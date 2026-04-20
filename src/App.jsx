@@ -1205,7 +1205,76 @@ function MentorDashboard({ mentor, onLogout }) {
       </div>
     );
   }
-  
+
+  function MentorRegistration({ onDone }) {
+  const TOTAL = 6;
+  const [step, setStep] = useState(1);
+  const [form, setForm] = useState({ name: "", college: "", course: "", year: "", email: "", whatsapp: "", bio: "", photo: "" });
+  const [uploading, setUploading] = useState(false);
+  const [preview, setPreview] = useState("");
+  const [submitting, setSubmitting] = useState(false);
+  const upd = (k, v) => setForm(f => ({ ...f, [k]: v }));
+
+  const handlePhoto = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    setUploading(true);
+    try { const url = await uploadToCloudinary(file); upd("photo", url); setPreview(url); }
+    catch { alert("Upload failed. Try again."); } finally { setUploading(false); }
+  };
+
+  const handleSubmit = async () => {
+    setSubmitting(true);
+    try {
+      await apiFetch("/registrations", { method: "POST", body: form });
+      wa(ADMIN_WHATSAPP, `New Mentor Application!\nName: ${form.name}\nCollege: ${form.college}\nCourse: ${form.course}\nEmail: ${form.email}\nPhone: ${form.whatsapp}`);
+      setStep(TOTAL);
+    } catch { alert("Submission failed. Try again."); } finally { setSubmitting(false); }
+  };
+
+  const steps = [
+    { label: "Name", content: <div><h2 style={{ fontSize: 28, fontWeight: 800, color: "#111", marginBottom: 8 }}>What's your full name?</h2><p style={{ color: "#888", marginBottom: 24 }}>This will appear on your public profile</p><input placeholder="Your full name" value={form.name} onChange={e => upd("name", e.target.value)} autoFocus /></div>, valid: form.name.trim() },
+    { label: "College", content: <div><h2 style={{ fontSize: 28, fontWeight: 800, color: "#111", marginBottom: 8 }}>Your college details</h2><p style={{ color: "#888", marginBottom: 24 }}>Tell us where you study</p><div style={{ display: "flex", flexDirection: "column", gap: 14 }}><input placeholder="College name (e.g. SRCC)" value={form.college} onChange={e => upd("college", e.target.value)} /><input placeholder="Course / Programme" value={form.course} onChange={e => upd("course", e.target.value)} /><select value={form.year} onChange={e => upd("year", e.target.value)}><option value="">Select year</option><option value="1st">1st Year</option><option value="2nd">2nd Year</option><option value="3rd">3rd Year</option></select></div></div>, valid: form.college && form.course && form.year },
+    { label: "Contact", content: <div><h2 style={{ fontSize: 28, fontWeight: 800, color: "#111", marginBottom: 8 }}>Contact details</h2><p style={{ color: "#888", marginBottom: 24 }}>Not shown publicly</p><div style={{ display: "flex", flexDirection: "column", gap: 14 }}><input placeholder="Email address" type="email" value={form.email} onChange={e => upd("email", e.target.value)} /><input placeholder="WhatsApp number" type="tel" value={form.whatsapp} onChange={e => upd("whatsapp", e.target.value)} /></div></div>, valid: form.email && form.whatsapp },
+    { label: "Bio", content: <div><h2 style={{ fontSize: 28, fontWeight: 800, color: "#111", marginBottom: 8 }}>Tell students about yourself</h2><p style={{ color: "#888", marginBottom: 24 }}>Max 200 characters</p><textarea placeholder="e.g. 2nd year BCom Hons at SRCC. Happy to talk about college life..." rows={4} maxLength={200} value={form.bio} onChange={e => upd("bio", e.target.value)} /><div style={{ color: "#888", fontSize: 12, marginTop: 6, textAlign: "right" }}>{form.bio.length}/200</div></div>, valid: form.bio.trim().length >= 20 },
+    { label: "Photo", content: <div><h2 style={{ fontSize: 28, fontWeight: 800, color: "#111", marginBottom: 8 }}>Add a profile photo</h2><p style={{ color: "#888", marginBottom: 24 }}>Clear, well-lit, face visible.</p>{preview && <div style={{ textAlign: "center", marginBottom: 20 }}><img src={preview} alt="preview" style={{ width: 100, height: 100, borderRadius: "50%", objectFit: "cover", border: "3px solid #E93800" }} /><div style={{ color: "#888", fontSize: 13, marginTop: 8 }}>Photo uploaded ✓</div></div>}<label style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 10, padding: "14px 20px", border: "2px dashed #E8E2D9", borderRadius: 10, cursor: "pointer", color: "#888" }}>↑ {uploading ? "Uploading..." : "Click to upload photo"}<input type="file" accept="image/*" onChange={handlePhoto} style={{ display: "none" }} /></label></div>, valid: true },
+  ];
+
+  if (step === TOTAL) return (
+    <div style={{ minHeight: "100vh", background: "#FAF7F2", display: "flex", alignItems: "center", justifyContent: "center", padding: 20, color: "#111" }}>
+      <div style={{ textAlign: "center", maxWidth: 440 }}>
+        <div style={{ fontSize: 60, marginBottom: 24 }}>🎉</div>
+        <h2 style={{ fontSize: 32, fontWeight: 800, marginBottom: 12, fontFamily: "'Gilroy', sans-serif" }}>Thanks {form.name}!</h2>
+        <p style={{ color: "#888", lineHeight: 1.7, marginBottom: 24 }}>We'll review your profile and get back to you within 24 hours.</p>
+        <button onClick={onDone} style={{ background: "#111", color: "#fff", border: "none", padding: "12px 28px", borderRadius: 8, fontSize: 15, fontWeight: 600, cursor: "pointer", fontFamily: "'Gilroy', sans-serif" }}>Back to Home</button>
+      </div>
+    </div>
+  );
+
+  const current = steps[step - 1];
+  return (
+    <div style={{ minHeight: "100vh", display: "flex", flexDirection: "column", background: "#FAF7F2", color: "#111", fontFamily: "'Gilroy', sans-serif" }}>
+      <div style={{ background: "#fff", borderBottom: "1px solid #E8E2D9", padding: "14px 32px", position: "sticky", top: 0, zIndex: 100 }}>
+        <button onClick={onDone} style={{ background: "none", border: "none", color: "#111", fontSize: 14, fontWeight: 600, cursor: "pointer", fontFamily: "'Gilroy', sans-serif" }}>← Back to Home</button>
+      </div>
+      <div style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center", padding: 20 }}>
+        <div style={{ width: "100%", maxWidth: 520 }}>
+          <div style={{ height: 3, background: "#E8E2D9", borderRadius: 2, marginBottom: 32, overflow: "hidden" }}>
+            <div style={{ height: "100%", background: "#E93800", borderRadius: 2, width: `${((step - 1) / (TOTAL - 1)) * 100}%`, transition: "width 0.4s ease" }} />
+          </div>
+          <div style={{ color: "#888", fontSize: 13, marginBottom: 24 }}>Step {step} of {TOTAL - 1}</div>
+          <div key={step}>{current.content}</div>
+          <div style={{ display: "flex", gap: 12, marginTop: 32 }}>
+            {step > 1 && <button style={{ flex: 1, background: "transparent", color: "#111", border: "1.5px solid #111", padding: "12px", borderRadius: 8, fontSize: 15, cursor: "pointer", fontFamily: "'Gilroy', sans-serif" }} onClick={() => setStep(s => s - 1)}>← Back</button>}
+            {step < TOTAL - 1 && <button style={{ flex: 1, background: current.valid ? "#111" : "#ccc", color: "#fff", border: "none", padding: "12px", borderRadius: 8, fontSize: 15, cursor: current.valid ? "pointer" : "not-allowed", fontFamily: "'Gilroy', sans-serif" }} disabled={!current.valid} onClick={() => setStep(s => s + 1)}>Continue →</button>}
+            {step === TOTAL - 1 && <button style={{ flex: 1, background: "#111", color: "#fff", border: "none", padding: "12px", borderRadius: 8, fontSize: 15, cursor: "pointer", fontFamily: "'Gilroy', sans-serif" }} onClick={handleSubmit} disabled={submitting}>{submitting ? "Submitting..." : "Submit Application"}</button>}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function AdminLogin({ onLogin }) {
   const [pw, setPw] = useState(""); const [err, setErr] = useState("");
   const handle = () => { if (pw === ADMIN_PASSWORD) onLogin(); else setErr("Incorrect password"); };
