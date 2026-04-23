@@ -312,7 +312,7 @@ html,body { margin:0; padding:0; width:100%; overflow-x:hidden; }
       <div className="ticker-wrap">
         <div style={{ fontSize: 13, fontWeight: 600, color: "#fff", textAlign: "center", marginBottom: 14, letterSpacing: 2, textTransform: "uppercase" }}>Questions Asked By Students</div>
         <div style={{ overflow: "hidden" }}>
-          <div style={{ display: "flex", gap: 16, animation: "ticker 30s linear infinite" }}>
+          <div style={{ display: "flex", gap: 16, animation: "ticker 15s linear infinite" }}>
             {[...questions, ...questions].map((q, i) => (
               <div key={i} style={{ fontSize: 13, color: "#ccc", padding: "6px 20px", border: "1px solid #333", borderRadius: 20, whiteSpace: "nowrap" }}>{q}</div>
             ))}
