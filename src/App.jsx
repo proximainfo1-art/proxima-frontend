@@ -420,7 +420,7 @@ html,body { margin:0; padding:0; width:100%; overflow-x:hidden; }
           <span style={{ fontSize: 13, color: "#aaa" }}>📞 +91 9354249942</span>
           <span style={{ fontSize: 13, color: "#aaa" }}>📞 +91 8130900858</span>
           <span style={{ fontSize: 13, color: "#aaa" }}>✉ proxima.info1@gmail.com</span>
-          <a href="https://linkedin.com" target="_blank" rel="noreferrer" style={{ color: "#aaa", fontSize: 13, textDecoration: "none", border: "1px solid #444", borderRadius: 6, padding: "4px 10px" }}>in</a>
+          <a href="https://www.linkedin.com/company/team-proxima/" target="_blank" rel="noreferrer" style={{ color: "#aaa", fontSize: 13, textDecoration: "none", border: "1px solid #444", borderRadius: 6, padding: "4px 10px" }}>in</a>
         </div>
       </div>
     </div>
@@ -703,7 +703,7 @@ const [showCustomCall, setShowCustomCall] = useState(false);
           <span style={{ fontSize: 13, color: "#aaa" }}>+91 9354249942</span>
           <span style={{ fontSize: 13, color: "#aaa" }}>+91 8130900858</span>
           <span style={{ fontSize: 13, color: "#aaa" }}>proxima.info1@gmail.com</span>
-          <a href="https://linkedin.com" target="_blank" rel="noreferrer" style={{ color: "#aaa", fontSize: 13, textDecoration: "none", border: "1px solid #444", borderRadius: 6, padding: "4px 10px" }}>in</a>
+          <a href="https://www.linkedin.com/company/team-proxima/" target="_blank" rel="noreferrer" style={{ color: "#aaa", fontSize: 13, textDecoration: "none", border: "1px solid #444", borderRadius: 6, padding: "4px 10px" }}>in</a>
         </div>
       </div>
     </div>
