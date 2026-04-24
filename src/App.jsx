@@ -935,7 +935,7 @@ function BookingFlow({ mentor, slot, onDone }) {
     try { return JSON.parse(sessionStorage.getItem("proxima_booking_form") || "{}"); } catch { return {}; }
   });
 
-  const RAZORPAY_KEY = "rzp_test_SeX3eqFxJgWXIh";
+  const RAZORPAY_KEY = import.meta.env.VITE_RAZORPAY_KEY_ID;
 
   const loadRazorpay = () => new Promise(resolve => {
     if (window.Razorpay) return resolve(true);
