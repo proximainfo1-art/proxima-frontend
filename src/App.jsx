@@ -1128,9 +1128,16 @@ style={{ background: loading || !email || !pin ? "#ccc" : "#111", color: loading
 
 function SlotManager({ mentor, onSave }) {
   const times = generateTimeSlots();
-  const [liveSlots, setLiveSlots] = useState(mentor.slots || []);
+  const [liveSlots, setLiveSlots] = useState([]);
   const [days, setDays] = useState({});
   const [saving, setSaving] = useState(false);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    apiFetch(`/mentors/${mentor._id}/slots`)
+      .then(slots => { setLiveSlots(slots); setLoading(false); })
+      .catch(() => { setLiveSlots(mentor.slots || []); setLoading(false); });
+  }, [mentor._id]);
 
   const toggleDay = (day) => setDays(d => d[day] ? (({ [day]: _, ...rest }) => rest)(d) : { ...d, [day]: [{ from: "09:00", to: "11:00" }] });
   const addRange = (day) => setDays(d => ({ ...d, [day]: [...d[day], { from: "14:00", to: "16:00" }] }));
@@ -1167,6 +1174,8 @@ function SlotManager({ mentor, onSave }) {
   }, {});
 
   const inp = { flex: 1, background: "#FAF7F2", border: "1.5px solid #E8E2D9", color: "#111", borderRadius: 8, padding: "8px 12px", fontFamily: "'Gilroy', sans-serif", fontSize: 13, outline: "none" };
+
+  if (loading) return <div style={{ padding: 40, textAlign: "center", color: "#888" }}>Loading slots...</div>;
 
   return (
     <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 24 }}>
