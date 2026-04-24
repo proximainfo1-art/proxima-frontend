@@ -193,11 +193,12 @@ useEffect(() => {
   ];
 
   const faqs = [
-    { q: "How do I book a session with a mentor?", a: "You can browse mentors based on college and course, select a suitable time slot, and book a 30-minute 1:1 session directly through the website." },
-    { q: "Are the mentors verified?", a: "Yes, all mentors go through a verification process before being listed on Proxima." },
-    { q: "What topics can I discuss in a session?", a: "Admissions, academics, campus life, societies, placements, internships � anything related to your target college." },
-    { q: "How much does a session cost?", a: "Sessions start at Rs.299 for 30 minutes. Prices may vary by mentor." },
-    { q: "Can I choose which mentor I speak to?", a: "Yes, you can browse all available mentors, filter by college, and book with whoever fits your needs." },
+    { q: "How do I book a session?", a: "Simple. Browse through available guides by college, course, or stream. Pick someone whose profile resonates with what you're looking for, choose a time slot that works, and confirm your 30-minute video call. The whole thing takes under five minutes." },
+    { q: "Are the guides on Proxima verified?", a: "Yes, every guide is manually verified before they appear on the platform. We confirm college enrollment, course details, and identity. You are always speaking to someone who is genuinely, currently studying at the college you are researching." },
+    { q: "What can I talk about in a session?", a: "Anything you actually want to know. Academics, workload, placements, hostel life, peer culture, ROI, how competitive it really is — or simply whether a college is worth it for your specific goals. There are no fixed topics. The 30 minutes are entirely yours." },
+    { q: "How much does a session cost?", a: "The fee is listed clearly on every profile before you book. No subscriptions, no hidden charges. You pay only for what you book." },
+    { q: "Can I choose who I speak to?", a: "Completely your call. Browse profiles, read about their college, course, year, and what they can speak on, then book whoever feels right. Deciding between two colleges? Book sessions with people from both and compare directly." },
+    { q: "I haven't got my results yet. Can I still use Proxima?", a: "Absolutely — and this might actually be the best time. A lot of students come to Proxima before results to understand what their target colleges are genuinely like, what the cutoffs feel like from the inside, and whether a college is worth chasing in the first place." },
   ];
 
   return (
@@ -697,6 +698,7 @@ const [showCustomCall, setShowCustomCall] = useState(false);
           ))}
       </div>
       {selected && <MentorModal mentor={selected.mentor} initialScreen={selected.screen} onClose={() => setSelected(null)} onBook={(m, slot, form) => { setSelected(null); onBook(m, slot, form); }} />}
+      {showCustomCall && <CustomCallModal onClose={() => setShowCustomCall(false)} />}
       <div style={{ background: "#111", color: "#fff", padding: "32px 48px", display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: 16, marginTop: 40 }}>
         <img src="https://res.cloudinary.com/dlzqb06u6/image/upload/v1775449181/Logo_Dark_Mode_hhg8xt.png" alt="Proxima" style={{ height: 28, objectFit: "contain" }} />
         <div style={{ display: "flex", gap: 24, flexWrap: "wrap", alignItems: "center" }}>
