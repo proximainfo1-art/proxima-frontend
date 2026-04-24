@@ -1127,66 +1127,126 @@ style={{ background: loading || !email || !pin ? "#ccc" : "#111", color: loading
 }
 
 function SlotManager({ mentor, onSave }) {
-  const [days, setDays] = useState(() => {
-  const d = {};
   const times = generateTimeSlots();
-  (mentor.slots || []).forEach(s => {
-    if (!d[s.day]) d[s.day] = [];
-    const existing = d[s.day];
-    const last = existing[existing.length - 1];
-    const nextTime = times[times.indexOf(s.time) + 1];
-    if (last && last.to === s.time) {
-      last.to = nextTime || s.time;
-    } else {
-      existing.push({ from: s.time, to: nextTime || s.time });
-    }
-  });
-  return d;
-});
-  const times = generateTimeSlots();
+  const [liveSlots, setLiveSlots] = useState(mentor.slots || []);
+  const [days, setDays] = useState({});
+  const [saving, setSaving] = useState(false);
+
   const toggleDay = (day) => setDays(d => d[day] ? (({ [day]: _, ...rest }) => rest)(d) : { ...d, [day]: [{ from: "09:00", to: "11:00" }] });
   const addRange = (day) => setDays(d => ({ ...d, [day]: [...d[day], { from: "14:00", to: "16:00" }] }));
   const removeRange = (day, i) => setDays(d => { const ranges = d[day].filter((_, idx) => idx !== i); return ranges.length ? { ...d, [day]: ranges } : (({ [day]: _, ...rest }) => rest)(d); });
   const updateRange = (day, i, k, v) => setDays(d => { const ranges = [...d[day]]; ranges[i] = { ...ranges[i], [k]: v }; return { ...d, [day]: ranges }; });
-  const allSlots = Object.entries(days).flatMap(([day, ranges]) => generateSlotsFromRanges(ranges.map(r => ({ ...r, day }))));
+
+  const newSlots = Object.entries(days).flatMap(([day, ranges]) => generateSlotsFromRanges(ranges.map(r => ({ ...r, day }))));
 
   const handleSave = async () => {
-    try { await apiFetch(`/mentors/${mentor._id}/slots`, { method: "PUT", body: { slots: allSlots } }); alert("Your slots have been updated!"); onSave(); }
-    catch { alert("Failed to save slots"); }
+    setSaving(true);
+    try {
+      const bookedSlots = liveSlots.filter(s => s.status === "booked");
+      const merged = [...bookedSlots, ...newSlots.filter(ns => !bookedSlots.some(b => b.display === ns.display))];
+      const updated = await apiFetch(`/mentors/${mentor._id}/slots`, { method: "PUT", body: { slots: merged } });
+      setLiveSlots(updated.slots || merged);
+      setDays({});
+      alert("Slots updated!");
+      onSave();
+    } catch { alert("Failed to save slots"); }
+    finally { setSaving(false); }
   };
 
+  const removeSlot = async (slotDisplay) => {
+    const updated = liveSlots.filter(s => s.display !== slotDisplay);
+    try {
+      await apiFetch(`/mentors/${mentor._id}/slots`, { method: "PUT", body: { slots: updated } });
+      setLiveSlots(updated);
+    } catch { alert("Failed to remove slot"); }
+  };
+
+  const liveByDay = DAYS.reduce((acc, day) => {
+    const s = liveSlots.filter(s => s.day === day);
+    if (s.length) acc[day] = s;
+    return acc;
+  }, {});
+
+  const inp = { flex: 1, background: "#FAF7F2", border: "1.5px solid #E8E2D9", color: "#111", borderRadius: 8, padding: "8px 12px", fontFamily: "'Gilroy', sans-serif", fontSize: 13, outline: "none" };
+
   return (
-    <div>
-      <div style={{ fontWeight: 600, fontSize: 18, marginBottom: 20 }}>Manage Your Slots</div>
-      {DAYS.map(day => (
-        <div key={day} style={{ marginBottom: 16, background: "#fff", border: "1px solid #E8E2D9", borderRadius: 12, padding: 16 }}>
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: days[day] ? 16 : 0 }}>
-            <span style={{ fontWeight: 500 }}>{day}</span>
-            <button onClick={() => toggleDay(day)} style={{ background: days[day] ? "#E93800" : "transparent", border: `1px solid ${days[day] ? "#E93800" : "#E8E2D9"}`, color: days[day] ? "#fff" : "#888", padding: "4px 14px", borderRadius: 20, fontSize: 13, fontFamily: "'Gilroy', sans-serif", cursor: "pointer" }}>{days[day] ? "Active" : "Off"}</button>
+    <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 24 }}>
+
+      {/* LEFT — Live Slots */}
+      <div>
+        <div style={{ fontWeight: 700, fontSize: 15, marginBottom: 16, color: "#111" }}>
+          Live Slots <span style={{ color: "#888", fontWeight: 400, fontSize: 13 }}>({liveSlots.length} total)</span>
+        </div>
+        {Object.keys(liveByDay).length === 0 && (
+          <div style={{ color: "#aaa", fontSize: 13, padding: "20px 0" }}>No slots set yet. Add some on the right.</div>
+        )}
+        {DAYS.filter(d => liveByDay[d]).map(day => (
+          <div key={day} style={{ marginBottom: 16, background: "#fff", border: "1px solid #E8E2D9", borderRadius: 12, padding: 14 }}>
+            <div style={{ fontWeight: 600, fontSize: 13, color: "#111", marginBottom: 10 }}>{day}</div>
+            <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
+              {liveByDay[day].map((s, i) => (
+                <div key={i} style={{ display: "flex", alignItems: "center", gap: 4, background: s.status === "booked" ? "#FFF0EB" : "#F0FBF6", border: `1px solid ${s.status === "booked" ? "#F0D5CB" : "#BBF0D6"}`, borderRadius: 6, padding: "4px 10px", fontSize: 12 }}>
+                  <span style={{ color: s.status === "booked" ? "#E93800" : "#16A34A", fontWeight: 600 }}>{formatTime(s.time)}</span>
+                  {s.status !== "booked" && (
+                    <button onClick={() => removeSlot(s.display)} style={{ background: "none", border: "none", color: "#aaa", cursor: "pointer", fontSize: 14, lineHeight: 1, padding: "0 0 0 4px" }}>×</button>
+                  )}
+                  {s.status === "booked" && <span style={{ color: "#E93800", fontSize: 10, fontWeight: 700 }}>BOOKED</span>}
+                </div>
+              ))}
+            </div>
           </div>
-          {days[day] && days[day].map((range, i) => (
-            <div key={i} style={{ display: "flex", gap: 10, alignItems: "center", marginBottom: 10 }}>
-              <select value={range.from} onChange={e => updateRange(day, i, "from", e.target.value)} style={{ flex: 1 }}>{times.map(t => <option key={t} value={t}>{formatTime(t)}</option>)}</select>
-              <span style={{ color: "#888" }}>to</span>
-              <select value={range.to} onChange={e => updateRange(day, i, "to", e.target.value)} style={{ flex: 1 }}>{times.map(t => <option key={t} value={t}>{formatTime(t)}</option>)}</select>
-              <button onClick={() => removeRange(day, i)} style={{ background: "none", border: "none", color: "#888" }}><X /></button>
+        ))}
+      </div>
+
+      {/* RIGHT — Add New Slots */}
+      <div>
+        <div style={{ fontWeight: 700, fontSize: 15, marginBottom: 16, color: "#111" }}>Add New Slots</div>
+        {DAYS.map(day => (
+          <div key={day} style={{ marginBottom: 12, background: "#fff", border: "1px solid #E8E2D9", borderRadius: 12, padding: 14 }}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: days[day] ? 12 : 0 }}>
+              <span style={{ fontWeight: 500, fontSize: 13 }}>{day}</span>
+              <button onClick={() => toggleDay(day)} style={{ background: days[day] ? "#E93800" : "transparent", border: `1px solid ${days[day] ? "#E93800" : "#E8E2D9"}`, color: days[day] ? "#fff" : "#888", padding: "3px 12px", borderRadius: 20, fontSize: 12, fontFamily: "'Gilroy', sans-serif", cursor: "pointer" }}>
+                {days[day] ? "Active" : "Add"}
+              </button>
             </div>
-          ))}
-          {days[day] && (
-            <div>
-              <div style={{ color: "#888", fontSize: 12, marginBottom: 8 }}>{generateSlotsFromRanges(days[day].map(r => ({ ...r, day }))).length} slots: {generateSlotsFromRanges(days[day].map(r => ({ ...r, day }))).map(s => formatTime(s.time)).join(", ")}</div>
-              <button onClick={() => addRange(day)} style={{ background: "none", border: "1px dashed #E8E2D9", color: "#888", padding: "6px 14px", borderRadius: 8, fontSize: 13, width: "100%", fontFamily: "'Gilroy', sans-serif", cursor: "pointer" }}>+ Add another range</button>
-            </div>
-          )}
-        </div>
-      ))}
-      {allSlots.length > 0 && (
-        <div style={{ background: "#FFF0EB", border: "1px solid #F0D5CB", borderRadius: 10, padding: 16, marginBottom: 20 }}>
-          <div style={{ fontWeight: 500, marginBottom: 8, color: "#E93800" }}>Preview — {allSlots.length} total slots</div>
-          {DAYS.filter(d => days[d]).map(d => <div key={d} style={{ fontSize: 13, color: "#555", marginBottom: 4 }}><strong>{d}:</strong> {generateSlotsFromRanges(days[d].map(r => ({ ...r, day: d }))).map(s => formatTime(s.time)).join(", ")}</div>)}
-        </div>
-      )}
-      <button className="btn-primary" onClick={handleSave} style={{ width: "100%" }}>Save Slots</button>
+            {days[day] && days[day].map((range, i) => (
+              <div key={i} style={{ display: "flex", gap: 8, alignItems: "center", marginBottom: 8 }}>
+                <select value={range.from} onChange={e => updateRange(day, i, "from", e.target.value)} style={inp}>
+                  {times.map(t => <option key={t} value={t}>{formatTime(t)}</option>)}
+                </select>
+                <span style={{ color: "#888", fontSize: 12 }}>to</span>
+                <select value={range.to} onChange={e => updateRange(day, i, "to", e.target.value)} style={inp}>
+                  {times.map(t => <option key={t} value={t}>{formatTime(t)}</option>)}
+                </select>
+                <button onClick={() => removeRange(day, i)} style={{ background: "none", border: "none", color: "#aaa", cursor: "pointer", fontSize: 16 }}>×</button>
+              </div>
+            ))}
+            {days[day] && (
+              <div>
+                <div style={{ color: "#888", fontSize: 11, marginBottom: 6 }}>
+                  {generateSlotsFromRanges(days[day].map(r => ({ ...r, day }))).map(s => formatTime(s.time)).join(", ")}
+                </div>
+                <button onClick={() => addRange(day)} style={{ background: "none", border: "1px dashed #E8E2D9", color: "#888", padding: "5px 12px", borderRadius: 8, fontSize: 12, width: "100%", fontFamily: "'Gilroy', sans-serif", cursor: "pointer" }}>+ Add range</button>
+              </div>
+            )}
+          </div>
+        ))}
+
+        {newSlots.length > 0 && (
+          <div style={{ background: "#FFF0EB", border: "1px solid #F0D5CB", borderRadius: 10, padding: 14, marginBottom: 16 }}>
+            <div style={{ fontWeight: 600, fontSize: 13, color: "#E93800", marginBottom: 8 }}>Adding {newSlots.length} new slots</div>
+            {DAYS.filter(d => days[d]).map(d => (
+              <div key={d} style={{ fontSize: 12, color: "#555", marginBottom: 3 }}>
+                <strong>{d}:</strong> {generateSlotsFromRanges(days[d].map(r => ({ ...r, day: d }))).map(s => formatTime(s.time)).join(", ")}
+              </div>
+            ))}
+          </div>
+        )}
+
+        <button onClick={handleSave} disabled={saving || newSlots.length === 0} style={{ width: "100%", background: saving || newSlots.length === 0 ? "#ccc" : "#111", color: "#fff", border: "none", borderRadius: 10, padding: "12px", fontSize: 14, fontWeight: 700, cursor: saving || newSlots.length === 0 ? "not-allowed" : "pointer", fontFamily: "'Gilroy', sans-serif" }}>
+          {saving ? "Saving..." : `Save ${newSlots.length} New Slots`}
+        </button>
+      </div>
     </div>
   );
 }
