@@ -1142,8 +1142,7 @@ function SlotManager({ mentor, onSave }) {
   const handleSave = async () => {
     setSaving(true);
     try {
-      const bookedSlots = liveSlots.filter(s => s.status === "booked");
-      const merged = [...bookedSlots, ...newSlots.filter(ns => !bookedSlots.some(b => b.display === ns.display))];
+      const merged = [...liveSlots, ...newSlots.filter(ns => !liveSlots.some(ls => ls.display === ns.display))];
       const updated = await apiFetch(`/mentors/${mentor._id}/slots`, { method: "PUT", body: { slots: merged } });
       setLiveSlots(updated.slots || merged);
       setDays({});
