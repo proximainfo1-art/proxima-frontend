@@ -264,7 +264,7 @@ html,body { margin:0; padding:0; width:100%; overflow-x:hidden; }
       `}</style>
 
      <nav style={{ display:"flex", alignItems:"center", justifyContent:"space-between", padding:"16px 20px", borderBottom:"1px solid #E8E2D9", background:"#ffffff", position:"sticky", top:0, zIndex:100, width:"100%", boxSizing:"border-box" }}>
-  <img src={LIGHT_LOGO} alt="Proxima" style={{ height: 24, width: "auto", objectFit: "contain", flexShrink: 0 }} />
+  <img src={LIGHT_LOGO} alt="Proxima" style={{ height: 24, width: "auto", objectFit: "contain", flexShrink: 0, cursor: "pointer" }} onClick={() => window.location.href = "/"} />
   <div style={{ display:"flex", gap:8, alignItems:"center" }}>
     <button onClick={onMentee} style={{ background:"#111", color:"#fff", border:"1.5px solid #111", padding:"9px 14px", borderRadius:8, fontSize:13, fontWeight:600, cursor:"pointer", fontFamily:"'Gilroy',sans-serif", whiteSpace:"nowrap", display: window.innerWidth < 600 ? "none" : "inline-block" }}>Get Guidance</button>
     <button onClick={onMentor} style={{ background:"transparent", color:"#111", border:"1.5px solid #111", padding:"9px 14px", borderRadius:8, fontSize:13, fontWeight:600, cursor:"pointer", fontFamily:"'Gilroy',sans-serif", whiteSpace:"nowrap", display: window.innerWidth < 600 ? "none" : "inline-block" }}>Join As Guide</button>
@@ -416,7 +416,7 @@ html,body { margin:0; padding:0; width:100%; overflow-x:hidden; }
       </div>
 
       <div className="l-footer">
-        <img src="https://res.cloudinary.com/dlzqb06u6/image/upload/v1775449181/Logo_Dark_Mode_hhg8xt.png" alt="Proxima" style={{ height: 28, objectFit: "contain" }} />
+        <a href="/"><img src="https://res.cloudinary.com/dlzqb06u6/image/upload/v1775449181/Logo_Dark_Mode_hhg8xt.png" alt="Proxima" style={{ height: 28, objectFit: "contain" }} /></a>
         <div style={{ display: "flex", gap: 24, flexWrap: "wrap", alignItems: "center" }}>
           <span style={{ fontSize: 13, color: "#aaa" }}>📞 +91 9354249942</span>
           <span style={{ fontSize: 13, color: "#aaa" }}>📞 +91 8130900858</span>
@@ -635,7 +635,10 @@ const [showCustomCall, setShowCustomCall] = useState(false);
   return (
     <div style={{ minHeight: "100vh", background: "#fff", fontFamily: "'Gilroy', sans-serif", color: "#111" }}>
       {/* Header */}
-      <div style={{ background: "#FFF0EB", padding: "clamp(24px,4vw,40px) clamp(16px,4vw,48px) clamp(20px,3vw,32px)" }}>
+      <div style={{ background: "#fff", borderBottom: "1px solid #E8E2D9", padding: "14px 24px", position: "sticky", top: 0, zIndex: 100 }}>
+  <a href="/"><img src="https://res.cloudinary.com/dlzqb06u6/image/upload/v1775389312/wbzrczuoo9swrhfvxhrx.png" alt="Proxima" style={{ height: 24, objectFit: "contain" }} /></a>
+</div>
+<div style={{ background: "#FFF0EB", padding: "clamp(24px,4vw,40px) clamp(16px,4vw,48px) clamp(20px,3vw,32px)" }}>
         <div style={{ maxWidth: 1100, margin: "0 auto" }}>
           <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: 3, color: "#888", textTransform: "uppercase", marginBottom: 16 }}>Find Your Mentor</div>
           <h1 style={{ fontSize: "clamp(28px,4vw,48px)", fontWeight: 600, lineHeight: 1.15, marginBottom: 12 }}>
@@ -700,7 +703,7 @@ const [showCustomCall, setShowCustomCall] = useState(false);
       {selected && <MentorModal mentor={selected.mentor} initialScreen={selected.screen} onClose={() => setSelected(null)} onBook={(m, slot, form) => { setSelected(null); onBook(m, slot, form); }} />}
       {showCustomCall && <CustomCallModal onClose={() => setShowCustomCall(false)} />}
       <div style={{ background: "#111", color: "#fff", padding: "32px 48px", display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: 16, marginTop: 40 }}>
-        <img src="https://res.cloudinary.com/dlzqb06u6/image/upload/v1775449181/Logo_Dark_Mode_hhg8xt.png" alt="Proxima" style={{ height: 28, objectFit: "contain" }} />
+        <a href="/"><img src="https://res.cloudinary.com/dlzqb06u6/image/upload/v1775449181/Logo_Dark_Mode_hhg8xt.png" alt="Proxima" style={{ height: 28, objectFit: "contain" }} /></a>
         <div style={{ display: "flex", gap: 24, flexWrap: "wrap", alignItems: "center" }}>
           <span style={{ fontSize: 13, color: "#aaa" }}>+91 9354249942</span>
           <span style={{ fontSize: 13, color: "#aaa" }}>+91 8130900858</span>
@@ -1294,7 +1297,7 @@ function MentorDashboard({ mentor, onLogout }) {
 
       {/* Header */}
       <div style={{ background: "#fff", borderBottom: "1px solid #E8E2D9", padding: "16px 32px", display: "flex", alignItems: "center", justifyContent: "space-between", position: "sticky", top: 0, zIndex: 100 }}>
-<img src="https://res.cloudinary.com/dlzqb06u6/image/upload/v1775389312/wbzrczuoo9swrhfvxhrx.png" alt="Proxima" style={{ height: 36, objectFit: "contain", filter: "none" }} />        <button onClick={onLogout} style={{ background: "none", border: "1.5px solid #111", color: "#111", padding: "8px 18px", borderRadius: 8, fontSize: 13, cursor: "pointer", display: "flex", alignItems: "center", gap: 6, fontFamily: "'Gilroy', sans-serif" }}>
+<a href="/"><img src="https://res.cloudinary.com/dlzqb06u6/image/upload/v1775389312/wbzrczuoo9swrhfvxhrx.png" alt="Proxima" style={{ height: 36, objectFit: "contain", filter: "none" }} /></a>        <button onClick={onLogout} style={{ background: "none", border: "1.5px solid #111", color: "#111", padding: "8px 18px", borderRadius: 8, fontSize: 13, cursor: "pointer", display: "flex", alignItems: "center", gap: 6, fontFamily: "'Gilroy', sans-serif" }}>
           <LogOut /> Sign out
         </button>
       </div>
@@ -1479,7 +1482,8 @@ function MentorRegistration({ onDone }) {
   return (
     <div style={{ minHeight: "100vh", display: "flex", flexDirection: "column", background: "#FAF7F2", color: "#111", fontFamily: "'Gilroy', sans-serif" }}>
       <div style={{ background: "#fff", borderBottom: "1px solid #E8E2D9", padding: "14px 32px", position: "sticky", top: 0, zIndex: 100 }}>
-        <button onClick={onDone} style={{ background: "none", border: "none", color: "#111", fontSize: 14, fontWeight: 600, cursor: "pointer", fontFamily: "'Gilroy', sans-serif" }}>← Back to Home</button>
+        <a href="/"><img src="https://res.cloudinary.com/dlzqb06u6/image/upload/v1775389312/wbzrczuoo9swrhfvxhrx.png" alt="Proxima" style={{ height: 24, objectFit: "contain" }} /></a>
+<button onClick={onDone} style={{ background: "none", border: "none", color: "#111", fontSize: 14, fontWeight: 600, cursor: "pointer", fontFamily: "'Gilroy', sans-serif" }}>← Back to Home</button>
       </div>
       <div style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center", padding: 20 }}>
         <div style={{ width: "100%", maxWidth: 520 }}>
