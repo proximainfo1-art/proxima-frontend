@@ -474,6 +474,22 @@ function MentorCard({ mentor, onClick, onBook }) {
 
   
     {/* Mobile — availability + buttons below */}
+    {window.innerWidth >= 600 && (
+      <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: 8, flexShrink: 0 }}>
+        <div style={{ fontSize: 12, color: "#888", display: "flex", alignItems: "center", gap: 4 }}>
+          <span style={{ width: 8, height: 8, borderRadius: "50%", background: hasToday ? "#22C55E" : "#E8E2D9", display: "inline-block" }} />
+          {hasToday ? "Available Today" : "No slots today"}
+        </div>
+        <button onClick={e => { e.stopPropagation(); onClick({ mentor, screen: "slots" }); }}
+          style={{ background: "#111", color: "#fff", border: "1.5px solid #111", borderRadius: 8, padding: "10px 20px", fontSize: 13, fontWeight: 600, cursor: "pointer", fontFamily: "'Gilroy', sans-serif", width: 140 }}>
+          Book A Session
+        </button>
+        <button onClick={e => { e.stopPropagation(); onClick({ mentor, screen: "profile" }); }}
+          style={{ background: "transparent", color: "#111", border: "1.5px solid #E8E2D9", borderRadius: 8, padding: "10px 20px", fontSize: 13, fontWeight: 500, cursor: "pointer", fontFamily: "'Gilroy', sans-serif", width: 140 }}>
+          View Profile
+        </button>
+      </div>
+    )}
     {window.innerWidth < 600 && (
       <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 8, width: "100%", marginTop: 12 }}>
         <div style={{ fontSize: 12, color: "#888", display: "flex", alignItems: "center", gap: 4 }}>
