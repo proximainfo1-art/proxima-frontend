@@ -710,8 +710,16 @@ const [showCustomCall, setShowCustomCall] = useState(false);
   );
 }
 
-function MentorModal({ mentor, onClose, onBook, initialScreen = "profile" }) {
+function MentorModal({ mentor: initialMentor, onClose, onBook, initialScreen = "profile" }) {
+  const [mentor, setMentor] = useState(initialMentor);
   const [screen, setScreen] = useState(initialScreen);
+
+  useEffect(() => {
+    apiFetch(`/mentors`).then(data => {
+      const fresh = data.find(m => m._id === initialMentor._id);
+      if (fresh) setMentor(fresh);
+    }).catch(() => {});
+  }, [initialMentor._id]);
   const [selectedDay, setSelectedDay] = useState(null);
   const [selectedSlot, setSelectedSlot] = useState(null);
   const [form, setForm] = useState({ name: "", email: "", phone: "", code: "", message: "" });
