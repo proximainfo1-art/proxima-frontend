@@ -1121,8 +1121,17 @@ style={{ background: loading || !email || !pin ? "#ccc" : "#111", color: loading
 function SlotManager({ mentor, onSave }) {
   const [days, setDays] = useState(() => {
   const d = {};
+  const times = generateTimeSlots();
   (mentor.slots || []).forEach(s => {
-    if (!d[s.day]) d[s.day] = [{ from: s.time, to: s.time }];
+    if (!d[s.day]) d[s.day] = [];
+    const existing = d[s.day];
+    const last = existing[existing.length - 1];
+    const nextTime = times[times.indexOf(s.time) + 1];
+    if (last && last.to === s.time) {
+      last.to = nextTime || s.time;
+    } else {
+      existing.push({ from: s.time, to: nextTime || s.time });
+    }
   });
   return d;
 });
