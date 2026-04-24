@@ -1119,7 +1119,13 @@ style={{ background: loading || !email || !pin ? "#ccc" : "#111", color: loading
 }
 
 function SlotManager({ mentor, onSave }) {
-  const [days, setDays] = useState({});
+  const [days, setDays] = useState(() => {
+  const d = {};
+  (mentor.slots || []).forEach(s => {
+    if (!d[s.day]) d[s.day] = [{ from: s.time, to: s.time }];
+  });
+  return d;
+});
   const times = generateTimeSlots();
   const toggleDay = (day) => setDays(d => d[day] ? (({ [day]: _, ...rest }) => rest)(d) : { ...d, [day]: [{ from: "09:00", to: "11:00" }] });
   const addRange = (day) => setDays(d => ({ ...d, [day]: [...d[day], { from: "14:00", to: "16:00" }] }));
