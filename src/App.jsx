@@ -108,7 +108,7 @@ const css = `
   @keyframes slideIn { from { opacity:0; transform:translateX(32px); } to { opacity:1; transform:translateX(0); } }
   .fade-up { animation: fadeUp 0.5s ease forwards; }
   .slide-in { animation: slideIn 0.4s ease forwards; }
-  input, textarea, select { background: #222; border: 1px solid ${S.border}; color: ${S.text}; border-radius: 8px; padding: 12px 16px; width: 100%; font-family: 'Gilroy', sans-serif; font-size: 15px; outline: none; transition: border 0.2s; box-sizing: border-box; }
+  <p style={{ color: "#666", fontSize: 15, lineHeight: 1.75, maxWidth: 420, marginBottom: 32 }}>
   input:focus, textarea:focus, select:focus { border-color: ${S.accent}; }
   button { cursor: pointer; font-family: 'Gilroy', sans-serif; transition: all 0.2s; }
   .btn-primary { background: ${S.accent}; color: #fff; border: none; padding: 12px 28px; border-radius: 8px; font-size: 15px; font-weight: 500; }
@@ -154,7 +154,7 @@ function Stars({ rating }) {
       {[1,2,3,4,5].map(i => (
         <span key={i} className="star" style={{ opacity: i <= Math.round(rating) ? 1 : 0.2 }}>★</span>
       ))}
-      <span style={{ color: "#888", fontSize: 13, marginLeft: 4 }}>{rating?.toFixed(1)}</span>
+      <span style={{ color: "#888", fontSize: 15, marginLeft: 4 }}>{rating?.toFixed(1)}</span>
     </span>
   );
 }
@@ -297,7 +297,7 @@ html,body { margin:0; padding:0; width:100%; overflow-x:hidden; }
 ].map(p => (
   <img key={p.name} src={p.url} alt={p.name} style={{ height: 48, objectFit: "contain" }} />
 ))}
-<span style={{ fontSize: 13, color: "#888" }}>+13 more</span>
+<span style={{ fontSize: 15, color: "#888" }}>+13 more</span>
             </div>
           </div>
         </div>
@@ -311,11 +311,11 @@ html,body { margin:0; padding:0; width:100%; overflow-x:hidden; }
       </div>
 
       <div className="ticker-wrap">
-        <div style={{ fontSize: 13, fontWeight: 600, color: "#fff", textAlign: "center", marginBottom: 14, letterSpacing: 2, textTransform: "uppercase" }}>Questions Asked By Students</div>
+        <div style={{ fontSize: 15, fontWeight: 600, color: "#fff", textAlign: "center", marginBottom: 14, letterSpacing: 2, textTransform: "uppercase" }}>Questions Asked By Students</div>
         <div style={{ overflow: "hidden" }}>
           <div style={{ display: "flex", gap: 16, animation: "ticker 15s linear infinite" }}>
             {[...questions, ...questions].map((q, i) => (
-              <div key={i} style={{ fontSize: 13, color: "#ccc", padding: "6px 20px", border: "1px solid #333", borderRadius: 20, whiteSpace: "nowrap" }}>{q}</div>
+              <div key={i} style={{ fontSize: 15, color: "#ccc", padding: "6px 20px", border: "1px solid #333", borderRadius: 20, whiteSpace: "nowrap" }}>{q}</div>
             ))}
           </div>
         </div>
@@ -361,11 +361,11 @@ html,body { margin:0; padding:0; width:100%; overflow-x:hidden; }
           </div>
           <div style={{ borderLeft: "1px solid #333", paddingLeft: 32 }}>
             <div style={{ fontSize: 56, fontWeight: 800 }}>{mentorCount}+</div>
-            <div style={{ color: "#aaa", fontSize: 13, marginTop: 8, lineHeight: 1.6 }}>Verified college seniors onboarded as student guides</div>
+            <div style={{ color: "#aaa", fontSize: 15, marginTop: 8, lineHeight: 1.6 }}>Verified college seniors onboarded as student guides</div>
           </div>
           <div style={{ borderLeft: "1px solid #333", paddingLeft: 32 }}>
             <div style={{ fontSize: 56, fontWeight: 800 }}>{collegeCount}+</div>
-            <div style={{ color: "#aaa", fontSize: 13, marginTop: 8, lineHeight: 1.6 }}>Colleges represented across our network</div>
+            <div style={{ color: "#aaa", fontSize: 15, marginTop: 8, lineHeight: 1.6 }}>Colleges represented across our network</div>
           </div>
         </div>
       </div>
@@ -376,10 +376,10 @@ html,body { margin:0; padding:0; width:100%; overflow-x:hidden; }
             <h2 style={{ fontSize: "clamp(24px,3vw,36px)", fontWeight: 800, lineHeight: 1.2, marginBottom: 24 }}>Frequently<br />Asked Questions</h2>
             <div style={{ background: "#F0EDE8", borderRadius: 12, padding: "20px 24px" }}>
               <div style={{ fontWeight: 600, fontSize: 14, marginBottom: 12 }}>Can't Find What You Are Looking For?</div>
-              <div style={{ fontSize: 13, color: "#666", marginBottom: 8 }}>Reach out to us at</div>
-              <div style={{ fontSize: 13, color: "#444", marginBottom: 4 }}>📞 +91 9354249942</div>
-              <div style={{ fontSize: 13, color: "#444", marginBottom: 4 }}>📞 +91 8130900858</div>
-              <div style={{ fontSize: 13, color: "#444" }}>✉ proxima.info1@gmail.com</div>
+              <div style={{ fontSize: 15, color: "#666", marginBottom: 8 }}>Reach out to us at</div>
+              <div style={{ fontSize: 15, color: "#444", marginBottom: 4 }}>📞 +91 9354249942</div>
+              <div style={{ fontSize: 15, color: "#444", marginBottom: 4 }}>📞 +91 8130900858</div>
+              <div style={{ fontSize: 15, color: "#444" }}>✉ proxima.info1@gmail.com</div>
             </div>
           </div>
           <div>
@@ -418,10 +418,10 @@ html,body { margin:0; padding:0; width:100%; overflow-x:hidden; }
       <div className="l-footer">
         <a href="/"><img src="https://res.cloudinary.com/dlzqb06u6/image/upload/v1775449181/Logo_Dark_Mode_hhg8xt.png" alt="Proxima" style={{ height: 28, objectFit: "contain" }} /></a>
         <div style={{ display: "flex", gap: 24, flexWrap: "wrap", alignItems: "center" }}>
-          <span style={{ fontSize: 13, color: "#aaa" }}>📞 +91 9354249942</span>
-          <span style={{ fontSize: 13, color: "#aaa" }}>📞 +91 8130900858</span>
-          <span style={{ fontSize: 13, color: "#aaa" }}>✉ proxima.info1@gmail.com</span>
-          <a href="https://www.linkedin.com/company/team-proxima/" target="_blank" rel="noreferrer" style={{ color: "#aaa", fontSize: 13, textDecoration: "none", border: "1px solid #444", borderRadius: 6, padding: "4px 10px" }}>in</a>
+          <span style={{ fontSize: 15, color: "#aaa" }}>📞 +91 9354249942</span>
+          <span style={{ fontSize: 15, color: "#aaa" }}>📞 +91 8130900858</span>
+          <span style={{ fontSize: 15, color: "#aaa" }}>✉ proxima.info1@gmail.com</span>
+          <a href="https://www.linkedin.com/company/team-proxima/" target="_blank" rel="noreferrer" style={{ color: "#aaa", fontSize: 15, textDecoration: "none", border: "1px solid #444", borderRadius: 6, padding: "4px 10px" }}>in</a>
         </div>
       </div>
     </div>
@@ -456,17 +456,17 @@ function MentorCard({ mentor, onClick, onBook }) {
     <div style={{ flex: 1, minWidth: 0 }}>
       <div style={{ fontWeight: 700, fontSize: 16, color: "#111", marginBottom: 8 }}>{mentor.name}</div>
       <div style={{ display: "flex", flexDirection: "column", gap: 4, marginBottom: 10 }}>
-        <div style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 13, color: "#555" }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 15, color: "#555" }}>
           <span>🎓</span><span>{mentor.college}</span>
         </div>
-        <div style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 13, color: "#555" }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 15, color: "#555" }}>
           <span>📖</span><span>{mentor.course} · {mentor.year}</span>
         </div>
-        <div style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 13, color: "#555" }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 15, color: "#555" }}>
           <span>📍</span><span>{location}</span>
         </div>
       </div>
-      <div style={{ borderTop: "1px solid #F0EDE8", paddingTop: 10, display: "flex", alignItems: "center", gap: 16, fontSize: 13 }}>
+      <div style={{ borderTop: "1px solid #F0EDE8", paddingTop: 10, display: "flex", alignItems: "center", gap: 16, fontSize: 15 }}>
         <span style={{ fontWeight: 700, color: "#111" }}>₹{mentor.price || 299}<span style={{ fontWeight: 400, color: "#888" }}> / 30 min</span></span>
         <span style={{ color: "#888" }}>|</span>
         <span style={{ color: "#888" }}>{mentor.sessions || 0} sessions taken</span>
@@ -482,11 +482,11 @@ function MentorCard({ mentor, onClick, onBook }) {
           {hasToday ? "Available Today" : "No slots today"}
         </div>
         <button onClick={e => { e.stopPropagation(); onClick({ mentor, screen: "slots" }); }}
-          style={{ background: "#111", color: "#fff", border: "1.5px solid #111", borderRadius: 8, padding: "10px 20px", fontSize: 13, fontWeight: 600, cursor: "pointer", fontFamily: "'Gilroy', sans-serif", width: 140 }}>
+          style={{ background: "#111", color: "#fff", border: "1.5px solid #111", borderRadius: 8, padding: "10px 20px", fontSize: 15, fontWeight: 600, cursor: "pointer", fontFamily: "'Gilroy', sans-serif", width: 140 }}>
           Book A Session
         </button>
         <button onClick={e => { e.stopPropagation(); onClick({ mentor, screen: "profile" }); }}
-          style={{ background: "transparent", color: "#111", border: "1.5px solid #E8E2D9", borderRadius: 8, padding: "10px 20px", fontSize: 13, fontWeight: 500, cursor: "pointer", fontFamily: "'Gilroy', sans-serif", width: 140 }}>
+          style={{ background: "transparent", color: "#111", border: "1.5px solid #E8E2D9", borderRadius: 8, padding: "10px 20px", fontSize: 15, fontWeight: 500, cursor: "pointer", fontFamily: "'Gilroy', sans-serif", width: 140 }}>
           View Profile
         </button>
       </div>
@@ -499,11 +499,11 @@ function MentorCard({ mentor, onClick, onBook }) {
         </div>
         <div style={{ display: "flex", gap: 10, width: "100%" }}>
           <button onClick={e => { e.stopPropagation(); onClick({ mentor, screen: "slots" }); }}
-            style={{ background: "#111", color: "#fff", border: "1.5px solid #111", borderRadius: 8, padding: "10px 20px", fontSize: 13, fontWeight: 600, cursor: "pointer", fontFamily: "'Gilroy', sans-serif", flex: 1 }}>
+            style={{ background: "#111", color: "#fff", border: "1.5px solid #111", borderRadius: 8, padding: "10px 20px", fontSize: 15, fontWeight: 600, cursor: "pointer", fontFamily: "'Gilroy', sans-serif", flex: 1 }}>
             Book A Session
           </button>
           <button onClick={e => { e.stopPropagation(); onClick({ mentor, screen: "profile" }); }}
-            style={{ background: "transparent", color: "#111", border: "1.5px solid #E8E2D9", borderRadius: 8, padding: "10px 20px", fontSize: 13, fontWeight: 500, cursor: "pointer", fontFamily: "'Gilroy', sans-serif", flex: 1 }}>
+            style={{ background: "transparent", color: "#111", border: "1.5px solid #E8E2D9", borderRadius: 8, padding: "10px 20px", fontSize: 15, fontWeight: 500, cursor: "pointer", fontFamily: "'Gilroy', sans-serif", flex: 1 }}>
             View Profile
           </button>
         </div>
@@ -656,15 +656,15 @@ const [showCustomCall, setShowCustomCall] = useState(false);
       <input placeholder="Search for course, college, etc." value={search} onChange={e => setSearch(e.target.value)}
         style={{ background: "#FAF7F2", border: "1.5px solid #E8E2D9", borderRadius: 20, padding: "12px 20px", fontSize: 14, outline: "none", fontFamily: "'Gilroy', sans-serif", color: "#111", flex: 1, boxSizing: "border-box" }}
         onFocus={e => e.target.style.borderColor="#E93800"} onBlur={e => e.target.style.borderColor="#E8E2D9"} />
-      <button onClick={() => setShowCustomCall(true)} style={{ background: "#E93800", color: "#fff", border: "none", borderRadius: 20, padding: "12px 18px", fontSize: 13, fontWeight: 700, cursor: "pointer", fontFamily: "'Gilroy', sans-serif", whiteSpace: "nowrap", flexShrink: 0 }}>
+      <button onClick={() => setShowCustomCall(true)} style={{ background: "#E93800", color: "#fff", border: "none", borderRadius: 20, padding: "12px 18px", fontSize: 15, fontWeight: 700, cursor: "pointer", fontFamily: "'Gilroy', sans-serif", whiteSpace: "nowrap", flexShrink: 0 }}>
         ✦ Custom Call
       </button>
     </div>
     {/* College filter pills */}
     <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
-      <button onClick={() => setFilter("")} style={{ background: !filter ? "#E93800" : "transparent", color: !filter ? "#fff" : "#111", border: `1.5px solid ${!filter ? "#E93800" : "#E8E2D9"}`, padding: "6px 16px", borderRadius: 20, fontSize: 13, fontWeight: 500, cursor: "pointer", fontFamily: "'Gilroy', sans-serif" }}>All</button>
+      <button onClick={() => setFilter("")} style={{ background: !filter ? "#E93800" : "transparent", color: !filter ? "#fff" : "#111", border: `1.5px solid ${!filter ? "#E93800" : "#E8E2D9"}`, padding: "6px 16px", borderRadius: 20, fontSize: 15, fontWeight: 500, cursor: "pointer", fontFamily: "'Gilroy', sans-serif" }}>All</button>
       {colleges.map(c => (
-        <button key={c} onClick={() => setFilter(c)} style={{ background: filter === c ? "#E93800" : "transparent", color: filter === c ? "#fff" : "#111", border: `1.5px solid ${filter === c ? "#E93800" : "#E8E2D9"}`, padding: "6px 16px", borderRadius: 20, fontSize: 13, fontWeight: 500, cursor: "pointer", fontFamily: "'Gilroy', sans-serif" }}>{c}</button>
+        <button key={c} onClick={() => setFilter(c)} style={{ background: filter === c ? "#E93800" : "transparent", color: filter === c ? "#fff" : "#111", border: `1.5px solid ${filter === c ? "#E93800" : "#E8E2D9"}`, padding: "6px 16px", borderRadius: 20, fontSize: 15, fontWeight: 500, cursor: "pointer", fontFamily: "'Gilroy', sans-serif" }}>{c}</button>
       ))}
     </div>
   </div>
@@ -705,10 +705,10 @@ const [showCustomCall, setShowCustomCall] = useState(false);
       <div style={{ background: "#111", color: "#fff", padding: "32px 48px", display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: 16, marginTop: 40 }}>
         <a href="/"><img src="https://res.cloudinary.com/dlzqb06u6/image/upload/v1775449181/Logo_Dark_Mode_hhg8xt.png" alt="Proxima" style={{ height: 28, objectFit: "contain" }} /></a>
         <div style={{ display: "flex", gap: 24, flexWrap: "wrap", alignItems: "center" }}>
-          <span style={{ fontSize: 13, color: "#aaa" }}>+91 9354249942</span>
-          <span style={{ fontSize: 13, color: "#aaa" }}>+91 8130900858</span>
-          <span style={{ fontSize: 13, color: "#aaa" }}>proxima.info1@gmail.com</span>
-          <a href="https://www.linkedin.com/company/team-proxima/" target="_blank" rel="noreferrer" style={{ color: "#aaa", fontSize: 13, textDecoration: "none", border: "1px solid #444", borderRadius: 6, padding: "4px 10px" }}>in</a>
+          <span style={{ fontSize: 15, color: "#aaa" }}>+91 9354249942</span>
+          <span style={{ fontSize: 15, color: "#aaa" }}>+91 8130900858</span>
+          <span style={{ fontSize: 15, color: "#aaa" }}>proxima.info1@gmail.com</span>
+          <a href="https://www.linkedin.com/company/team-proxima/" target="_blank" rel="noreferrer" style={{ color: "#aaa", fontSize: 15, textDecoration: "none", border: "1px solid #444", borderRadius: 6, padding: "4px 10px" }}>in</a>
         </div>
       </div>
     </div>
@@ -788,7 +788,7 @@ function MentorModal({ mentor: initialMentor, onClose, onBook, initialScreen = "
           const isSelected = selectedSlot === t;
           return (
             <button key={i} disabled={isBooked} onClick={() => !isBooked && setSelectedSlot(t)}
-              style={{ border: `1.5px solid ${isSelected ? "#E93800" : "#ddd"}`, background: isBooked ? "#f5f5f5" : "#fff", borderRadius: 6, padding: "7px 12px", fontSize: 13, cursor: isBooked ? "not-allowed" : "pointer", color: isBooked ? "#bbb" : isSelected ? "#E93800" : "#111", fontWeight: isSelected ? 600 : 400, textDecoration: isBooked ? "line-through" : "none", fontFamily: "'Gilroy', sans-serif" }}>
+              style={{ border: `1.5px solid ${isSelected ? "#E93800" : "#ddd"}`, background: isBooked ? "#f5f5f5" : "#fff", borderRadius: 6, padding: "7px 12px", fontSize: 15, cursor: isBooked ? "not-allowed" : "pointer", color: isBooked ? "#bbb" : isSelected ? "#E93800" : "#111", fontWeight: isSelected ? 600 : 400, textDecoration: isBooked ? "line-through" : "none", fontFamily: "'Gilroy', sans-serif" }}>
               {t}
             </button>
           );
@@ -818,9 +818,9 @@ function MentorModal({ mentor: initialMentor, onClose, onBook, initialScreen = "
                 alt={mentor.name} style={{ width: 80, height: 80, borderRadius: "50%", objectFit: "cover", flexShrink: 0 }} />
               <div style={{ flex: 1 }}>
                 <h2 style={{ fontSize: 22, fontWeight: 700, color: "#111", marginBottom: 8 }}>{mentor.name}</h2>
-                <div style={{ display: "flex", alignItems: "center", gap: 6, color: "#555", fontSize: 13, marginBottom: 4 }}>📍 {mentor.college}</div>
-                <div style={{ display: "flex", alignItems: "center", gap: 6, color: "#555", fontSize: 13, marginBottom: 4 }}>🎓 {mentor.course} · {mentor.year}</div>
-                <div style={{ fontSize: 13, color: "#888", marginBottom: 8 }}>{mentor.sessions || 0} sessions taken</div>
+                <div style={{ display: "flex", alignItems: "center", gap: 6, color: "#555", fontSize: 15, marginBottom: 4 }}>📍 {mentor.college}</div>
+                <div style={{ display: "flex", alignItems: "center", gap: 6, color: "#555", fontSize: 15, marginBottom: 4 }}>🎓 {mentor.course} · {mentor.year}</div>
+                <div style={{ fontSize: 15, color: "#888", marginBottom: 8 }}>{mentor.sessions || 0} sessions taken</div>
                 <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
                   {["DU", "Admissions", "Campus Life", "Academics"].map(t => (
                     <span key={t} style={{ background: "#f5f5f5", borderRadius: 20, padding: "3px 10px", fontSize: 12, color: "#555" }}>{t}</span>
@@ -833,7 +833,7 @@ function MentorModal({ mentor: initialMentor, onClose, onBook, initialScreen = "
               <p style={{ color: "#555", fontSize: 14, lineHeight: 1.7 }}>{mentor.bio}</p>
             </div>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-              <div style={{ fontWeight: 700, fontSize: 20, color: "#111" }}>₹{mentor.price || 299}<span style={{ color: "#888", fontWeight: 400, fontSize: 13 }}>/30 min</span></div>
+              <div style={{ fontWeight: 700, fontSize: 20, color: "#111" }}>₹{mentor.price || 299}<span style={{ color: "#888", fontWeight: 400, fontSize: 15 }}>/30 min</span></div>
               <button onClick={() => setScreen("slots")} style={{ background: "#111", color: "#fff", border: "none", borderRadius: 8, padding: "12px 24px", fontSize: 14, fontWeight: 600, cursor: "pointer", fontFamily: "'Gilroy', sans-serif" }}>Book a Session →</button>
             </div>
           </div>
@@ -846,11 +846,11 @@ function MentorModal({ mentor: initialMentor, onClose, onBook, initialScreen = "
               <div style={{ fontSize: 12, color: "#888", marginBottom: 4 }}>Booking a session with</div>
               <div style={{ fontSize: 17, fontWeight: 700, color: "#111" }}>{mentor.name}</div>
               <div style={{ borderBottom: "1px solid #f0d5cb", margin: "10px 0" }} />
-              <div style={{ fontSize: 13, color: "#555" }}>30 min · ₹{mentor.price || 299}</div>
+              <div style={{ fontSize: 15, color: "#555" }}>30 min · ₹{mentor.price || 299}</div>
               <div style={{ fontSize: 12, color: "#888", marginTop: 8 }}>Asia/Kolkata (IST)</div>
             </div>
             <div style={RS}>
-              <button onClick={() => setScreen("profile")} style={{ background: "none", border: "none", cursor: "pointer", fontSize: 13, color: "#555", display: "flex", alignItems: "center", gap: 5, padding: 0, fontFamily: "'Gilroy', sans-serif", marginBottom: 18 }}>← Back To Profile</button>
+              <button onClick={() => setScreen("profile")} style={{ background: "none", border: "none", cursor: "pointer", fontSize: 15, color: "#555", display: "flex", alignItems: "center", gap: 5, padding: 0, fontFamily: "'Gilroy', sans-serif", marginBottom: 18 }}>← Back To Profile</button>
               <div style={{ fontWeight: 600, fontSize: 15, color: "#111", marginBottom: 14 }}>Choose Availability</div>
               <div style={{ display: "flex", gap: 6, flexWrap: "wrap", marginBottom: 20 }}>
                 {next7.map((d, i) => (
@@ -861,7 +861,7 @@ function MentorModal({ mentor: initialMentor, onClose, onBook, initialScreen = "
                   </button>
                 ))}
               </div>
-              <div style={{ fontSize: 13, color: "#888", marginBottom: 14 }}>IST (Asia/Kolkata)</div>
+              <div style={{ fontSize: 15, color: "#888", marginBottom: 14 }}>IST (Asia/Kolkata)</div>
               <div style={{ fontWeight: 600, fontSize: 15, color: "#111", marginBottom: 14 }}>Choose Time Slot</div>
               {!selectedDay && <div style={{ color: "#888", fontSize: 14, padding: "20px 0" }}>Select a day to see available slots.</div>}
               {selectedDay && (() => { const { morning, afternoon, evening } = categorize(selectedDay.slots); return (<><SlotGroup label="Morning" slots={morning} /><SlotGroup label="Afternoon" slots={afternoon} /><SlotGroup label="Evening" slots={evening} /></>); })()}
@@ -883,8 +883,8 @@ function MentorModal({ mentor: initialMentor, onClose, onBook, initialScreen = "
               <div style={{ fontSize: 17, fontWeight: 700, color: "#111" }}>{mentor.name}</div>
               <div style={{ borderBottom: "1px solid #f0d5cb", margin: "10px 0" }} />
               <div style={{ fontSize: 12, color: "#888", marginBottom: 8 }}>Asia/Kolkata</div>
-              <div style={{ display: "flex", alignItems: "center", gap: 6, color: "#111", fontSize: 13, fontWeight: 600, marginBottom: 4 }}>📅 {selectedDay?.dateStr}</div>
-              <div style={{ display: "flex", alignItems: "center", gap: 6, color: "#111", fontSize: 13, marginBottom: 8 }}>🕐 {selectedSlot} - {computeEnd(selectedSlot)}</div>
+              <div style={{ display: "flex", alignItems: "center", gap: 6, color: "#111", fontSize: 15, fontWeight: 600, marginBottom: 4 }}>📅 {selectedDay?.dateStr}</div>
+              <div style={{ display: "flex", alignItems: "center", gap: 6, color: "#111", fontSize: 15, marginBottom: 8 }}>🕐 {selectedSlot} - {computeEnd(selectedSlot)}</div>
               <button onClick={() => setScreen("slots")} style={{ background: "none", border: "none", cursor: "pointer", color: "#E93800", fontSize: 12, padding: 0, fontFamily: "'Gilroy', sans-serif" }}>✏ Edit Schedule</button>
               <div style={{ background: "#fff", borderRadius: 8, padding: "10px 12px", fontSize: 11.5, color: "#555", display: "flex", gap: 8, alignItems: "flex-start", marginTop: "auto" }}>
                 ✓ We offer a complete spam-free service, and would never contact you without your consent
@@ -897,7 +897,7 @@ function MentorModal({ mentor: initialMentor, onClose, onBook, initialScreen = "
                   <div key={key} style={{ display: "flex", flexDirection: "column", gap: 5 }}>
                     <label style={{ fontSize: 12, color: "#555", fontWeight: 500 }}>{label}</label>
                     <input type={type} placeholder={ph} value={form[key]} onChange={e => upd(key, e.target.value)}
-                      style={{ border: "1.5px solid #ddd", borderRadius: 8, padding: "10px 12px", fontSize: 13, outline: "none", fontFamily: "'Gilroy', sans-serif", color: "#111" ,background: "#fff"}}
+                      style={{ border: "1.5px solid #ddd", borderRadius: 8, padding: "10px 12px", fontSize: 15, outline: "none", fontFamily: "'Gilroy', sans-serif", color: "#111" ,background: "#fff"}}
                       onFocus={e => e.target.style.borderColor="#E93800"} onBlur={e => e.target.style.borderColor="#ddd"} />
                   </div>
                 ))}
@@ -907,7 +907,7 @@ function MentorModal({ mentor: initialMentor, onClose, onBook, initialScreen = "
                   <div key={key} style={{ display: "flex", flexDirection: "column", gap: 5 }}>
                     <label style={{ fontSize: 12, color: "#555", fontWeight: 500 }}>{label}</label>
                     <input type={type} placeholder={ph} value={form[key]} onChange={e => upd(key, e.target.value)}
-                      style={{ border: "1.5px solid #ddd", borderRadius: 8, padding: "10px 12px", fontSize: 13, outline: "none", fontFamily: "'Gilroy', sans-serif", color: "#111" , background: "#fff"}}
+                      style={{ border: "1.5px solid #ddd", borderRadius: 8, padding: "10px 12px", fontSize: 15, outline: "none", fontFamily: "'Gilroy', sans-serif", color: "#111" , background: "#fff"}}
                       onFocus={e => e.target.style.borderColor="#E93800"} onBlur={e => e.target.style.borderColor="#ddd"} />
                   </div>
                 ))}
@@ -915,7 +915,7 @@ function MentorModal({ mentor: initialMentor, onClose, onBook, initialScreen = "
               <div style={{ display: "flex", flexDirection: "column", gap: 5, marginBottom: 20 }}>
                 <label style={{ fontSize: 12, color: "#555", fontWeight: 500 }}>Please briefly describe your query*</label>
                 <textarea rows={4} placeholder="e.g. I want to know about admissions and campus life..." value={form.message} onChange={e => upd("message", e.target.value)}
-                  style={{ border: "1.5px solid #ddd", borderRadius: 8, padding: "10px 12px", fontSize: 13, outline: "none", fontFamily: "'Gilroy', sans-serif", color: "#111", resize: "none", background: "#fff", width: "100%", boxSizing: "border-box" }}
+                  style={{ border: "1.5px solid #ddd", borderRadius: 8, padding: "10px 12px", fontSize: 15, outline: "none", fontFamily: "'Gilroy', sans-serif", color: "#111", resize: "none", background: "#fff", width: "100%", boxSizing: "border-box" }}
                   onFocus={e => e.target.style.borderColor="#E93800"} onBlur={e => e.target.style.borderColor="#ddd"} />
               </div>
               <div style={{ textAlign: "right" }}>
@@ -931,7 +931,7 @@ function MentorModal({ mentor: initialMentor, onClose, onBook, initialScreen = "
         {/* INVOICE SCREEN */}
         {screen === "invoice" && (
           <div style={{ padding: 28 }}>
-            <button onClick={() => setScreen("form")} style={{ background: "none", border: "none", cursor: "pointer", fontSize: 13, color: "#555", display: "flex", alignItems: "center", gap: 5, padding: 0, fontFamily: "'Gilroy', sans-serif", marginBottom: 18 }}>← Back</button>
+            <button onClick={() => setScreen("form")} style={{ background: "none", border: "none", cursor: "pointer", fontSize: 15, color: "#555", display: "flex", alignItems: "center", gap: 5, padding: 0, fontFamily: "'Gilroy', sans-serif", marginBottom: 18 }}>← Back</button>
             <div style={{ fontWeight: 600, fontSize: 15, color: "#111", marginBottom: 20 }}>Your 30 minute 1:1 call booking summary</div>
             {[["Mentor", mentor.name],["College", mentor.college],["Course", mentor.course],["Date & Time", `${selectedDay?.dateStr} | ${selectedSlot}`],["Your Name", form.name],["Your Email", form.email],["Your Phone", form.phone]].map(([label, val]) => (
               <div key={label} style={{ display: "flex", justifyContent: "space-between", padding: "10px 0", borderBottom: "1px solid #f0f0f0", fontSize: 14 }}>
@@ -1071,7 +1071,7 @@ function MentorLogin({ onLogin }) {
         {/* Logo / Brand */}
         <div style={{ textAlign: "center", marginBottom: 48 }}>
           <img src="https://res.cloudinary.com/dlzqb06u6/image/upload/v1775389312/wbzrczuoo9swrhfvxhrx.png" alt="Proxima" style={{ height: 40, objectFit: "contain", marginBottom: 8 }} />
-          <div style={{ color: "#555", fontSize: 13, marginTop: 8, letterSpacing: 2, textTransform: "uppercase" }}>Mentor Portal</div>
+          <div style={{ color: "#555", fontSize: 15, marginTop: 8, letterSpacing: 2, textTransform: "uppercase" }}>Mentor Portal</div>
         </div>
 
         {/* Card */}
@@ -1108,7 +1108,7 @@ function MentorLogin({ onLogin }) {
               />
             </div>
             {err && (
-              <div style={{ background: "rgba(233,56,0,0.08)", border: `1px solid rgba(233,56,0,0.2)`, borderRadius: 8, padding: "10px 14px", color: S.accent, fontSize: 13 }}>
+              <div style={{ background: "rgba(233,56,0,0.08)", border: `1px solid rgba(233,56,0,0.2)`, borderRadius: 8, padding: "10px 14px", color: S.accent, fontSize: 15 }}>
                 ⚠ {err}
               </div>
             )}
@@ -1123,7 +1123,7 @@ style={{ background: loading || !email || !pin ? "#ccc" : "#111", color: loading
           </div>
         </div>
 
-        <div style={{ textAlign: "center", marginTop: 24, color: "#444", fontSize: 13 }}>
+        <div style={{ textAlign: "center", marginTop: 24, color: "#444", fontSize: 15 }}>
           Don't have your PIN? Contact the Proxima team.
         </div>
       </div>
@@ -1178,7 +1178,7 @@ function SlotManager({ mentor, onSave }) {
     return acc;
   }, {});
 
-  const inp = { flex: 1, background: "#FAF7F2", border: "1.5px solid #E8E2D9", color: "#111", borderRadius: 8, padding: "8px 12px", fontFamily: "'Gilroy', sans-serif", fontSize: 13, outline: "none" };
+  const inp = { flex: 1, background: "#FAF7F2", border: "1.5px solid #E8E2D9", color: "#111", borderRadius: 8, padding: "8px 12px", fontFamily: "'Gilroy', sans-serif", fontSize: 15, outline: "none" };
 
   if (loading) return <div style={{ padding: 40, textAlign: "center", color: "#888" }}>Loading slots...</div>;
 
@@ -1188,14 +1188,14 @@ function SlotManager({ mentor, onSave }) {
       {/* LEFT — Live Slots */}
       <div>
         <div style={{ fontWeight: 700, fontSize: 15, marginBottom: 16, color: "#111" }}>
-          Live Slots <span style={{ color: "#888", fontWeight: 400, fontSize: 13 }}>({liveSlots.length} total)</span>
+          Live Slots <span style={{ color: "#888", fontWeight: 400, fontSize: 15 }}>({liveSlots.length} total)</span>
         </div>
         {Object.keys(liveByDay).length === 0 && (
-          <div style={{ color: "#aaa", fontSize: 13, padding: "20px 0" }}>No slots set yet. Add some on the right.</div>
+          <div style={{ color: "#aaa", fontSize: 15, padding: "20px 0" }}>No slots set yet. Add some on the right.</div>
         )}
         {DAYS.filter(d => liveByDay[d]).map(day => (
           <div key={day} style={{ marginBottom: 16, background: "#fff", border: "1px solid #E8E2D9", borderRadius: 12, padding: 14 }}>
-            <div style={{ fontWeight: 600, fontSize: 13, color: "#111", marginBottom: 10 }}>{day}</div>
+            <div style={{ fontWeight: 600, fontSize: 15, color: "#111", marginBottom: 10 }}>{day}</div>
             <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
               {liveByDay[day].map((s, i) => (
                 <div key={i} style={{ display: "flex", alignItems: "center", gap: 4, background: s.status === "booked" ? "#FFF0EB" : "#F0FBF6", border: `1px solid ${s.status === "booked" ? "#F0D5CB" : "#BBF0D6"}`, borderRadius: 6, padding: "4px 10px", fontSize: 12 }}>
@@ -1217,7 +1217,7 @@ function SlotManager({ mentor, onSave }) {
         {DAYS.map(day => (
           <div key={day} style={{ marginBottom: 12, background: "#fff", border: "1px solid #E8E2D9", borderRadius: 12, padding: 14 }}>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: days[day] ? 12 : 0 }}>
-              <span style={{ fontWeight: 500, fontSize: 13 }}>{day}</span>
+              <span style={{ fontWeight: 500, fontSize: 15 }}>{day}</span>
               <button onClick={() => toggleDay(day)} style={{ background: days[day] ? "#E93800" : "transparent", border: `1px solid ${days[day] ? "#E93800" : "#E8E2D9"}`, color: days[day] ? "#fff" : "#888", padding: "3px 12px", borderRadius: 20, fontSize: 12, fontFamily: "'Gilroy', sans-serif", cursor: "pointer" }}>
                 {days[day] ? "Active" : "Add"}
               </button>
@@ -1247,7 +1247,7 @@ function SlotManager({ mentor, onSave }) {
 
         {newSlots.length > 0 && (
           <div style={{ background: "#FFF0EB", border: "1px solid #F0D5CB", borderRadius: 10, padding: 14, marginBottom: 16 }}>
-            <div style={{ fontWeight: 600, fontSize: 13, color: "#E93800", marginBottom: 8 }}>Adding {newSlots.length} new slots</div>
+            <div style={{ fontWeight: 600, fontSize: 15, color: "#E93800", marginBottom: 8 }}>Adding {newSlots.length} new slots</div>
             {DAYS.filter(d => days[d]).map(d => (
               <div key={d} style={{ fontSize: 12, color: "#555", marginBottom: 3 }}>
                 <strong>{d}:</strong> {generateSlotsFromRanges(days[d].map(r => ({ ...r, day: d }))).map(s => formatTime(s.time)).join(", ")}
@@ -1297,7 +1297,7 @@ function MentorDashboard({ mentor, onLogout }) {
 
       {/* Header */}
       <div style={{ background: "#fff", borderBottom: "1px solid #E8E2D9", padding: "16px 32px", display: "flex", alignItems: "center", justifyContent: "space-between", position: "sticky", top: 0, zIndex: 100 }}>
-<a href="/"><img src="https://res.cloudinary.com/dlzqb06u6/image/upload/v1775389312/wbzrczuoo9swrhfvxhrx.png" alt="Proxima" style={{ height: 36, objectFit: "contain", filter: "none" }} /></a>        <button onClick={onLogout} style={{ background: "none", border: "1.5px solid #111", color: "#111", padding: "8px 18px", borderRadius: 8, fontSize: 13, cursor: "pointer", display: "flex", alignItems: "center", gap: 6, fontFamily: "'Gilroy', sans-serif" }}>
+<a href="/"><img src="https://res.cloudinary.com/dlzqb06u6/image/upload/v1775389312/wbzrczuoo9swrhfvxhrx.png" alt="Proxima" style={{ height: 36, objectFit: "contain", filter: "none" }} /></a>        <button onClick={onLogout} style={{ background: "none", border: "1.5px solid #111", color: "#111", padding: "8px 18px", borderRadius: 8, fontSize: 15, cursor: "pointer", display: "flex", alignItems: "center", gap: 6, fontFamily: "'Gilroy', sans-serif" }}>
           <LogOut /> Sign out
         </button>
       </div>
@@ -1319,7 +1319,7 @@ function MentorDashboard({ mentor, onLogout }) {
             <div style={{ flex: 1 }}>
               <div style={{ fontFamily: "'Gilroy', sans-serif", fontSize: 28, fontWeight: 800, color: "#111", marginBottom: 4 }}>{mentor.name}</div>
                 <div style={{ color: S.accent, fontSize: 14, fontWeight: 500, marginBottom: 4 }}>{mentor.college}</div>
-                <div style={{ color: "#888", fontSize: 13, marginBottom: 16 }}>{mentor.course} · {mentor.year} Year</div>
+                <div style={{ color: "#888", fontSize: 15, marginBottom: 16 }}>{mentor.course} · {mentor.year} Year</div>
                 {editingBio ? (
                   <div>
                     <textarea
@@ -1327,16 +1327,16 @@ function MentorDashboard({ mentor, onLogout }) {
                       onChange={e => setBio(e.target.value)}
                       maxLength={200}
                       rows={3}
-                      style={{ background: "#fff", border: "1px solid #E93800", color: "#111", borderRadius: 8, padding: "10px 14px", width: "100%", fontSize: 13, fontFamily: "'Gilroy', sans-serif", outline: "none", resize: "none" }}
+                      style={{ background: "#fff", border: "1px solid #E93800", color: "#111", borderRadius: 8, padding: "10px 14px", width: "100%", fontSize: 15, fontFamily: "'Gilroy', sans-serif", outline: "none", resize: "none" }}
                     />
                     <div style={{ display: "flex", gap: 8, marginTop: 8 }}>
-                      <button onClick={saveBio} disabled={savingBio} style={{ background: S.accent, color: "#fff", border: "none", padding: "7px 18px", borderRadius: 7, fontSize: 13, cursor: "pointer" }}>{savingBio ? "Saving..." : "Save Bio"}</button>
-                      <button onClick={() => setEditingBio(false)} style={{ background: "transparent", color: "#888", border: `1px solid ${S.border}`, padding: "7px 18px", borderRadius: 7, fontSize: 13, cursor: "pointer" }}>Cancel</button>
+                      <button onClick={saveBio} disabled={savingBio} style={{ background: S.accent, color: "#fff", border: "none", padding: "7px 18px", borderRadius: 7, fontSize: 15, cursor: "pointer" }}>{savingBio ? "Saving..." : "Save Bio"}</button>
+                      <button onClick={() => setEditingBio(false)} style={{ background: "transparent", color: "#888", border: `1px solid ${S.border}`, padding: "7px 18px", borderRadius: 7, fontSize: 15, cursor: "pointer" }}>Cancel</button>
                     </div>
                   </div>
                 ) : (
                   <div style={{ display: "flex", alignItems: "flex-start", gap: 10 }}>
-                    <p style={{ color: "#aaa", fontSize: 13, lineHeight: 1.7, flex: 1 }}>{bio || "No bio added yet."}</p>
+                    <p style={{ color: "#aaa", fontSize: 15, lineHeight: 1.7, flex: 1 }}>{bio || "No bio added yet."}</p>
                     <button onClick={() => setEditingBio(true)} style={{ background: "none", border: `1px solid ${S.border}`, color: "#888", padding: "5px 12px", borderRadius: 6, fontSize: 12, cursor: "pointer", whiteSpace: "nowrap" }}>✏ Edit Bio</button>
                   </div>
                 )}
@@ -1377,29 +1377,29 @@ function MentorDashboard({ mentor, onLogout }) {
                 <div style={{ textAlign: "center", padding: "60px 20px", color: "#555" }}>
                   <div style={{ fontSize: 48, marginBottom: 16 }}>📭</div>
                   <div style={{ fontSize: 16, color: "#888" }}>No bookings yet</div>
-                  <div style={{ fontSize: 13, color: "#555", marginTop: 8 }}>Students will appear here once they book a session with you</div>
+                  <div style={{ fontSize: 15, color: "#555", marginTop: 8 }}>Students will appear here once they book a session with you</div>
                 </div>
               ) : bookings.map(b => (
                 <div key={b._id} className="booking-card">
                   <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 12 }}>
                     <div>
                       <div style={{ fontWeight: 600, fontSize: 16, color: S.text }}>{b.studentName}</div>
-                      <div style={{ color: S.accent, fontSize: 13, marginTop: 2 }}>📅 {b.slot}</div>
+                      <div style={{ color: S.accent, fontSize: 15, marginTop: 2 }}>📅 {b.slot}</div>
                     </div>
                     <div style={{ background: "rgba(233,56,0,0.1)", border: `1px solid rgba(233,56,0,0.2)`, color: S.accent, padding: "4px 12px", borderRadius: 20, fontSize: 12 }}>Confirmed</div>
                   </div>
                   <div style={{ display: "flex", gap: 20, flexWrap: "wrap" }}>
-                    <div style={{ color: "#aaa", fontSize: 13 }}>📞 {b.studentPhone}</div>
+                    <div style={{ color: "#aaa", fontSize: 15 }}>📞 {b.studentPhone}</div>
                   </div>
                   {b.message && (
-                    <div style={{ marginTop: 12, background: "#222", border: `1px solid ${S.border}`, borderRadius: 8, padding: "10px 14px", color: "#ccc", fontSize: 13, lineHeight: 1.6 }}>
+                    <div style={{ marginTop: 12, background: "#222", border: `1px solid ${S.border}`, borderRadius: 8, padding: "10px 14px", color: "#ccc", fontSize: 15, lineHeight: 1.6 }}>
                       💬 {b.message}
                     </div>
                   )}
                 <div style={{ marginTop: 12 }}>
     {b.meetLink ? (
       <div style={{ display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap" }}>
-        <a href={b.meetLink} target="_blank" rel="noreferrer" style={{ display: "inline-flex", alignItems: "center", gap: 8, background: S.blue, color: "#fff", padding: "8px 18px", borderRadius: 8, fontSize: 13, textDecoration: "none" }}>🎥 Join Meet →</a>
+        <a href={b.meetLink} target="_blank" rel="noreferrer" style={{ display: "inline-flex", alignItems: "center", gap: 8, background: S.blue, color: "#fff", padding: "8px 18px", borderRadius: 8, fontSize: 15, textDecoration: "none" }}>🎥 Join Meet →</a>
         <span style={{ color: "#888", fontSize: 12 }}>Link shared with admin</span>
       </div>
     ) : (
@@ -1407,7 +1407,7 @@ function MentorDashboard({ mentor, onLogout }) {
         <input
           placeholder="Paste your Google Meet link here"
           id={`meet-${b._id}`}
-          style={{ background: "#2A2A2A", border: `1px solid ${S.border}`, color: S.text, borderRadius: 8, padding: "8px 14px", fontSize: 13, outline: "none", flex: 1, minWidth: 200, fontFamily: "'DM Sans', sans-serif" }}
+          style={{ background: "#2A2A2A", border: `1px solid ${S.border}`, color: S.text, borderRadius: 8, padding: "8px 14px", fontSize: 15, outline: "none", flex: 1, minWidth: 200, fontFamily: "'DM Sans', sans-serif" }}
         />
         <button onClick={async () => {
           const link = document.getElementById(`meet-${b._id}`)?.value;
@@ -1416,7 +1416,7 @@ function MentorDashboard({ mentor, onLogout }) {
           wa(ADMIN_WHATSAPP, `Meet link from mentor ${mentor.name} for student ${b.studentName} (Slot: ${b.slot}):\n${link}\n\nPlease forward this to the student.`);
           alert("Meet link sent to admin!");
           window.location.reload();
-        }} style={{ background: S.accent, color: "#fff", border: "none", padding: "8px 18px", borderRadius: 8, fontSize: 13, cursor: "pointer" }}>
+        }} style={{ background: S.accent, color: "#fff", border: "none", padding: "8px 18px", borderRadius: 8, fontSize: 15, cursor: "pointer" }}>
           Send to Admin
         </button>
       </div>
@@ -1461,10 +1461,10 @@ function MentorRegistration({ onDone }) {
 
   const steps = [
     { label: "Name", content: <div><h2 style={{ fontSize: 28, fontWeight: 800, color: "#111", marginBottom: 8 }}>What's your full name?</h2><p style={{ color: "#888", marginBottom: 24 }}>This will appear on your public profile</p><input placeholder="Your full name" value={form.name} onChange={e => upd("name", e.target.value)} autoFocus /></div>, valid: form.name.trim() },
-    { label: "College", content: <div><h2 style={{ fontSize: 28, fontWeight: 800, color: "#111", marginBottom: 8 }}>Your college details</h2><p style={{ color: "#888", marginBottom: 24 }}>Tell us where you study</p><div style={{ display: "flex", flexDirection: "column", gap: 14 }}><input placeholder="College name (e.g. SRCC)" value={form.college} onChange={e => upd("college", e.target.value)} /><input placeholder="Course / Programme" value={form.course} onChange={e => upd("course", e.target.value)} /><select value={form.year} onChange={e => upd("year", e.target.value)}><option value="">Select year</option><option value="1st">1st Year</option><option value="2nd">2nd Year</option><option value="3rd">3rd Year</option></select></div></div>, valid: form.college && form.course && form.year },
+    { label: "College", content: <div><h2 style={{ fontSize: 28, fontWeight: 800, color: "#111", marginBottom: 8 }}>Your college details</h2><p style={{ color: "#888", marginBottom: 24 }}>Tell us where you study</p><div style={{ display: "flex", flexDirection: "column", gap: 14 }}><input placeholder="College name (e.g. SRCC)" value={form.college} onChange={e => upd("college", e.target.value)} /><input placeholder="Course / Programme" value={form.course} onChange={e => upd("course", e.target.value)} /><select value={form.year} onChange={e => upd("year", e.target.value)}><option value="">Select year</option><option value="1st">1st Year</option><option value="2nd">2nd Year</option><option value="3rd">3rd Year</option><option value="4th">4th Year</option><option value="5th">5th Year</option></select></div></div>, valid: form.college && form.course && form.year },
     { label: "Contact", content: <div><h2 style={{ fontSize: 28, fontWeight: 800, color: "#111", marginBottom: 8 }}>Contact details</h2><p style={{ color: "#888", marginBottom: 24 }}>Not shown publicly</p><div style={{ display: "flex", flexDirection: "column", gap: 14 }}><input placeholder="Email address" type="email" value={form.email} onChange={e => upd("email", e.target.value)} /><input placeholder="WhatsApp number" type="tel" value={form.whatsapp} onChange={e => upd("whatsapp", e.target.value)} /></div></div>, valid: form.email && form.whatsapp },
     { label: "Bio", content: <div><h2 style={{ fontSize: 28, fontWeight: 800, color: "#111", marginBottom: 8 }}>Tell students about yourself</h2><p style={{ color: "#888", marginBottom: 24 }}>Max 200 characters</p><textarea placeholder="e.g. 2nd year BCom Hons at SRCC. Happy to talk about college life..." rows={4} maxLength={200} value={form.bio} onChange={e => upd("bio", e.target.value)} /><div style={{ color: "#888", fontSize: 12, marginTop: 6, textAlign: "right" }}>{form.bio.length}/200</div></div>, valid: form.bio.trim().length >= 20 },
-    { label: "Photo", content: <div><h2 style={{ fontSize: 28, fontWeight: 800, color: "#111", marginBottom: 8 }}>Add a profile photo</h2><p style={{ color: "#888", marginBottom: 24 }}>Clear, well-lit, face visible.</p>{preview && <div style={{ textAlign: "center", marginBottom: 20 }}><img src={preview} alt="preview" style={{ width: 100, height: 100, borderRadius: "50%", objectFit: "cover", border: "3px solid #E93800" }} /><div style={{ color: "#888", fontSize: 13, marginTop: 8 }}>Photo uploaded ✓</div></div>}<label style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 10, padding: "14px 20px", border: "2px dashed #E8E2D9", borderRadius: 10, cursor: "pointer", color: "#888" }}>↑ {uploading ? "Uploading..." : "Click to upload photo"}<input type="file" accept="image/*" onChange={handlePhoto} style={{ display: "none" }} /></label></div>, valid: true },
+    { label: "Photo", content: <div><h2 style={{ fontSize: 28, fontWeight: 800, color: "#111", marginBottom: 8 }}>Add a profile photo</h2><p style={{ color: "#888", marginBottom: 24 }}>Clear, well-lit, face visible.</p>{preview && <div style={{ textAlign: "center", marginBottom: 20 }}><img src={preview} alt="preview" style={{ width: 100, height: 100, borderRadius: "50%", objectFit: "cover", border: "3px solid #E93800" }} /><div style={{ color: "#888", fontSize: 15, marginTop: 8 }}>Photo uploaded ✓</div></div>}<label style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 10, padding: "14px 20px", border: "2px dashed #E8E2D9", borderRadius: 10, cursor: "pointer", color: "#888" }}>↑ {uploading ? "Uploading..." : "Click to upload photo"}<input type="file" accept="image/*" onChange={handlePhoto} style={{ display: "none" }} /></label></div>, valid: true },
   ];
 
   if (step === TOTAL) return (
@@ -1490,7 +1490,7 @@ function MentorRegistration({ onDone }) {
           <div style={{ height: 3, background: "#E8E2D9", borderRadius: 2, marginBottom: 32, overflow: "hidden" }}>
             <div style={{ height: "100%", background: "#E93800", borderRadius: 2, width: `${((step - 1) / (TOTAL - 1)) * 100}%`, transition: "width 0.4s ease" }} />
           </div>
-          <div style={{ color: "#888", fontSize: 13, marginBottom: 24 }}>Step {step} of {TOTAL - 1}</div>
+          <div style={{ color: "#888", fontSize: 15, marginBottom: 24 }}>Step {step} of {TOTAL - 1}</div>
           <div key={step}>{current.content}</div>
           <div style={{ display: "flex", gap: 12, marginTop: 32 }}>
             {step > 1 && <button style={{ flex: 1, background: "transparent", color: "#111", border: "1.5px solid #111", padding: "12px", borderRadius: 8, fontSize: 15, cursor: "pointer", fontFamily: "'Gilroy', sans-serif" }} onClick={() => setStep(s => s - 1)}>← Back</button>}
@@ -1511,7 +1511,7 @@ function AdminLogin({ onLogin }) {
       <div className="modal fade-up" style={{ maxWidth: 360 }}>
         <h2 className="serif" style={{ fontSize: 24, marginBottom: 20 }}>Admin Access</h2>
         <input type="password" placeholder="Password" value={pw} onChange={e => setPw(e.target.value)} onKeyDown={e => e.key === "Enter" && handle()} />
-        {err && <div style={{ color: S.accent, fontSize: 13, marginTop: 8 }}>{err}</div>}
+        {err && <div style={{ color: S.accent, fontSize: 15, marginTop: 8 }}>{err}</div>}
         <button className="btn-primary" style={{ width: "100%", marginTop: 14 }} onClick={handle}>Login</button>
       </div>
     </div>
@@ -1553,7 +1553,7 @@ function MentorForm({ data, onChange, onSave, onCancel }) {
           <input ref={refs.referralCode} placeholder="Referral Code" defaultValue={data.referralCode || ""} style={inp} />
           <input ref={refs.pin} placeholder="PIN (4 digits)" defaultValue={data.pin || "0000"} style={inp} />
           <select ref={refs.year} defaultValue={data.year || "1st"} style={inp}>
-            <option value="1st">1st Year</option><option value="2nd">2nd Year</option><option value="3rd">3rd Year</option>
+            <option value="1st">1st Year</option><option value="2nd">2nd Year</option><option value="3rd">3rd Year</option><option value="4th">4th Year</option><option value="5th">5th Year</option>
           </select>
           <input ref={refs.price} type="number" placeholder="Price (₹)" defaultValue={data.price || 299} style={inp} />
           <input ref={refs.rating} type="number" placeholder="Rating" step="0.1" min="1" max="5" defaultValue={data.rating || 5} style={inp} />
@@ -1661,7 +1661,7 @@ const tabs = ["stats", "mentors", "registrations", "bookings", "customcalls"];
             <img src="https://res.cloudinary.com/dlzqb06u6/image/upload/v1775389312/wbzrczuoo9swrhfvxhrx.png" alt="Proxima" style={{ height: 28, objectFit: "contain" }} />
             <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: 3, color: "#aaa", textTransform: "uppercase" }}>Admin</span>
           </div>
-          <button onClick={onLogout} style={{ background: "none", border: "1.5px solid #E8E2D9", color: "#555", padding: "8px 18px", borderRadius: 8, fontSize: 13, cursor: "pointer", fontFamily: "'Gilroy', sans-serif", fontWeight: 500, marginBottom: 8 }}>Sign Out</button>
+          <button onClick={onLogout} style={{ background: "none", border: "1.5px solid #E8E2D9", color: "#555", padding: "8px 18px", borderRadius: 8, fontSize: 15, cursor: "pointer", fontFamily: "'Gilroy', sans-serif", fontWeight: 500, marginBottom: 8 }}>Sign Out</button>
         </div>
         <div style={{ display: "flex", gap: 4, marginTop: 4 }}>
           {tabs.map(t => (
@@ -1743,7 +1743,7 @@ const tabs = ["stats", "mentors", "registrations", "bookings", "customcalls"];
                         <div style={{ fontSize: 12, color: "#888" }}>{m.course} · {m.year}</div>
                       </td>
                       <td>
-                        <div style={{ fontSize: 13, color: "#555" }}>{m.email}</div>
+                        <div style={{ fontSize: 15, color: "#555" }}>{m.email}</div>
                         <div style={{ fontSize: 12, color: "#888" }}>{m.whatsapp}</div>
                       </td>
                       <td>
@@ -1783,14 +1783,14 @@ const tabs = ["stats", "mentors", "registrations", "bookings", "customcalls"];
                       {r.photo && <img src={r.photo} alt={r.name} style={{ width: 48, height: 48, borderRadius: "50%", objectFit: "cover" }} />}
                       <div>
                         <div style={{ fontWeight: 700, fontSize: 17, color: "#111" }}>{r.name}</div>
-                        <div style={{ fontSize: 13, color: "#E93800", fontWeight: 500 }}>{r.college} · {r.course} · {r.year}</div>
+                        <div style={{ fontSize: 15, color: "#E93800", fontWeight: 500 }}>{r.college} · {r.course} · {r.year}</div>
                       </div>
                     </div>
                     <div style={{ display: "flex", gap: 20, marginBottom: 12, flexWrap: "wrap" }}>
-                      <span style={{ fontSize: 13, color: "#555" }}>📧 {r.email}</span>
-                      <span style={{ fontSize: 13, color: "#555" }}>📱 {r.whatsapp}</span>
+                      <span style={{ fontSize: 15, color: "#555" }}>📧 {r.email}</span>
+                      <span style={{ fontSize: 15, color: "#555" }}>📱 {r.whatsapp}</span>
                     </div>
-                    <div style={{ background: "#FAF7F2", borderRadius: 8, padding: "12px 14px", fontSize: 13, color: "#555", lineHeight: 1.7 }}>{r.bio}</div>
+                    <div style={{ background: "#FAF7F2", borderRadius: 8, padding: "12px 14px", fontSize: 15, color: "#555", lineHeight: 1.7 }}>{r.bio}</div>
                   </div>
                 </div>
                 <div style={{ display: "flex", gap: 10, marginTop: 16, paddingTop: 16, borderTop: "1px solid #F0EDE8" }}>
@@ -1820,15 +1820,15 @@ const tabs = ["stats", "mentors", "registrations", "bookings", "customcalls"];
                       <span style={{ color: "#aaa" }}>→</span>
                       <div style={{ fontWeight: 600, fontSize: 14, color: "#E93800" }}>{b.mentorName}</div>
                     </div>
-                    <div style={{ display: "inline-flex", alignItems: "center", gap: 6, background: "#FFF0EB", border: "1px solid #F0D5CB", color: "#E93800", fontSize: 13, fontWeight: 600, padding: "5px 12px", borderRadius: 8 }}>
+                    <div style={{ display: "inline-flex", alignItems: "center", gap: 6, background: "#FFF0EB", border: "1px solid #F0D5CB", color: "#E93800", fontSize: 15, fontWeight: 600, padding: "5px 12px", borderRadius: 8 }}>
                       📅 {b.slot}
                     </div>
                     <div style={{ display: "flex", gap: 16, marginTop: 10, flexWrap: "wrap" }}>
-                      <span style={{ fontSize: 13, color: "#555" }}>📧 {b.studentEmail}</span>
-                      <span style={{ fontSize: 13, color: "#555" }}>📞 {b.studentPhone}</span>
+                      <span style={{ fontSize: 15, color: "#555" }}>📧 {b.studentEmail}</span>
+                      <span style={{ fontSize: 15, color: "#555" }}>📞 {b.studentPhone}</span>
                       <span style={{ fontSize: 12, color: "#aaa" }}>{new Date(b.createdAt).toLocaleDateString()}</span>
                     </div>
-                    {b.message && <div style={{ marginTop: 10, background: "#FAF7F2", borderRadius: 8, padding: "10px 14px", fontSize: 13, color: "#555", lineHeight: 1.6 }}>{b.message}</div>}
+                    {b.message && <div style={{ marginTop: 10, background: "#FAF7F2", borderRadius: 8, padding: "10px 14px", fontSize: 15, color: "#555", lineHeight: 1.6 }}>{b.message}</div>}
                   </div>
                   <button onClick={() => deleteBooking(b._id)} className="ap-btn-red">🗑 Delete</button>
                 </div>
@@ -1842,7 +1842,7 @@ const tabs = ["stats", "mentors", "registrations", "bookings", "customcalls"];
                     <div style={{ fontSize: 11, fontWeight: 600, color: "#aaa", textTransform: "uppercase", letterSpacing: 1, marginBottom: 8 }}>Meet Link</div>
                     {b.meetLink ? (
                       <div>
-                        <div style={{ background: "#EFF6FF", border: "1px solid #BFDBFE", borderRadius: 8, padding: "10px 14px", fontSize: 13, color: "#2563EB", wordBreak: "break-all", marginBottom: 10 }}>{b.meetLink}</div>
+                        <div style={{ background: "#EFF6FF", border: "1px solid #BFDBFE", borderRadius: 8, padding: "10px 14px", fontSize: 15, color: "#2563EB", wordBreak: "break-all", marginBottom: 10 }}>{b.meetLink}</div>
                         <button onClick={() => {
                           wa(b.studentPhone, `Hi ${b.studentName}, your Proxima session is confirmed!\nSlot: ${b.slot}\nMeet Link: ${b.meetLink}\n\nSee you soon!`);
                           apiFetch(`/bookings/${b._id}/meetlink`, { method: "PUT", body: { meetLink: b.meetLink, meetSent: true } });
@@ -1850,7 +1850,7 @@ const tabs = ["stats", "mentors", "registrations", "bookings", "customcalls"];
                         }} className="ap-btn-blue">{sentMeet[b._id] ? "✓ Forwarded" : "📤 Forward to Student"}</button>
                       </div>
                     ) : (
-                      <div style={{ background: "#FAF7F2", border: "1.5px dashed #E8E2D9", borderRadius: 8, padding: 16, fontSize: 13, color: "#aaa", textAlign: "center" }}>⏳ Waiting for guide to share link</div>
+                      <div style={{ background: "#FAF7F2", border: "1.5px dashed #E8E2D9", borderRadius: 8, padding: 16, fontSize: 15, color: "#aaa", textAlign: "center" }}>⏳ Waiting for guide to share link</div>
                     )}
                   </div>
                 </div>
