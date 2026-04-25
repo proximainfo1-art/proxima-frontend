@@ -455,17 +455,22 @@ function MentorCard({ mentor, onClick, onBook }) {
     {/* Middle — name, college, price */}
     <div style={{ flex: 1, minWidth: 0 }}>
       <div style={{ fontWeight: 700, fontSize: 16, color: "#111", marginBottom: 8 }}>{mentor.name}</div>
-      <div style={{ display: "flex", flexDirection: "column", gap: 4, marginBottom: 10 }}>
-        <div style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 15, color: "#555" }}>
-          <span>🎓</span><span>{mentor.college}</span>
-        </div>
-        <div style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 15, color: "#555" }}>
-          <span>📖</span><span>{mentor.course} · {mentor.year}</span>
-        </div>
-        <div style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 15, color: "#555" }}>
-          <span>📍</span><span>{location}</span>
-        </div>
-      </div>
+      <div style={{ display: "flex", flexDirection: "column", gap: 6, marginBottom: 10 }}>
+  <div style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 13 }}>
+    <span>🎓</span>
+    <span style={{ fontWeight: 700, color: "#111" }}>{mentor.college}</span>
+  </div>
+  <div style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 13 }}>
+    <span>📖</span>
+    <span style={{ color: "#E93800", fontWeight: 600 }}>{mentor.course}</span>
+    <span style={{ background: "#FFF0EB", color: "#E93800", fontSize: 11, fontWeight: 700, padding: "2px 8px", borderRadius: 20 }}>
+      {mentor.year ? `${mentor.year} Year` : ""}
+    </span>
+  </div>
+  <div style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 13, color: "#888" }}>
+    <span>📍</span><span>{location}</span>
+  </div>
+</div>
       <div style={{ borderTop: "1px solid #F0EDE8", paddingTop: 10, display: "flex", alignItems: "center", gap: 16, fontSize: 15 }}>
         <span style={{ fontWeight: 700, color: "#111" }}>₹{mentor.price || 299}<span style={{ fontWeight: 400, color: "#888" }}> / 30 min</span></span>
         
@@ -1269,6 +1274,18 @@ function MentorDashboard({ mentor, onLogout }) {
   const [editingBio, setEditingBio] = useState(false);
   const [bio, setBio] = useState(mentor.bio || "");
   const [savingBio, setSavingBio] = useState(false);
+  const [editingDetails, setEditingDetails] = useState(false);
+const [details, setDetails] = useState({ year: mentor.year || '', pin: mentor.pin || '', bio: mentor.bio || '' });
+const [savingDetails, setSavingDetails] = useState(false);
+
+const saveDetails = async () => {
+  setSavingDetails(true);
+  try {
+    await apiFetch(`/mentors/${mentor._id}`, { method: "PUT", body: { ...mentor, ...details } });
+    setEditingDetails(false);
+    alert("Details updated!");
+  } catch { alert("Failed to update"); } finally { setSavingDetails(false); }
+};
 
   useEffect(() => {
     apiFetch(`/bookings?mentorId=${mentor._id}`).then(setBookings).catch(() => {});
@@ -1305,47 +1322,82 @@ function MentorDashboard({ mentor, onLogout }) {
 
         {/* Profile Card */}
         <div style={{ background: "#FFF0EB", border: "1px solid #F0D5CB", borderRadius: 20, padding: 32, marginBottom: 32, position: "relative", overflow: "hidden" }}>
-          <div style={{ position: "absolute", top: -40, right: -40, width: 160, height: 160, borderRadius: "50%", background: `radial-gradient(circle, rgba(233,56,0,0.08) 0%, transparent 70%)` }} />
-          <div style={{ display: "flex", gap: 24, alignItems: "flex-start", flexWrap: "wrap" }}>
-            <div style={{ position: "relative" }}>
-              <img
-                src={mentor.photo || `https://ui-avatars.com/api/?name=${encodeURIComponent(mentor.name)}&background=1C1C1C&color=E93800&size=120`}
-                alt={mentor.name}
-                style={{ width: 90, height: 90, borderRadius: "50%", objectFit: "cover", border: `3px solid ${S.accent}`, display: "block" }}
-              />
-              <div style={{ position: "absolute", bottom: 2, right: 2, width: 16, height: 16, borderRadius: "50%", background: "#22C55E", border: `2px solid ${S.card}` }} />
+  <div style={{ position: "absolute", top: -40, right: -40, width: 160, height: 160, borderRadius: "50%", background: `radial-gradient(circle, rgba(233,56,0,0.08) 0%, transparent 70%)` }} />
+  <div style={{ display: "flex", gap: 24, alignItems: "flex-start", flexWrap: "wrap" }}>
+    <div style={{ position: "relative" }}>
+      <img
+        src={mentor.photo || `https://ui-avatars.com/api/?name=${encodeURIComponent(mentor.name)}&background=1C1C1C&color=E93800&size=120`}
+        alt={mentor.name}
+        style={{ width: 90, height: 90, borderRadius: "50%", objectFit: "cover", border: `3px solid ${S.accent}`, display: "block" }}
+      />
+      <div style={{ position: "absolute", bottom: 2, right: 2, width: 16, height: 16, borderRadius: "50%", background: "#22C55E", border: `2px solid ${S.card}` }} />
+    </div>
+    <div style={{ flex: 1 }}>
+      <div style={{ fontFamily: "'Gilroy', sans-serif", fontSize: 28, fontWeight: 800, color: "#111", marginBottom: 4 }}>{mentor.name}</div>
+      <div style={{ color: S.accent, fontSize: 14, fontWeight: 500, marginBottom: 4 }}>{mentor.college}</div>
+      <div style={{ color: "#888", fontSize: 13, marginBottom: 12 }}>{mentor.course} · {details.year} Year</div>
+
+      {!editingDetails ? (
+        <button onClick={() => setEditingDetails(true)} style={{ background: "none", border: "1px solid #E8E2D9", color: "#555", padding: "6px 14px", borderRadius: 8, fontSize: 12, cursor: "pointer", fontFamily: "'Gilroy', sans-serif", marginBottom: 12 }}>✏ Edit Details</button>
+      ) : (
+        <div style={{ background: "#fff", borderRadius: 12, padding: 16, marginBottom: 12, border: "1px solid #E8E2D9" }}>
+          <div style={{ fontSize: 12, fontWeight: 600, color: "#888", marginBottom: 12, textTransform: "uppercase", letterSpacing: 1 }}>Edit Your Details</div>
+          <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+            <div>
+              <label style={{ fontSize: 12, color: "#666", display: "block", marginBottom: 4 }}>Year</label>
+              <select value={details.year} onChange={e => setDetails(d => ({ ...d, year: e.target.value }))}
+                style={{ background: "#FAF7F2", border: "1px solid #E8E2D9", color: "#111", borderRadius: 8, padding: "8px 12px", fontSize: 13, width: "100%", fontFamily: "'Gilroy', sans-serif", outline: "none" }}>
+                <option value="1st">1st Year</option>
+                <option value="2nd">2nd Year</option>
+                <option value="3rd">3rd Year</option>
+                <option value="4th">4th Year</option>
+              </select>
             </div>
-            <div style={{ flex: 1 }}>
-              <div style={{ fontFamily: "'Gilroy', sans-serif", fontSize: 28, fontWeight: 800, color: "#111", marginBottom: 4 }}>{mentor.name}</div>
-                <div style={{ color: S.accent, fontSize: 14, fontWeight: 500, marginBottom: 4 }}>{mentor.college}</div>
-                <div style={{ color: "#888", fontSize: 15, marginBottom: 16 }}>{mentor.course} · {mentor.year} Year</div>
-                {editingBio ? (
-                  <div>
-                    <textarea
-                      value={bio}
-                      onChange={e => setBio(e.target.value)}
-                      maxLength={200}
-                      rows={3}
-                      style={{ background: "#fff", border: "1px solid #E93800", color: "#111", borderRadius: 8, padding: "10px 14px", width: "100%", fontSize: 15, fontFamily: "'Gilroy', sans-serif", outline: "none", resize: "none" }}
-                    />
-                    <div style={{ display: "flex", gap: 8, marginTop: 8 }}>
-                      <button onClick={saveBio} disabled={savingBio} style={{ background: S.accent, color: "#fff", border: "none", padding: "7px 18px", borderRadius: 7, fontSize: 15, cursor: "pointer" }}>{savingBio ? "Saving..." : "Save Bio"}</button>
-                      <button onClick={() => setEditingBio(false)} style={{ background: "transparent", color: "#888", border: `1px solid ${S.border}`, padding: "7px 18px", borderRadius: 7, fontSize: 15, cursor: "pointer" }}>Cancel</button>
-                    </div>
-                  </div>
-                ) : (
-                  <div style={{ display: "flex", alignItems: "flex-start", gap: 10 }}>
-                    <p style={{ color: "#aaa", fontSize: 15, lineHeight: 1.7, flex: 1 }}>{bio || "No bio added yet."}</p>
-                    <button onClick={() => setEditingBio(true)} style={{ background: "none", border: `1px solid ${S.border}`, color: "#888", padding: "5px 12px", borderRadius: 6, fontSize: 12, cursor: "pointer", whiteSpace: "nowrap" }}>✏ Edit Bio</button>
-                  </div>
-                )}
-              </div>
-              <div style={{ textAlign: "center", background: "rgba(233,56,0,0.08)", border: `1px solid rgba(233,56,0,0.2)`, borderRadius: 14, padding: "16px 24px" }}>
-                <div style={{ fontSize: 40, fontWeight: 700, color: "#E93800", fontFamily: "'Gilroy', sans-serif" }}>{mentor.credits || 0}</div>
-                <div style={{ color: "#888", fontSize: 12, marginTop: 2, textTransform: "uppercase", letterSpacing: 1 }}>Credits</div>
-              </div>
+            <div>
+              <label style={{ fontSize: 12, color: "#666", display: "block", marginBottom: 4 }}>PIN (4 digits)</label>
+              <input type="password" maxLength={4} value={details.pin} onChange={e => setDetails(d => ({ ...d, pin: e.target.value }))}
+                style={{ background: "#FAF7F2", border: "1px solid #E8E2D9", color: "#111", borderRadius: 8, padding: "8px 12px", fontSize: 13, width: "100%", fontFamily: "'Gilroy', sans-serif", outline: "none", boxSizing: "border-box" }} />
+            </div>
+            <div>
+              <label style={{ fontSize: 12, color: "#666", display: "block", marginBottom: 4 }}>Bio</label>
+              <textarea value={details.bio} onChange={e => setDetails(d => ({ ...d, bio: e.target.value }))} maxLength={200} rows={3}
+                style={{ background: "#FAF7F2", border: "1px solid #E8E2D9", color: "#111", borderRadius: 8, padding: "8px 12px", fontSize: 13, width: "100%", fontFamily: "'Gilroy', sans-serif", outline: "none", resize: "none", boxSizing: "border-box" }} />
+              <div style={{ fontSize: 11, color: "#aaa", textAlign: "right" }}>{details.bio.length}/200</div>
+            </div>
+            <div style={{ display: "flex", gap: 8 }}>
+              <button onClick={saveDetails} disabled={savingDetails} style={{ background: "#111", color: "#fff", border: "none", padding: "8px 20px", borderRadius: 8, fontSize: 13, fontWeight: 600, cursor: "pointer", fontFamily: "'Gilroy', sans-serif" }}>
+                {savingDetails ? "Saving..." : "Save Changes"}
+              </button>
+              <button onClick={() => setEditingDetails(false)} style={{ background: "transparent", color: "#888", border: "1px solid #E8E2D9", padding: "8px 20px", borderRadius: 8, fontSize: 13, cursor: "pointer", fontFamily: "'Gilroy', sans-serif" }}>Cancel</button>
             </div>
           </div>
+        </div>
+      )}
+
+      {!editingDetails && (
+        editingBio ? (
+          <div>
+            <textarea value={bio} onChange={e => setBio(e.target.value)} maxLength={200} rows={3}
+              style={{ background: "#fff", border: "1px solid #E93800", color: "#111", borderRadius: 8, padding: "10px 14px", width: "100%", fontSize: 13, fontFamily: "'Gilroy', sans-serif", outline: "none", resize: "none" }} />
+            <div style={{ display: "flex", gap: 8, marginTop: 8 }}>
+              <button onClick={saveBio} disabled={savingBio} style={{ background: S.accent, color: "#fff", border: "none", padding: "7px 18px", borderRadius: 7, fontSize: 13, cursor: "pointer" }}>{savingBio ? "Saving..." : "Save Bio"}</button>
+              <button onClick={() => setEditingBio(false)} style={{ background: "transparent", color: "#888", border: `1px solid ${S.border}`, padding: "7px 18px", borderRadius: 7, fontSize: 13, cursor: "pointer" }}>Cancel</button>
+            </div>
+          </div>
+        ) : (
+          <div style={{ display: "flex", alignItems: "flex-start", gap: 10 }}>
+            <p style={{ color: "#aaa", fontSize: 13, lineHeight: 1.7, flex: 1 }}>{bio || "No bio added yet."}</p>
+            <button onClick={() => setEditingBio(true)} style={{ background: "none", border: `1px solid ${S.border}`, color: "#888", padding: "5px 12px", borderRadius: 6, fontSize: 12, cursor: "pointer", whiteSpace: "nowrap" }}>✏ Edit Bio</button>
+          </div>
+        )
+      )}
+    </div>
+    <div style={{ textAlign: "center", background: "rgba(233,56,0,0.08)", border: `1px solid rgba(233,56,0,0.2)`, borderRadius: 14, padding: "16px 24px" }}>
+      <div style={{ fontSize: 40, fontWeight: 700, color: "#E93800", fontFamily: "'Gilroy', sans-serif" }}>{mentor.credits || 0}</div>
+      <div style={{ color: "#888", fontSize: 12, marginTop: 2, textTransform: "uppercase", letterSpacing: 1 }}>Credits</div>
+    </div>
+  </div>
+</div>
 
           {/* Stats Row */}
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(140px,1fr))", gap: 14, marginBottom: 32 }}>
