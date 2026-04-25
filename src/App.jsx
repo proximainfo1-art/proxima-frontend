@@ -468,8 +468,7 @@ function MentorCard({ mentor, onClick, onBook }) {
       </div>
       <div style={{ borderTop: "1px solid #F0EDE8", paddingTop: 10, display: "flex", alignItems: "center", gap: 16, fontSize: 15 }}>
         <span style={{ fontWeight: 700, color: "#111" }}>₹{mentor.price || 299}<span style={{ fontWeight: 400, color: "#888" }}> / 30 min</span></span>
-        <span style={{ color: "#888" }}>|</span>
-        <span style={{ color: "#888" }}>{mentor.sessions || 0} sessions taken</span>
+        
       </div>
     </div>
 
