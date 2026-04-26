@@ -19,7 +19,6 @@ const Upload = () => <span>↑</span>;
 const Search = () => <span>🔍</span>;
 const Star = () => <span>★</span>;
 
-const ADMIN_PASSWORD = "Kusu@Manku0430";
 const ADMIN_WHATSAPP = "919354249942";
 const CLOUDINARY_CLOUD_NAME = "dlzqb06u6";
 const CLOUDINARY_UPLOAD_PRESET = "proxima_mentors";
@@ -1729,7 +1728,14 @@ function MentorRegistration({ onDone }) {
 
 function AdminLogin({ onLogin }) {
   const [pw, setPw] = useState(""); const [err, setErr] = useState("");
-  const handle = () => { if (pw === ADMIN_PASSWORD) onLogin(); else setErr("Incorrect password"); };
+const handle = async () => {
+  try {
+    await apiFetch("/admin/login", { method: "POST", body: { password: pw } });
+    onLogin();
+  } catch {
+    setErr("Incorrect password");
+  }
+};
   return (
     <div style={{ minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center", padding: 20 }}>
       <div className="modal fade-up" style={{ maxWidth: 360 }}>
