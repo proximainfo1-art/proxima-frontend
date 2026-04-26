@@ -1752,8 +1752,23 @@ function MentorForm({ data, onChange, onSave, onCancel }) {
   const refs = {
     name: useRef(null), college: useRef(null), course: useRef(null),
     email: useRef(null), whatsapp: useRef(null), referralCode: useRef(null),
-    pin: useRef(null), bio: useRef(null), photo: useRef(null),
+    pin: useRef(null), bio: useRef(null),
     price: useRef(null), rating: useRef(null), sessions: useRef(null), year: useRef(null),
+  };
+
+  const [photoPreview, setPhotoPreview] = useState(data.photo || "");
+  const [uploading, setUploading] = useState(false);
+
+  const handlePhoto = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    setUploading(true);
+    try {
+      const url = await uploadToCloudinary(file);
+      setPhotoPreview(url);
+      onChange("photo", url);
+    } catch { alert("Upload failed. Try again."); }
+    finally { setUploading(false); }
   };
 
   const handleSave = () => {
@@ -1764,6 +1779,7 @@ function MentorForm({ data, onChange, onSave, onCancel }) {
     updated.price = Number(updated.price || data.price || 299);
     updated.rating = Number(updated.rating || data.rating || 5);
     updated.sessions = Number(updated.sessions || data.sessions || 0);
+    updated.photo = photoPreview;
     Object.entries(updated).forEach(([k, v]) => onChange(k, v));
     onSave();
   };
@@ -1790,13 +1806,27 @@ function MentorForm({ data, onChange, onSave, onCancel }) {
           <input ref={refs.sessions} type="number" placeholder="Sessions done" defaultValue={data.sessions || 0} style={inp} />
         </div>
         <textarea ref={refs.bio} placeholder="Bio (max 200 chars)" maxLength={200} rows={3} defaultValue={data.bio || ""} style={{ ...inp, marginTop: 12 }} />
-        <div style={{ marginTop: 12 }}>
-          {data.photo && <img src={data.photo} alt="" style={{ width: 60, height: 60, borderRadius: "50%", objectFit: "cover", marginBottom: 8 }} />}
-          <input ref={refs.photo} placeholder="Paste image URL" defaultValue={data.photo || ""} style={{ ...inp, marginTop: 4 }} />
+
+        {/* Photo Upload */}
+        <div style={{ marginTop: 16 }}>
+          <div style={{ fontSize: 12, fontWeight: 600, color: "#888", textTransform: "uppercase", letterSpacing: 1, marginBottom: 10 }}>Profile Photo</div>
+          <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
+            {photoPreview ? (
+              <img src={photoPreview} alt="preview" style={{ width: 64, height: 64, borderRadius: "50%", objectFit: "cover", border: "2px solid #E93800", flexShrink: 0 }} />
+            ) : (
+              <div style={{ width: 64, height: 64, borderRadius: "50%", background: "#F0EDE8", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 24, flexShrink: 0 }}>👤</div>
+            )}
+            <label style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 8, padding: "10px 16px", background: uploading ? "#ccc" : "#111", border: "none", borderRadius: 8, cursor: uploading ? "not-allowed" : "pointer", color: "#fff", fontFamily: "'Gilroy', sans-serif", fontWeight: 600, fontSize: 13, flex: 1, boxSizing: "border-box" }}>
+              {uploading ? "Uploading..." : photoPreview ? "Replace Photo" : "Upload from Device"}
+              <input type="file" accept="image/*" onChange={handlePhoto} style={{ display: "none" }} disabled={uploading} />
+            </label>
+          </div>
+          {photoPreview && <div style={{ fontSize: 11, color: "#22C55E", marginTop: 8 }}>✓ Photo ready</div>}
         </div>
+
         <div style={{ display: "flex", gap: 10, marginTop: 20 }}>
           <button onClick={onCancel} style={{ flex: 1, background: "transparent", color: "#111", border: "1.5px solid #E8E2D9", padding: "12px", borderRadius: 8, fontSize: 14, fontWeight: 600, cursor: "pointer", fontFamily: "'Gilroy', sans-serif" }}>Cancel</button>
-          <button onClick={handleSave} style={{ flex: 1, background: "#111", color: "#fff", border: "none", padding: "12px", borderRadius: 8, fontSize: 14, fontWeight: 600, cursor: "pointer", fontFamily: "'Gilroy', sans-serif" }}>Save</button>
+          <button onClick={handleSave} disabled={uploading} style={{ flex: 1, background: uploading ? "#ccc" : "#111", color: "#fff", border: "none", padding: "12px", borderRadius: 8, fontSize: 14, fontWeight: 600, cursor: uploading ? "not-allowed" : "pointer", fontFamily: "'Gilroy', sans-serif" }}>Save</button>
         </div>
       </div>
     </div>
