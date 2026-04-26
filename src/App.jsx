@@ -623,18 +623,28 @@ function MentorDiscovery({ onBook }) {
   const [loading, setLoading] = useState(true);
 const [showCustomCall, setShowCustomCall] = useState(false);
   const load = useCallback(async () => {
-    try { const data = await apiFetch("/mentors"); setMentors(data); }
+    try { const data = await apiFetch("/mentors/public"); setMentors(data); }
     catch { setMentors([]); } finally { setLoading(false); }
   }, []);
 
-  useEffect(() => { load(); const t = setInterval(load, 30000); return () => clearInterval(t); }, [load]);
+  useEffect(() => { load(); const t = setInterval(() => { if (document.visibilityState === 'visible') load(); }, 30000); return () => clearInterval(t); }, [load]);
 
   const colleges = [...new Set(mentors.map(m => m.college))];
-  const filtered = mentors.filter(m => {
-    const matchCollege = !filter || m.college === filter;
-    const matchSearch = !search || m.name.toLowerCase().includes(search.toLowerCase()) || m.college.toLowerCase().includes(search.toLowerCase()) || (m.course || "").toLowerCase().includes(search.toLowerCase());
-    return matchCollege && matchSearch;
-  });
+  const todayName = ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"][new Date().getDay()];
+
+  const filtered = mentors
+    .filter(m => {
+      const matchCollege = !filter || m.college === filter;
+      const matchSearch = !search || m.name.toLowerCase().includes(search.toLowerCase()) || m.college.toLowerCase().includes(search.toLowerCase()) || (m.course || "").toLowerCase().includes(search.toLowerCase());
+      return matchCollege && matchSearch;
+    })
+    .sort((a, b) => {
+      const aAvail = (a.slots || []).some(s => s.day === todayName && s.status !== "booked");
+      const bAvail = (b.slots || []).some(s => s.day === todayName && s.status !== "booked");
+      if (aAvail && !bAvail) return -1;
+      if (!aAvail && bAvail) return 1;
+      return 0;
+    });
 
   return (
     <div style={{ minHeight: "100vh", background: "#fff", fontFamily: "'Gilroy', sans-serif", color: "#111" }}>
@@ -1510,12 +1520,122 @@ function MentorRegistration({ onDone }) {
     } catch { alert("Submission failed. Try again."); } finally { setSubmitting(false); }
   };
 
-  const steps = [
-    { label: "Name", content: <div><h2 style={{ fontSize: 28, fontWeight: 800, color: "#111", marginBottom: 8 }}>What's your full name?</h2><p style={{ color: "#888", marginBottom: 24 }}>This will appear on your public profile</p><input placeholder="Your full name" value={form.name} onChange={e => upd("name", e.target.value)} autoFocus /></div>, valid: form.name.trim() },
-    { label: "College", content: <div><h2 style={{ fontSize: 28, fontWeight: 800, color: "#111", marginBottom: 8 }}>Your college details</h2><p style={{ color: "#888", marginBottom: 24 }}>Tell us where you study</p><div style={{ display: "flex", flexDirection: "column", gap: 14 }}><input placeholder="College name (e.g. SRCC)" value={form.college} onChange={e => upd("college", e.target.value)} /><input placeholder="Course / Programme" value={form.course} onChange={e => upd("course", e.target.value)} /><select value={form.year} onChange={e => upd("year", e.target.value)}><option value="">Select year</option><option value="1st">1st Year</option><option value="2nd">2nd Year</option><option value="3rd">3rd Year</option><option value="4th">4th Year</option><option value="5th">5th Year</option></select></div></div>, valid: form.college && form.course && form.year },
-    { label: "Contact", content: <div><h2 style={{ fontSize: 28, fontWeight: 800, color: "#111", marginBottom: 8 }}>Contact details</h2><p style={{ color: "#888", marginBottom: 24 }}>Not shown publicly</p><div style={{ display: "flex", flexDirection: "column", gap: 14 }}><input placeholder="Email address" type="email" value={form.email} onChange={e => upd("email", e.target.value)} /><input placeholder="WhatsApp number" type="tel" value={form.whatsapp} onChange={e => upd("whatsapp", e.target.value)} /></div></div>, valid: form.email && form.whatsapp },
-    { label: "Bio", content: <div><h2 style={{ fontSize: 28, fontWeight: 800, color: "#111", marginBottom: 8 }}>Tell students about yourself</h2><p style={{ color: "#888", marginBottom: 24 }}>Max 200 characters</p><textarea placeholder="e.g. 2nd year BCom Hons at SRCC. Happy to talk about college life..." rows={4} maxLength={200} value={form.bio} onChange={e => upd("bio", e.target.value)} /><div style={{ color: "#888", fontSize: 12, marginTop: 6, textAlign: "right" }}>{form.bio.length}/200</div></div>, valid: form.bio.trim().length >= 20 },
-    { label: "Photo", content: <div><h2 style={{ fontSize: 28, fontWeight: 800, color: "#111", marginBottom: 8 }}>Add a profile photo</h2><p style={{ color: "#888", marginBottom: 24 }}>Clear, well-lit, face visible.</p>{preview && <div style={{ textAlign: "center", marginBottom: 20 }}><img src={preview} alt="preview" style={{ width: 100, height: 100, borderRadius: "50%", objectFit: "cover", border: "3px solid #E93800" }} /><div style={{ color: "#888", fontSize: 15, marginTop: 8 }}>Photo uploaded ✓</div></div>}<label style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 10, padding: "14px 20px", border: "2px dashed #E8E2D9", borderRadius: 10, cursor: "pointer", color: "#888" }}>↑ {uploading ? "Uploading..." : "Click to upload photo"}<input type="file" accept="image/*" onChange={handlePhoto} style={{ display: "none" }} /></label></div>, valid: true },
+  const regInp = {
+    width: "100%", padding: "13px 16px", borderRadius: 10,
+    border: "1.5px solid #E8E2D9", background: "#FAF7F2",
+    fontFamily: "'Gilroy', sans-serif", fontSize: 15, color: "#111",
+    outline: "none", boxSizing: "border-box", transition: "border 0.2s",
+  };
+
+  const stepConfig = [
+    {
+      label: "Name", icon: "👤",
+      heading: "What's your full name?",
+      sub: "This will appear on your public profile",
+      valid: form.name.trim(),
+      content: (
+        <input placeholder="e.g. Rahul Sharma" value={form.name}
+          onChange={e => upd("name", e.target.value)} autoFocus style={regInp}
+          onFocus={e => e.target.style.borderColor="#E93800"}
+          onBlur={e => e.target.style.borderColor="#E8E2D9"} />
+      ),
+    },
+    {
+      label: "College", icon: "🎓",
+      heading: "Where do you study?",
+      sub: "Your college and course details",
+      valid: form.college && form.course && form.year,
+      content: (
+        <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+          <input placeholder="College name (e.g. SRCC, NMIMS)" value={form.college}
+            onChange={e => upd("college", e.target.value)} style={regInp}
+            onFocus={e => e.target.style.borderColor="#E93800"}
+            onBlur={e => e.target.style.borderColor="#E8E2D9"} />
+          <input placeholder="Course / Programme (e.g. B.Com Hons)" value={form.course}
+            onChange={e => upd("course", e.target.value)} style={regInp}
+            onFocus={e => e.target.style.borderColor="#E93800"}
+            onBlur={e => e.target.style.borderColor="#E8E2D9"} />
+          <select value={form.year} onChange={e => upd("year", e.target.value)} style={regInp}>
+            <option value="">Select your year</option>
+            <option value="1st">1st Year</option>
+            <option value="2nd">2nd Year</option>
+            <option value="3rd">3rd Year</option>
+            <option value="4th">4th Year</option>
+            <option value="5th">5th Year</option>
+          </select>
+        </div>
+      ),
+    },
+    {
+      label: "Contact", icon: "📱",
+      heading: "How can we reach you?",
+      sub: "These details are never shown publicly",
+      valid: form.email && form.whatsapp,
+      content: (
+        <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+          <input placeholder="Email address" type="email" value={form.email}
+            onChange={e => upd("email", e.target.value)} style={regInp}
+            onFocus={e => e.target.style.borderColor="#E93800"}
+            onBlur={e => e.target.style.borderColor="#E8E2D9"} />
+          <input placeholder="WhatsApp number (10 digits)" type="tel" value={form.whatsapp}
+            onChange={e => upd("whatsapp", e.target.value)} style={regInp}
+            onFocus={e => e.target.style.borderColor="#E93800"}
+            onBlur={e => e.target.style.borderColor="#E8E2D9"} />
+        </div>
+      ),
+    },
+    {
+      label: "Bio", icon: "✍️",
+      heading: "Tell students about yourself",
+      sub: "What can you help them understand? Be specific.",
+      valid: form.bio.trim().length >= 20,
+      content: (
+        <div>
+          <textarea
+            placeholder="e.g. 2nd year B.Com Hons at SRCC. I can talk about DU admissions, college culture, society life, and what BCom is actually like day-to-day."
+            rows={5} maxLength={200} value={form.bio}
+            onChange={e => upd("bio", e.target.value)}
+            style={{ ...regInp, resize: "none", lineHeight: 1.7 }}
+            onFocus={e => e.target.style.borderColor="#E93800"}
+            onBlur={e => e.target.style.borderColor="#E8E2D9"} />
+          <div style={{ display: "flex", justifyContent: "space-between", marginTop: 8, fontSize: 12 }}>
+            <span style={{ color: form.bio.trim().length < 20 ? "#E93800" : "#22C55E" }}>
+              {form.bio.trim().length < 20 ? `${20 - form.bio.trim().length} more characters needed` : "✓ Looks good"}
+            </span>
+            <span style={{ color: "#aaa" }}>{form.bio.length}/200</span>
+          </div>
+        </div>
+      ),
+    },
+    {
+      label: "Photo", icon: "📸",
+      heading: "Add a profile photo",
+      sub: "Clear, well-lit, face visible — builds trust with students",
+      valid: true,
+      content: (
+        <div>
+          {preview ? (
+            <div style={{ display: "flex", alignItems: "center", gap: 20, background: "#F0FBF6", border: "1px solid #BBF0D6", borderRadius: 12, padding: "16px 20px", marginBottom: 16 }}>
+              <img src={preview} alt="preview" style={{ width: 72, height: 72, borderRadius: "50%", objectFit: "cover", border: "3px solid #E93800", flexShrink: 0 }} />
+              <div>
+                <div style={{ fontWeight: 700, color: "#16A34A", fontSize: 15, marginBottom: 2 }}>✓ Photo uploaded</div>
+                <div style={{ color: "#555", fontSize: 13 }}>Looking good! You can replace it below.</div>
+              </div>
+            </div>
+          ) : (
+            <div style={{ background: "#FFF0EB", border: "1.5px dashed #F0D5CB", borderRadius: 12, padding: "28px 20px", textAlign: "center", marginBottom: 16 }}>
+              <div style={{ fontSize: 32, marginBottom: 8 }}>📷</div>
+              <div style={{ fontWeight: 600, color: "#111", fontSize: 15, marginBottom: 4 }}>No photo yet</div>
+              <div style={{ color: "#888", fontSize: 13 }}>Profiles with photos get 3× more bookings</div>
+            </div>
+          )}
+          <label style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 10, padding: "13px 20px", background: uploading ? "#ccc" : "#111", border: "none", borderRadius: 10, cursor: uploading ? "not-allowed" : "pointer", color: "#fff", fontFamily: "'Gilroy', sans-serif", fontWeight: 600, fontSize: 15 }}>
+            {uploading ? "Uploading..." : preview ? "Replace Photo" : "Upload Photo"}
+            <input type="file" accept="image/*" onChange={handlePhoto} style={{ display: "none" }} disabled={uploading} />
+          </label>
+        </div>
+      ),
+    },
   ];
 
   if (step === TOTAL) return (
@@ -1529,25 +1649,78 @@ function MentorRegistration({ onDone }) {
     </div>
   );
 
-  const current = steps[step - 1];
+  const current = stepConfig[step - 1];
+  const isLastStep = step === TOTAL - 1;
+
   return (
-    <div style={{ minHeight: "100vh", display: "flex", flexDirection: "column", background: "#FAF7F2", color: "#111", fontFamily: "'Gilroy', sans-serif" }}>
-      <div style={{ background: "#fff", borderBottom: "1px solid #E8E2D9", padding: "14px 32px", position: "sticky", top: 0, zIndex: 100 }}>
+    <div style={{ minHeight: "100vh", background: "#FAF7F2", fontFamily: "'Gilroy', sans-serif", color: "#111" }}>
+
+      {/* Top nav */}
+      <div style={{ background: "#fff", borderBottom: "1px solid #E8E2D9", padding: "14px 32px", display: "flex", alignItems: "center", justifyContent: "space-between", position: "sticky", top: 0, zIndex: 100 }}>
         <a href="/"><img src="https://res.cloudinary.com/dlzqb06u6/image/upload/v1775389312/wbzrczuoo9swrhfvxhrx.png" alt="Proxima" style={{ height: 24, objectFit: "contain" }} /></a>
-<button onClick={onDone} style={{ background: "none", border: "none", color: "#111", fontSize: 14, fontWeight: 600, cursor: "pointer", fontFamily: "'Gilroy', sans-serif" }}>← Back to Home</button>
+        <button onClick={onDone} style={{ background: "none", border: "none", color: "#888", fontSize: 14, cursor: "pointer", fontFamily: "'Gilroy', sans-serif" }}>✕ Exit</button>
       </div>
-      <div style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center", padding: 20 }}>
-        <div style={{ width: "100%", maxWidth: 520 }}>
-          <div style={{ height: 3, background: "#E8E2D9", borderRadius: 2, marginBottom: 32, overflow: "hidden" }}>
-            <div style={{ height: "100%", background: "#E93800", borderRadius: 2, width: `${((step - 1) / (TOTAL - 1)) * 100}%`, transition: "width 0.4s ease" }} />
+
+      <div style={{ maxWidth: 600, margin: "0 auto", padding: "40px 20px 60px" }}>
+
+        {/* Step indicator dots */}
+        <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 36 }}>
+          {stepConfig.map((s, i) => (
+            <div key={i} style={{ display: "flex", alignItems: "center", gap: 6 }}>
+              <div style={{
+                width: 28, height: 28, borderRadius: "50%",
+                background: i < step - 1 ? "#22C55E" : i === step - 1 ? "#E93800" : "#F0EDE8",
+                color: i < step - 1 ? "#fff" : i === step - 1 ? "#fff" : "#aaa",
+                display: "flex", alignItems: "center", justifyContent: "center",
+                fontSize: 12, fontWeight: 700, flexShrink: 0, transition: "all 0.3s",
+              }}>
+                {i < step - 1 ? "✓" : i + 1}
+              </div>
+              {i < stepConfig.length - 1 && (
+                <div style={{ width: 28, height: 2, background: i < step - 1 ? "#22C55E" : "#F0EDE8", borderRadius: 2, transition: "background 0.3s" }} />
+              )}
+            </div>
+          ))}
+        </div>
+
+        {/* Card */}
+        <div style={{ background: "#fff", border: "1px solid #E8E2D9", borderRadius: 20, overflow: "hidden" }}>
+
+          {/* Card header strip */}
+          <div style={{ background: "#FFF0EB", padding: "28px 32px", borderBottom: "1px solid #F0D5CB" }}>
+            <div style={{ fontSize: 28, marginBottom: 10 }}>{current.icon}</div>
+            <h2 style={{ fontSize: 22, fontWeight: 800, color: "#111", margin: "0 0 6px" }}>{current.heading}</h2>
+            <p style={{ color: "#888", fontSize: 14, margin: 0, lineHeight: 1.6 }}>{current.sub}</p>
           </div>
-          <div style={{ color: "#888", fontSize: 15, marginBottom: 24 }}>Step {step} of {TOTAL - 1}</div>
-          <div key={step}>{current.content}</div>
-          <div style={{ display: "flex", gap: 12, marginTop: 32 }}>
-            {step > 1 && <button style={{ flex: 1, background: "transparent", color: "#111", border: "1.5px solid #111", padding: "12px", borderRadius: 8, fontSize: 15, cursor: "pointer", fontFamily: "'Gilroy', sans-serif" }} onClick={() => setStep(s => s - 1)}>← Back</button>}
-            {step < TOTAL - 1 && <button style={{ flex: 1, background: current.valid ? "#111" : "#ccc", color: "#fff", border: "none", padding: "12px", borderRadius: 8, fontSize: 15, cursor: current.valid ? "pointer" : "not-allowed", fontFamily: "'Gilroy', sans-serif" }} disabled={!current.valid} onClick={() => setStep(s => s + 1)}>Continue →</button>}
-            {step === TOTAL - 1 && <button style={{ flex: 1, background: "#111", color: "#fff", border: "none", padding: "12px", borderRadius: 8, fontSize: 15, cursor: "pointer", fontFamily: "'Gilroy', sans-serif" }} onClick={handleSubmit} disabled={submitting}>{submitting ? "Submitting..." : "Submit Application"}</button>}
+
+          {/* Card body */}
+          <div style={{ padding: "28px 32px" }}>
+            <div key={step}>{current.content}</div>
+
+            <div style={{ display: "flex", gap: 10, marginTop: 28 }}>
+              {step > 1 && (
+                <button onClick={() => setStep(s => s - 1)}
+                  style={{ background: "transparent", color: "#111", border: "1.5px solid #E8E2D9", padding: "13px 24px", borderRadius: 10, fontSize: 15, fontWeight: 600, cursor: "pointer", fontFamily: "'Gilroy', sans-serif" }}>
+                  ← Back
+                </button>
+              )}
+              {!isLastStep ? (
+                <button onClick={() => current.valid && setStep(s => s + 1)} disabled={!current.valid}
+                  style={{ flex: 1, background: current.valid ? "#111" : "#E8E2D9", color: current.valid ? "#fff" : "#aaa", border: "none", padding: "13px 24px", borderRadius: 10, fontSize: 15, fontWeight: 700, cursor: current.valid ? "pointer" : "not-allowed", fontFamily: "'Gilroy', sans-serif", transition: "all 0.2s" }}>
+                  Continue →
+                </button>
+              ) : (
+                <button onClick={handleSubmit} disabled={submitting}
+                  style={{ flex: 1, background: submitting ? "#ccc" : "#E93800", color: "#fff", border: "none", padding: "13px 24px", borderRadius: 10, fontSize: 15, fontWeight: 700, cursor: submitting ? "not-allowed" : "pointer", fontFamily: "'Gilroy', sans-serif" }}>
+                  {submitting ? "Submitting..." : "Submit Application →"}
+                </button>
+              )}
+            </div>
           </div>
+        </div>
+
+        <div style={{ textAlign: "center", marginTop: 20, color: "#aaa", fontSize: 13 }}>
+          Step {step} of {TOTAL - 1} — {current.label}
         </div>
       </div>
     </div>
@@ -1635,6 +1808,8 @@ function AdminPanel({ onLogout }) {
   const [notes, setNotes] = useState({});
   const [meetLinks, setMeetLinks] = useState({});
   const [sentMeet, setSentMeet] = useState({});
+  const [customCalls, setCustomCalls] = useState([]);
+
 
   const newMentorData = useRef({ name: "", college: "", course: "", year: "1st", bio: "", photo: "", email: "", whatsapp: "", price: 299, rating: 5, sessions: 0, referralCode: "", pin: "0000" });
   const editMentorData = useRef({});
@@ -1677,7 +1852,7 @@ setMentors(m); setBookings(b); setRegs(r); setStats(s); setCustomCalls(cc);
     setEditMentor(null); load();
   };
 
-  const [customCalls, setCustomCalls] = useState([]);
+  
 const tabs = ["stats", "mentors", "registrations", "bookings", "customcalls"];
 
   return (
@@ -1753,7 +1928,7 @@ const tabs = ["stats", "mentors", "registrations", "bookings", "customcalls"];
               <table className="ap-table">
                 <thead><tr><th>Guide</th><th>College</th><th>Bookings</th><th>Credits</th></tr></thead>
                 <tbody>
-                  {mentors.map(m => (
+                  {[...mentors].sort((a, b) => a.name.localeCompare(b.name)).map(m => (
                     <tr key={m._id}>
                       <td style={{ fontWeight: 600 }}>{m.name}</td>
                       <td style={{ color: "#555" }}>{m.college}</td>
