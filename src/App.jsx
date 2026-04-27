@@ -932,39 +932,16 @@ function MentorModal({ mentor: initialMentor, onClose, onBook, initialScreen = "
                   onFocus={e => e.target.style.borderColor="#E93800"} onBlur={e => e.target.style.borderColor="#ddd"} />
               </div>
               <div style={{ textAlign: "right" }}>
-                <button onClick={() => { if (!form.name||!form.email||!form.phone||!form.message) { alert("Please fill all required fields."); return; } setScreen("invoice"); }}
+                <button onClick={() => { if (!form.name||!form.email||!form.phone||!form.message) { alert("Please fill all required fields."); return; } onBook(mentor, `${selectedDay?.dayName} ${selectedSlot}`, form); }}
                   style={{ background: "#111", color: "#fff", border: "none", borderRadius: 8, padding: "12px 24px", fontSize: 14, fontWeight: 600, cursor: "pointer", fontFamily: "'Gilroy', sans-serif" }}>
-                  Review Booking
+                  Secure Checkout →
                 </button>
               </div>
             </div>
           </div>
         )}
 
-        {/* INVOICE SCREEN */}
-        {screen === "invoice" && (
-          <div style={{ padding: 28 }}>
-            <button onClick={() => setScreen("form")} style={{ background: "none", border: "none", cursor: "pointer", fontSize: 15, color: "#555", display: "flex", alignItems: "center", gap: 5, padding: 0, fontFamily: "'Gilroy', sans-serif", marginBottom: 18 }}>← Back</button>
-            <div style={{ fontWeight: 600, fontSize: 15, color: "#111", marginBottom: 20 }}>Your 30 minute 1:1 call booking summary</div>
-            {[["Mentor", mentor.name],["College", mentor.college],["Course", mentor.course],["Date & Time", `${selectedDay?.dateStr} | ${selectedSlot}`],["Your Name", form.name],["Your Email", form.email],["Your Phone", form.phone]].map(([label, val]) => (
-              <div key={label} style={{ display: "flex", justifyContent: "space-between", padding: "10px 0", borderBottom: "1px solid #f0f0f0", fontSize: 14 }}>
-                <span style={{ color: "#888" }}>{label}</span>
-                <span style={{ fontWeight: 500 }}>{val}</span>
-              </div>
-            ))}
-            <div style={{ background: "#FFF5F2", borderRadius: 10, padding: "16px 18px", margin: "16px 0" }}>
-              <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: 1, color: "#888", marginBottom: 10 }}>INVOICE DETAILS</div>
-              <div style={{ display: "flex", justifyContent: "space-between", fontSize: 14, padding: "6px 0" }}><span>Appointment Cost</span><span>₹{mentor.price || 299}</span></div>
-              <div style={{ display: "flex", justifyContent: "space-between", fontSize: 15, fontWeight: 700, borderTop: "1px solid #f0c8b8", marginTop: 4, paddingTop: 10 }}><span>To Pay</span><span>₹{mentor.price || 299}</span></div>
-            </div>
-            <div style={{ textAlign: "right" }}>
-              <button onClick={() => onBook(mentor, `${selectedDay?.dayName} ${selectedSlot}`, form)}
-                style={{ background: "#111", color: "#fff", border: "none", borderRadius: 8, padding: "12px 24px", fontSize: 14, fontWeight: 600, cursor: "pointer", fontFamily: "'Gilroy', sans-serif", minWidth: 160 }}>
-                Secure Checkout →
-              </button>
-            </div>
-          </div>
-        )}
+        
       </div>
     </div>
   );
