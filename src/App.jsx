@@ -905,22 +905,12 @@ function MentorModal({ mentor: initialMentor, onClose, onBook, initialScreen = "
             </div>
             <div style={RS}>
               <div style={{ fontWeight: 600, fontSize: 15, color: "#111", marginBottom: 18 }}>Please fill your details to confirm booking</div>
-              <div style={{ display: "grid", gridTemplateColumns: window.innerWidth < 500 ? "1fr" : "1fr 1fr", gap: 12, marginBottom: 12, width: "100%" }}>
-                {[["Enter Full Name*","name","text","John Doe"],["Enter Email*","email","email","johnydoe@gmail.com"]].map(([label,key,type,ph]) => (
+              <div style={{ display: "flex", flexDirection: "column", gap: 12, marginBottom: 12, width: "100%" }}>
+                {[["Enter Full Name*","name","text","John Doe"],["Enter Email*","email","email","johnydoe@gmail.com"],["Enter Phone Number*","phone","tel","9876543210"],["Referral Code (optional)","code","text","0000"]].map(([label,key,type,ph]) => (
                   <div key={key} style={{ display: "flex", flexDirection: "column", gap: 5 }}>
                     <label style={{ fontSize: 12, color: "#555", fontWeight: 500 }}>{label}</label>
                     <input type={type} placeholder={ph} value={form[key]} onChange={e => upd(key, e.target.value)}
-                      style={{ border: "1.5px solid #ddd", borderRadius: 8, padding: "10px 12px", fontSize: 15, outline: "none", fontFamily: "'Gilroy', sans-serif", color: "#111" ,background: "#fff"}}
-                      onFocus={e => e.target.style.borderColor="#E93800"} onBlur={e => e.target.style.borderColor="#ddd"} />
-                  </div>
-                ))}
-              </div>
-              <div style={{ display: "grid", gridTemplateColumns: window.innerWidth < 500 ? "1fr" : "1fr 1fr", gap: 12, marginBottom: 12, width: "100%" }}>
-                {[["Enter Phone Number*","phone","tel","9876543210"],["Referral Code (optional)","code","text","0000"]].map(([label,key,type,ph]) => (
-                  <div key={key} style={{ display: "flex", flexDirection: "column", gap: 5 }}>
-                    <label style={{ fontSize: 12, color: "#555", fontWeight: 500 }}>{label}</label>
-                    <input type={type} placeholder={ph} value={form[key]} onChange={e => upd(key, e.target.value)}
-                      style={{ border: "1.5px solid #ddd", borderRadius: 8, padding: "10px 12px", fontSize: 15, outline: "none", fontFamily: "'Gilroy', sans-serif", color: "#111" , background: "#fff"}}
+                      style={{ border: "1.5px solid #ddd", borderRadius: 8, padding: "10px 12px", fontSize: 14, outline: "none", fontFamily: "'Gilroy', sans-serif", color: "#111", background: "#fff", width: "100%", boxSizing: "border-box" }}
                       onFocus={e => e.target.style.borderColor="#E93800"} onBlur={e => e.target.style.borderColor="#ddd"} />
                   </div>
                 ))}
