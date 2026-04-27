@@ -1,4 +1,6 @@
 import { useState, useEffect, useCallback, useRef } from "react";
+import { inject } from "@vercel/analytics";
+inject();
 import { ShieldCheck, MessageSquare, Users, Wallet, Target, Zap } from "https://esm.sh/lucide-react@0.383.0";
 const Shield = () => <span>✓</span>;
 const MessageCircle = () => <span>💬</span>;
