@@ -624,8 +624,28 @@ function MentorDiscovery({ onBook }) {
   const [loading, setLoading] = useState(true);
 const [showCustomCall, setShowCustomCall] = useState(false);
   const load = useCallback(async () => {
-    try { const data = await apiFetch("/mentors/public"); setMentors(data); }
-    catch { setMentors([]); } finally { setLoading(false); }
+    try {
+      const data = await apiFetch("/mentors/public");
+      if (data && data.length > 0) {
+        setMentors(data);
+      } else {
+        // Backend may be waking up, retry after 3 seconds
+        setTimeout(async () => {
+          try {
+            const retry = await apiFetch("/mentors/public");
+            setMentors(retry || []);
+          } catch { setMentors([]); }
+        }, 3000);
+      }
+    } catch { 
+      // Retry once on failure
+      setTimeout(async () => {
+        try {
+          const retry = await apiFetch("/mentors/public");
+          setMentors(retry || []);
+        } catch { setMentors([]); }
+      }, 3000);
+    } finally { setLoading(false); }
   }, []);
 
   useEffect(() => { load(); const t = setInterval(() => { if (document.visibilityState === 'visible') load(); }, 30000); return () => clearInterval(t); }, [load]);
