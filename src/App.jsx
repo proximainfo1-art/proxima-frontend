@@ -1279,7 +1279,7 @@ const [savingDetails, setSavingDetails] = useState(false);
 const saveDetails = async () => {
   setSavingDetails(true);
   try {
-    await apiFetch(`/mentors/${mentor._id}`, { method: "PUT", body: { ...mentor, ...details } });
+    await apiFetch(`/mentors/${mentor._id}`, { method: "PUT", body: { year: details.year, pin: details.pin, bio: details.bio } });
     setEditingDetails(false);
     alert("Details updated!");
   } catch { alert("Failed to update"); } finally { setSavingDetails(false); }
@@ -1292,7 +1292,7 @@ const saveDetails = async () => {
   const saveBio = async () => {
     setSavingBio(true);
     try {
-      await apiFetch(`/mentors/${mentor._id}`, { method: "PUT", body: { ...mentor, bio } });
+      await apiFetch(`/mentors/${mentor._id}`, { method: "PUT", body: { bio } });
       setEditingBio(false);
       alert("Bio updated!");
     } catch { alert("Failed to update bio"); } finally { setSavingBio(false); }
