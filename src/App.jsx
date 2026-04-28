@@ -735,7 +735,7 @@ function MentorModal({ mentor: initialMentor, onClose, onBook, initialScreen = "
   const [screen, setScreen] = useState(initialScreen);
 
   useEffect(() => {
-    apiFetch(`/mentors`).then(data => {
+    apiFetch(`/mentors/public`).then(data => {
       const fresh = data.find(m => m._id === initialMentor._id);
       if (fresh) setMentor(fresh);
     }).catch(() => {});
