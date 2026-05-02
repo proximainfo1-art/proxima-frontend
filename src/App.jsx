@@ -652,13 +652,33 @@ const [showCustomCall, setShowCustomCall] = useState(false);
   useEffect(() => { load(); const t = setInterval(() => { if (document.visibilityState === 'visible') load(); }, 30000); return () => clearInterval(t); }, [load]);
 
   const colleges = [...new Set(mentors.map(m => m.college))].sort();
-  const courses = [...new Set(mentors.map(m => m.course))].sort();
+
+  const normalizeCourse = (course) => {
+    if (!course) return "";
+    return course
+      .trim()
+      .toLowerCase()
+      .replace(/\./g, "")
+      .replace(/\(|\)/g, "")
+      .replace(/honours/g, "hons")
+      .replace(/honor/g, "hons")
+      .replace(/\s+/g, " ")
+      .trim();
+  };
+
+  const courseMap = {};
+  mentors.forEach(m => {
+    if (!m.course) return;
+    const key = normalizeCourse(m.course);
+    if (!courseMap[key]) courseMap[key] = m.course.trim();
+  });
+  const courses = Object.values(courseMap).sort();
   const todayName = ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"][new Date().getDay()];
 
   const filtered = mentors
     .filter(m => {
       const matchCollege = !filter || m.college === filter;
-      const matchCourse = !courseFilter || m.course === courseFilter;
+      const matchCourse = !courseFilter || normalizeCourse(m.course) === normalizeCourse(courseFilter);
       const matchSearch = !search || m.name.toLowerCase().includes(search.toLowerCase()) || m.college.toLowerCase().includes(search.toLowerCase()) || (m.course || "").toLowerCase().includes(search.toLowerCase());
       return matchCollege && matchCourse && matchSearch;
     })
