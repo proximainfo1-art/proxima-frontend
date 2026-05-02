@@ -269,6 +269,7 @@ html,body { margin:0; padding:0; width:100%; overflow-x:hidden; }
   <div style={{ display:"flex", gap:8, alignItems:"center" }}>
     <button onClick={onMentee} style={{ background:"#111", color:"#fff", border:"1.5px solid #111", padding:"9px 14px", borderRadius:8, fontSize:13, fontWeight:600, cursor:"pointer", fontFamily:"'Gilroy',sans-serif", whiteSpace:"nowrap", display: window.innerWidth < 600 ? "none" : "inline-block" }}>Get Guidance</button>
     <button onClick={onMentor} style={{ background:"transparent", color:"#111", border:"1.5px solid #111", padding:"9px 14px", borderRadius:8, fontSize:13, fontWeight:600, cursor:"pointer", fontFamily:"'Gilroy',sans-serif", whiteSpace:"nowrap", display: window.innerWidth < 600 ? "none" : "inline-block" }}>Join As Guide</button>
+    <button onClick={onGroup} style={{ background:"#E93800", color:"#fff", border:"1.5px solid #E93800", padding:"9px 14px", borderRadius:8, fontSize:13, fontWeight:600, cursor:"pointer", fontFamily:"'Gilroy',sans-serif", whiteSpace:"nowrap", display: window.innerWidth < 600 ? "none" : "inline-block" }}>Group Sessions ✦</button>
   </div>
 </nav>
 
@@ -1834,20 +1835,25 @@ function AdminPanel({ onLogout }) {
   const [meetLinks, setMeetLinks] = useState({});
   const [sentMeet, setSentMeet] = useState({});
   const [customCalls, setCustomCalls] = useState([]);
+  const [groupSessions, setGroupSessions] = useState([]);
+  const [showAddGroup, setShowAddGroup] = useState(false);
+  const [newGroup, setNewGroup] = useState({ mentorId: "", topic: "", slot: "", price: 99, maxParticipants: 5 });
 
 
   const newMentorData = useRef({ name: "", college: "", course: "", year: "1st", bio: "", photo: "", email: "", whatsapp: "", price: 299, rating: 5, sessions: 0, referralCode: "", pin: "0000" });
   const editMentorData = useRef({});
 
   const load = useCallback(async () => {
-    const [m, b, r, s, cc] = await Promise.all([
+    const [m, b, r, s, cc, gs] = await Promise.all([
   apiFetch("/mentors?all=true").catch(() => []),
   apiFetch("/bookings").catch(() => []),
   apiFetch("/registrations").catch(() => []),
   apiFetch("/stats").catch(() => ({})),
   apiFetch("/custom-calls").catch(() => []),
+  apiFetch("/group-sessions/admin").catch(() => []),
 ]);
 setMentors(m); setBookings(b); setRegs(r); setStats(s); setCustomCalls(cc);
+setGroupSessions(gs);
     const n = {}; b.forEach(bk => { if (bk.notes) n[bk._id] = bk.notes; });
     setNotes(n);
     const ml = {}; const sm = {};
@@ -1878,7 +1884,7 @@ setMentors(m); setBookings(b); setRegs(r); setStats(s); setCustomCalls(cc);
   };
 
   
-const tabs = ["stats", "mentors", "registrations", "bookings", "customcalls"];
+const tabs = ["stats", "mentors", "registrations", "bookings", "customcalls", "groupsessions"];
 
   return (
     <div style={{ minHeight: "100vh", background: "#FAF7F2", fontFamily: "'Gilroy', sans-serif" }}>
@@ -2152,11 +2158,291 @@ const tabs = ["stats", "mentors", "registrations", "bookings", "customcalls"];
   </div>
 )}
 </div>
+     
+     {tab === "groupsessions" && (
+  <div>
+    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 24 }}>
+      <div style={{ fontSize: 22, fontWeight: 800, color: "#111" }}>Group Sessions ({groupSessions.length})</div>
+      <button onClick={() => setShowAddGroup(true)} style={{ background: "#111", color: "#fff", border: "none", padding: "10px 20px", borderRadius: 8, fontSize: 14, fontWeight: 600, cursor: "pointer", fontFamily: "'Gilroy', sans-serif" }}>+ Create Session</button>
+    </div>
+
+    {showAddGroup && (
+      <div style={{ background: "#fff", border: "1px solid #E8E2D9", borderRadius: 16, padding: 24, marginBottom: 24 }}>
+        <div style={{ fontWeight: 700, fontSize: 15, marginBottom: 16 }}>New Group Session</div>
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginBottom: 12 }}>
+          <div>
+            <label style={{ fontSize: 12, color: "#888", display: "block", marginBottom: 4 }}>Select Mentor</label>
+            <select className="ap-input" value={newGroup.mentorId} onChange={e => {
+              const m = mentors.find(x => x._id === e.target.value);
+              setNewGroup(g => ({ ...g, mentorId: m._id, mentorName: m.name, mentorPhoto: m.photo, mentorCollege: m.college, mentorCourse: m.course, mentorYear: m.year }));
+            }}>
+              <option value="">Choose mentor...</option>
+              {mentors.filter(m => m.visible).map(m => <option key={m._id} value={m._id}>{m.name} — {m.college}</option>)}
+            </select>
+          </div>
+          <div>
+            <label style={{ fontSize: 12, color: "#888", display: "block", marginBottom: 4 }}>Topic</label>
+            <input className="ap-input" placeholder="e.g. SRCC Admissions Q&A" value={newGroup.topic} onChange={e => setNewGroup(g => ({ ...g, topic: e.target.value }))} />
+          </div>
+          <div>
+            <label style={{ fontSize: 12, color: "#888", display: "block", marginBottom: 4 }}>Date & Time (slot display)</label>
+            <input className="ap-input" placeholder="e.g. Saturday, May 10 · 5:00 PM" value={newGroup.slot} onChange={e => setNewGroup(g => ({ ...g, slot: e.target.value }))} />
+          </div>
+          <div>
+            <label style={{ fontSize: 12, color: "#888", display: "block", marginBottom: 4 }}>Max Participants</label>
+            <input className="ap-input" type="number" value={newGroup.maxParticipants} onChange={e => setNewGroup(g => ({ ...g, maxParticipants: Number(e.target.value) }))} />
+          </div>
+        </div>
+        <div style={{ display: "flex", gap: 10 }}>
+          <button onClick={async () => {
+            if (!newGroup.mentorId || !newGroup.topic || !newGroup.slot) return alert("Fill all fields");
+            await apiFetch("/group-sessions", { method: "POST", body: newGroup });
+            setShowAddGroup(false);
+            setNewGroup({ mentorId: "", topic: "", slot: "", price: 99, maxParticipants: 5 });
+            load();
+          }} style={{ background: "#111", color: "#fff", border: "none", padding: "10px 24px", borderRadius: 8, fontSize: 14, fontWeight: 600, cursor: "pointer", fontFamily: "'Gilroy', sans-serif" }}>Create</button>
+          <button onClick={() => setShowAddGroup(false)} style={{ background: "transparent", color: "#888", border: "1.5px solid #E8E2D9", padding: "10px 24px", borderRadius: 8, fontSize: 14, cursor: "pointer", fontFamily: "'Gilroy', sans-serif" }}>Cancel</button>
+        </div>
+      </div>
+    )}
+
+    {groupSessions.length === 0 ? (
+      <div style={{ background: "#fff", border: "1px solid #E8E2D9", borderRadius: 16, padding: 60, textAlign: "center", color: "#888" }}>
+        <div style={{ fontSize: 40, marginBottom: 12 }}>👥</div>
+        <div style={{ fontWeight: 600 }}>No group sessions yet</div>
+      </div>
+    ) : groupSessions.map(s => (
+      <div key={s._id} className="ap-card">
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", flexWrap: "wrap", gap: 16 }}>
+          <div style={{ flex: 1 }}>
+            <div style={{ fontWeight: 700, fontSize: 16, color: "#111", marginBottom: 4 }}>{s.topic}</div>
+            <div style={{ fontSize: 14, color: "#E93800", marginBottom: 4 }}>{s.mentorName} — {s.mentorCollege}</div>
+            <div style={{ fontSize: 13, color: "#555", marginBottom: 8 }}>📅 {s.slot}</div>
+            <div style={{ fontSize: 13, color: "#555" }}>
+              👥 {s.participants?.length || 0}/{s.maxParticipants} booked
+              {s.participants?.length > 0 && (
+                <div style={{ marginTop: 8 }}>
+                  {s.participants.map((p, i) => (
+                    <div key={i} style={{ fontSize: 12, color: "#888" }}>• {p.name} — {p.phone}</div>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+          <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+            <button onClick={async () => {
+              await apiFetch(`/group-sessions/${s._id}`, { method: "PUT", body: { visible: !s.visible } });
+              load();
+            }} className={s.visible ? "ap-btn-green" : "ap-btn-red"}>{s.visible ? "✓ Visible" : "Hidden"}</button>
+            <button onClick={async () => {
+              await apiFetch(`/group-sessions/${s._id}`, { method: "PUT", body: { status: s.status === "upcoming" ? "completed" : "upcoming" } });
+              load();
+            }} className="ap-btn-blue">{s.status === "upcoming" ? "Mark Complete" : "Mark Upcoming"}</button>
+            <button onClick={async () => {
+              if (window.confirm("Delete this session?")) { await apiFetch(`/group-sessions/${s._id}`, { method: "DELETE" }); load(); }
+            }} className="ap-btn-red">🗑</button>
+          </div>
+        </div>
+      </div>
+    ))}
+  </div>
+)}
       {showAddMentor && <MentorForm data={newMentorData.current} onChange={handleNewMentorChange} onSave={addMentor} onCancel={() => setShowAddMentor(false)} />}
       {editMentor && <MentorForm data={editMentor} onChange={handleEditMentorChange} onSave={saveMentor} onCancel={() => setEditMentor(null)} />}
     </div>
   );
 }
+
+function GroupDiscovery() {
+  const [sessions, setSessions] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [selected, setSelected] = useState(null);
+  const [form, setForm] = useState({ name: "", email: "", phone: "" });
+  const [booking, setBooking] = useState(false);
+  const [booked, setBooked] = useState(false);
+  const [err, setErr] = useState("");
+
+  useEffect(() => {
+    apiFetch("/group-sessions")
+      .then(setSessions)
+      .catch(() => setSessions([]))
+      .finally(() => setLoading(false));
+  }, []);
+
+  const spotsLeft = (s) => s.maxParticipants - (s.participants?.length || 0);
+
+  const handleBook = async () => {
+    if (!form.name || !form.email || !form.phone) { setErr("Please fill all fields."); return; }
+    setBooking(true); setErr("");
+    try {
+      await apiFetch(`/group-sessions/${selected._id}/book`, {
+        method: "POST",
+        body: { name: form.name, email: form.email, phone: form.phone },
+      });
+      setBooked(true);
+    } catch (e) {
+      setErr(e.message.includes("full") ? "Sorry, this session just filled up!" : "Something went wrong. Try again.");
+    } finally { setBooking(false); }
+  };
+
+  const inp = { border: "1.5px solid #ddd", borderRadius: 8, padding: "10px 12px", fontSize: 14, outline: "none", fontFamily: "'Gilroy', sans-serif", color: "#111", background: "#fff", width: "100%", boxSizing: "border-box" };
+
+  return (
+    <div style={{ minHeight: "100vh", background: "#fff", fontFamily: "'Gilroy', sans-serif", color: "#111" }}>
+      {/* Header */}
+      <div style={{ background: "#fff", borderBottom: "1px solid #E8E2D9", padding: "14px 24px", position: "sticky", top: 0, zIndex: 100 }}>
+        <a href="/"><img src="https://res.cloudinary.com/dlzqb06u6/image/upload/v1775389312/wbzrczuoo9swrhfvxhrx.png" alt="Proxima" style={{ height: 24, objectFit: "contain" }} /></a>
+      </div>
+
+      {/* Hero */}
+      <div style={{ background: "#FFF0EB", padding: "clamp(24px,4vw,48px) clamp(16px,4vw,48px)" }}>
+        <div style={{ maxWidth: 1100, margin: "0 auto" }}>
+          <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: 3, color: "#888", textTransform: "uppercase", marginBottom: 16 }}>Group Sessions</div>
+          <h1 style={{ fontSize: "clamp(28px,4vw,48px)", fontWeight: 600, lineHeight: 1.15, marginBottom: 12 }}>
+            Learn together with a <span style={{ color: "#E93800", fontStyle: "italic" }}>real senior</span>
+          </h1>
+          <p style={{ color: "#666", fontSize: 15, marginBottom: 0 }}>Join a live group call with a college senior. Ask questions, hear real answers, pay just ₹99.</p>
+        </div>
+      </div>
+
+      {/* Sessions */}
+      <div style={{ maxWidth: 1100, margin: "0 auto", padding: "32px clamp(16px,4vw,48px)" }}>
+        {loading ? (
+          <div style={{ textAlign: "center", color: "#888", padding: 60 }}>Loading sessions...</div>
+        ) : sessions.length === 0 ? (
+          <div style={{ textAlign: "center", color: "#888", padding: 60 }}>
+            <div style={{ fontSize: 40, marginBottom: 12 }}>📅</div>
+            <div style={{ fontWeight: 600, fontSize: 16 }}>No upcoming group sessions</div>
+            <div style={{ fontSize: 14, marginTop: 8 }}>Check back soon — new sessions are added regularly.</div>
+          </div>
+        ) : (
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(320px, 1fr))", gap: 20 }}>
+            {sessions.map(s => {
+              const left = spotsLeft(s);
+              const full = left <= 0;
+              return (
+                <div key={s._id} style={{ background: "#fff", border: "1px solid #E8E2D9", borderRadius: 16, padding: 24, transition: "all 0.2s", cursor: full ? "not-allowed" : "pointer", opacity: full ? 0.7 : 1 }}
+                  onMouseEnter={e => { if (!full) { e.currentTarget.style.borderColor = "#E93800"; e.currentTarget.style.boxShadow = "0 4px 20px rgba(233,56,0,0.08)"; }}}
+                  onMouseLeave={e => { e.currentTarget.style.borderColor = "#E8E2D9"; e.currentTarget.style.boxShadow = "none"; }}>
+                  
+                  {/* Mentor info */}
+                  <div style={{ display: "flex", gap: 12, alignItems: "center", marginBottom: 16 }}>
+                    <img src={s.mentorPhoto || `https://ui-avatars.com/api/?name=${encodeURIComponent(s.mentorName)}&background=FFF0EB&color=E93800&size=80`}
+                      alt={s.mentorName} style={{ width: 52, height: 52, borderRadius: "50%", objectFit: "cover", flexShrink: 0 }} />
+                    <div>
+                      <div style={{ fontWeight: 700, fontSize: 15, color: "#111" }}>{s.mentorName}</div>
+                      <div style={{ fontSize: 13, color: "#E93800", fontWeight: 600 }}>{s.mentorCollege}</div>
+                      <div style={{ fontSize: 12, color: "#888" }}>{s.mentorCourse} · {s.mentorYear}</div>
+                    </div>
+                  </div>
+
+                  {/* Topic */}
+                  <div style={{ fontWeight: 700, fontSize: 16, color: "#111", marginBottom: 10 }}>{s.topic}</div>
+
+                  {/* Time */}
+                  <div style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 14, color: "#555", marginBottom: 14 }}>
+                    📅 <span>{s.slot}</span>
+                  </div>
+
+                  {/* Spots */}
+                  <div style={{ marginBottom: 16 }}>
+                    <div style={{ display: "flex", justifyContent: "space-between", fontSize: 12, color: "#888", marginBottom: 6 }}>
+                      <span>{full ? "Session Full" : `${left} spot${left !== 1 ? "s" : ""} left`}</span>
+                      <span>{s.participants?.length || 0}/{s.maxParticipants} joined</span>
+                    </div>
+                    <div style={{ height: 6, background: "#F0EDE8", borderRadius: 4, overflow: "hidden" }}>
+                      <div style={{ height: "100%", width: `${((s.participants?.length || 0) / s.maxParticipants) * 100}%`, background: left <= 1 ? "#E93800" : "#22C55E", borderRadius: 4, transition: "width 0.3s" }} />
+                    </div>
+                  </div>
+
+                  {/* Price + CTA */}
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                    <div style={{ fontWeight: 700, fontSize: 18, color: "#111" }}>₹99<span style={{ fontWeight: 400, color: "#888", fontSize: 13 }}> / person</span></div>
+                    <button onClick={() => !full && setSelected(s)} disabled={full}
+                      style={{ background: full ? "#ccc" : "#111", color: "#fff", border: "none", borderRadius: 8, padding: "10px 20px", fontSize: 14, fontWeight: 600, cursor: full ? "not-allowed" : "pointer", fontFamily: "'Gilroy', sans-serif" }}>
+                      {full ? "Full" : "Join Session →"}
+                    </button>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        )}
+      </div>
+
+      {/* Booking Modal */}
+      {selected && (
+        <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.5)", zIndex: 1000, display: "flex", alignItems: "center", justifyContent: "center", padding: 20 }}
+          onClick={e => e.target === e.currentTarget && !booked && setSelected(null)}>
+          <div style={{ background: "#fff", borderRadius: 20, width: "100%", maxWidth: 560, maxHeight: "90vh", overflowY: "auto", fontFamily: "'Gilroy', sans-serif", color: "#111" }}>
+
+            {booked ? (
+              <div style={{ padding: 40, textAlign: "center" }}>
+                <div style={{ fontSize: 52, marginBottom: 16 }}>🎉</div>
+                <h2 style={{ fontWeight: 800, fontSize: 22, marginBottom: 8 }}>You're in!</h2>
+                <p style={{ color: "#666", fontSize: 14, lineHeight: 1.7, marginBottom: 8 }}>Your spot in <strong>{selected.topic}</strong> is confirmed.</p>
+                <p style={{ color: "#555", fontSize: 14, marginBottom: 24 }}>📅 {selected.slot}</p>
+                <p style={{ color: "#888", fontSize: 13, marginBottom: 28 }}>The Google Meet link will be shared before the session starts.</p>
+                <button onClick={() => { setSelected(null); setBooked(false); setForm({ name: "", email: "", phone: "" }); }}
+                  style={{ background: "#111", color: "#fff", border: "none", borderRadius: 10, padding: "12px 32px", fontWeight: 700, fontSize: 15, cursor: "pointer", fontFamily: "'Gilroy', sans-serif" }}>Done</button>
+              </div>
+            ) : (
+              <div style={{ display: "flex", flexWrap: window.innerWidth < 600 ? "wrap" : "nowrap", borderRadius: 20, overflow: "hidden" }}>
+                {/* Left panel */}
+                <div style={{ background: "#FFF0EB", padding: "28px 24px", width: window.innerWidth < 600 ? "100%" : 220, flexShrink: 0, boxSizing: "border-box" }}>
+                  <div style={{ fontSize: 12, color: "#888", marginBottom: 4 }}>Joining a group session with</div>
+                  <div style={{ fontSize: 16, fontWeight: 700, color: "#111", marginBottom: 4 }}>{selected.mentorName}</div>
+                  <div style={{ fontSize: 13, color: "#E93800", marginBottom: 12 }}>{selected.mentorCollege}</div>
+                  <div style={{ borderBottom: "1px solid #F0D5CB", marginBottom: 12 }} />
+                  <div style={{ fontSize: 14, fontWeight: 600, color: "#111", marginBottom: 4 }}>{selected.topic}</div>
+                  <div style={{ fontSize: 13, color: "#555", marginBottom: 4 }}>📅 {selected.slot}</div>
+                  <div style={{ fontSize: 13, color: "#555", marginBottom: 12 }}>👥 {spotsLeft(selected)} spot{spotsLeft(selected) !== 1 ? "s" : ""} left</div>
+                  <div style={{ fontSize: 15, fontWeight: 700, color: "#111" }}>₹99 <span style={{ fontWeight: 400, color: "#888", fontSize: 13 }}>per person</span></div>
+                </div>
+
+                {/* Right panel */}
+                <div style={{ flex: 1, padding: "28px 24px", boxSizing: "border-box" }}>
+                  <button onClick={() => setSelected(null)} style={{ background: "none", border: "none", cursor: "pointer", fontSize: 20, color: "#888", float: "right", padding: 0 }}>✕</button>
+                  <div style={{ fontWeight: 600, fontSize: 15, color: "#111", marginBottom: 20 }}>Enter your details to join</div>
+
+                  <div style={{ display: "flex", flexDirection: "column", gap: 12, marginBottom: 20 }}>
+                    {[["Full Name *", "name", "text", "Rahul Sharma"], ["Email *", "email", "email", "rahul@email.com"], ["Phone *", "phone", "tel", "9876543210"]].map(([label, key, type, ph]) => (
+                      <div key={key}>
+                        <label style={{ fontSize: 12, color: "#555", fontWeight: 500, display: "block", marginBottom: 5 }}>{label}</label>
+                        <input type={type} placeholder={ph} value={form[key]} onChange={e => setForm(f => ({ ...f, [key]: e.target.value }))}
+                          style={inp}
+                          onFocus={e => e.target.style.borderColor = "#E93800"}
+                          onBlur={e => e.target.style.borderColor = "#ddd"} />
+                      </div>
+                    ))}
+                  </div>
+
+                  {err && <div style={{ color: "#DC2626", fontSize: 13, marginBottom: 12 }}>{err}</div>}
+
+                  <button onClick={handleBook} disabled={booking}
+                    style={{ width: "100%", background: booking ? "#ccc" : "#111", color: "#fff", border: "none", borderRadius: 10, padding: "13px", fontSize: 15, fontWeight: 700, cursor: booking ? "not-allowed" : "pointer", fontFamily: "'Gilroy', sans-serif" }}>
+                    {booking ? "Booking..." : "Confirm Spot — ₹99 →"}
+                  </button>
+                  <div style={{ fontSize: 12, color: "#aaa", textAlign: "center", marginTop: 10 }}>Payment collected offline / via UPI before session</div>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* Footer */}
+      <div style={{ background: "#111", color: "#fff", padding: "32px 48px", display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: 16, marginTop: 40 }}>
+        <a href="/"><img src="https://res.cloudinary.com/dlzqb06u6/image/upload/v1775449181/Logo_Dark_Mode_hhg8xt.png" alt="Proxima" style={{ height: 28, objectFit: "contain" }} /></a>
+        <div style={{ display: "flex", gap: 24, flexWrap: "wrap", alignItems: "center" }}>
+          <span style={{ fontSize: 15, color: "#aaa" }}>+91 9354249942</span>
+          <span style={{ fontSize: 15, color: "#aaa" }}>proxima.info1@gmail.com</span>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export default function App() {
   const [view, setView] = useState("landing");
   const [bookData, setBookData] = useState(null);
@@ -2185,7 +2471,8 @@ export default function App() {
   return (
     <>
       <style>{css}</style>
-      {view === "landing" && <Landing onMentee={() => navigate("discovery")} onMentor={() => navigate("register")} />}
+      {view === "landing" && <Landing onMentee={() => navigate("discovery")} onMentor={() => navigate("register")} onGroup={() => navigate("group")} />}
+      {view === "group" && <GroupDiscovery />}
       {view === "discovery" && <MentorDiscovery onBook={(m,s) => { setBookData({mentor:m,slot:s}); navigate("booking"); }} />}
       {view === "booking" && bookData && <BookingFlow mentor={bookData.mentor} slot={bookData.slot} onDone={() => { setBookData(null); navigate("discovery"); }} />}
       {view === "register" && <MentorRegistration onDone={() => navigate("landing")} />}
