@@ -736,14 +736,14 @@ const [showCustomCall, setShowCustomCall] = useState(false);
     <div style={{ display: "flex", gap: 10, flexWrap: "wrap", alignItems: "center" }}>
       {/* College dropdown */}
       <select value={filter} onChange={e => setFilter(e.target.value)}
-        style={{ background: filter ? "#E93800" : "#FAF7F2", color: filter ? "#fff" : "#111", border: `1.5px solid ${filter ? "#E93800" : "#E8E2D9"}`, borderRadius: 20, padding: "8px 16px", fontSize: 14, fontWeight: 500, cursor: "pointer", fontFamily: "'Gilroy', sans-serif", outline: "none" }}>
+        style={{ background: "#FAF7F2", color: "#111", border: `1.5px solid ${filter ? "#E93800" : "#E8E2D9"}`, borderRadius: 20, padding: "8px 16px", fontSize: 14, fontWeight: 500, cursor: "pointer", fontFamily: "'Gilroy', sans-serif", outline: "none" }}>
         <option value="">All Colleges</option>
         {colleges.map(c => <option key={c} value={c}>{c}</option>)}
       </select>
 
       {/* Course dropdown */}
       <select value={courseFilter} onChange={e => setCourseFilter(e.target.value)}
-        style={{ background: courseFilter ? "#E93800" : "#FAF7F2", color: courseFilter ? "#fff" : "#111", border: `1.5px solid ${courseFilter ? "#E93800" : "#E8E2D9"}`, borderRadius: 20, padding: "8px 16px", fontSize: 14, fontWeight: 500, cursor: "pointer", fontFamily: "'Gilroy', sans-serif", outline: "none" }}>
+        style={{ background: "#FAF7F2", color: "#111", border: `1.5px solid ${courseFilter ? "#E93800" : "#E8E2D9"}`, borderRadius: 20, padding: "8px 16px", fontSize: 14, fontWeight: 500, cursor: "pointer", fontFamily: "'Gilroy', sans-serif", outline: "none" }}>
         <option value="">All Courses</option>
         {courses.map(c => <option key={c} value={c}>{c}</option>)}
       </select>
