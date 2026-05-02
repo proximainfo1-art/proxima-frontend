@@ -269,7 +269,6 @@ html,body { margin:0; padding:0; width:100%; overflow-x:hidden; }
   <div style={{ display:"flex", gap:8, alignItems:"center" }}>
     <button onClick={onMentee} style={{ background:"#111", color:"#fff", border:"1.5px solid #111", padding:"9px 14px", borderRadius:8, fontSize:13, fontWeight:600, cursor:"pointer", fontFamily:"'Gilroy',sans-serif", whiteSpace:"nowrap", display: window.innerWidth < 600 ? "none" : "inline-block" }}>Get Guidance</button>
     <button onClick={onMentor} style={{ background:"transparent", color:"#111", border:"1.5px solid #111", padding:"9px 14px", borderRadius:8, fontSize:13, fontWeight:600, cursor:"pointer", fontFamily:"'Gilroy',sans-serif", whiteSpace:"nowrap", display: window.innerWidth < 600 ? "none" : "inline-block" }}>Join As Guide</button>
-    <button onClick={onGroup} style={{ background:"#E93800", color:"#fff", border:"1.5px solid #E93800", padding:"9px 14px", borderRadius:8, fontSize:13, fontWeight:600, cursor:"pointer", fontFamily:"'Gilroy',sans-serif", whiteSpace:"nowrap", display: window.innerWidth < 600 ? "none" : "inline-block" }}>Group Sessions ✦</button>
   </div>
 </nav>
 
@@ -620,6 +619,7 @@ const [error, setError] = useState('');
 function MentorDiscovery({ onBook }) {
   const [mentors, setMentors] = useState([]);
   const [filter, setFilter] = useState("");
+  const [courseFilter, setCourseFilter] = useState("");
   const [search, setSearch] = useState("");
   const [selected, setSelected] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -651,14 +651,16 @@ const [showCustomCall, setShowCustomCall] = useState(false);
 
   useEffect(() => { load(); const t = setInterval(() => { if (document.visibilityState === 'visible') load(); }, 30000); return () => clearInterval(t); }, [load]);
 
-  const colleges = [...new Set(mentors.map(m => m.college))];
+  const colleges = [...new Set(mentors.map(m => m.college))].sort();
+  const courses = [...new Set(mentors.map(m => m.course))].sort();
   const todayName = ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"][new Date().getDay()];
 
   const filtered = mentors
     .filter(m => {
       const matchCollege = !filter || m.college === filter;
+      const matchCourse = !courseFilter || m.course === courseFilter;
       const matchSearch = !search || m.name.toLowerCase().includes(search.toLowerCase()) || m.college.toLowerCase().includes(search.toLowerCase()) || (m.course || "").toLowerCase().includes(search.toLowerCase());
-      return matchCollege && matchSearch;
+      return matchCollege && matchCourse && matchSearch;
     })
     .sort((a, b) => {
       const aAvail = (a.slots || []).some(s => s.day === todayName && s.status !== "booked");
@@ -687,22 +689,45 @@ const [showCustomCall, setShowCustomCall] = useState(false);
       {/* Filters + Search */}
 <div style={{ background: "#fff", padding: "16px clamp(16px,4vw,48px)", borderBottom: "1px solid #F0EDE8" }}>
   <div style={{ maxWidth: 1100, margin: "0 auto", display: "flex", flexDirection: "column", gap: 12 }}>
-    {/* Search + Custom Call button row */}
-    <div style={{ display: "flex", gap: 10, alignItems: "center" }}>
-      <input placeholder="Search for course, college, etc." value={search} onChange={e => setSearch(e.target.value)}
-        style={{ background: "#FAF7F2", border: "1.5px solid #E8E2D9", borderRadius: 20, padding: "12px 20px", fontSize: 14, outline: "none", fontFamily: "'Gilroy', sans-serif", color: "#111", flex: 1, boxSizing: "border-box" }}
+
+    {/* Search + buttons row */}
+    <div style={{ display: "flex", gap: 10, alignItems: "center", flexWrap: "wrap" }}>
+      <input placeholder="Search by name, college, course..." value={search} onChange={e => setSearch(e.target.value)}
+        style={{ background: "#FAF7F2", border: "1.5px solid #E8E2D9", borderRadius: 20, padding: "12px 20px", fontSize: 14, outline: "none", fontFamily: "'Gilroy', sans-serif", color: "#111", flex: 1, minWidth: 200, boxSizing: "border-box" }}
         onFocus={e => e.target.style.borderColor="#E93800"} onBlur={e => e.target.style.borderColor="#E8E2D9"} />
-      <button onClick={() => setShowCustomCall(true)} style={{ background: "#E93800", color: "#fff", border: "none", borderRadius: 20, padding: "12px 18px", fontSize: 15, fontWeight: 700, cursor: "pointer", fontFamily: "'Gilroy', sans-serif", whiteSpace: "nowrap", flexShrink: 0 }}>
+      <button onClick={() => setShowCustomCall(true)} style={{ background: "#111", color: "#fff", border: "none", borderRadius: 20, padding: "12px 18px", fontSize: 14, fontWeight: 700, cursor: "pointer", fontFamily: "'Gilroy', sans-serif", whiteSpace: "nowrap", flexShrink: 0 }}>
         ✦ Custom Call
       </button>
+      <button onClick={() => window.location.hash = "group"} style={{ background: "#E93800", color: "#fff", border: "none", borderRadius: 20, padding: "12px 18px", fontSize: 14, fontWeight: 700, cursor: "pointer", fontFamily: "'Gilroy', sans-serif", whiteSpace: "nowrap", flexShrink: 0 }}>
+        👥 Group Sessions
+      </button>
     </div>
-    {/* College filter pills */}
-    <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
-      <button onClick={() => setFilter("")} style={{ background: !filter ? "#E93800" : "transparent", color: !filter ? "#fff" : "#111", border: `1.5px solid ${!filter ? "#E93800" : "#E8E2D9"}`, padding: "6px 16px", borderRadius: 20, fontSize: 15, fontWeight: 500, cursor: "pointer", fontFamily: "'Gilroy', sans-serif" }}>All</button>
-      {colleges.map(c => (
-        <button key={c} onClick={() => setFilter(c)} style={{ background: filter === c ? "#E93800" : "transparent", color: filter === c ? "#fff" : "#111", border: `1.5px solid ${filter === c ? "#E93800" : "#E8E2D9"}`, padding: "6px 16px", borderRadius: 20, fontSize: 15, fontWeight: 500, cursor: "pointer", fontFamily: "'Gilroy', sans-serif" }}>{c}</button>
-      ))}
+
+    {/* Dropdowns row */}
+    <div style={{ display: "flex", gap: 10, flexWrap: "wrap", alignItems: "center" }}>
+      {/* College dropdown */}
+      <select value={filter} onChange={e => setFilter(e.target.value)}
+        style={{ background: filter ? "#E93800" : "#FAF7F2", color: filter ? "#fff" : "#111", border: `1.5px solid ${filter ? "#E93800" : "#E8E2D9"}`, borderRadius: 20, padding: "8px 16px", fontSize: 14, fontWeight: 500, cursor: "pointer", fontFamily: "'Gilroy', sans-serif", outline: "none", appearance: "none", paddingRight: 32, backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='${filter ? "%23fff" : "%23888"}' d='M6 8L1 3h10z'/%3E%3C/svg%3E")`, backgroundRepeat: "no-repeat", backgroundPosition: "right 12px center" }}>
+        <option value="">All Colleges</option>
+        {colleges.map(c => <option key={c} value={c}>{c}</option>)}
+      </select>
+
+      {/* Course dropdown */}
+      <select value={courseFilter} onChange={e => setCourseFilter(e.target.value)}
+        style={{ background: courseFilter ? "#E93800" : "#FAF7F2", color: courseFilter ? "#fff" : "#111", border: `1.5px solid ${courseFilter ? "#E93800" : "#E8E2D9"}`, borderRadius: 20, padding: "8px 16px", fontSize: 14, fontWeight: 500, cursor: "pointer", fontFamily: "'Gilroy', sans-serif", outline: "none", appearance: "none", paddingRight: 32, backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='${courseFilter ? "%23fff" : "%23888"}' d='M6 8L1 3h10z'/%3E%3C/svg%3E")`, backgroundRepeat: "no-repeat", backgroundPosition: "right 12px center" }}>
+        <option value="">All Courses</option>
+        {courses.map(c => <option key={c} value={c}>{c}</option>)}
+      </select>
+
+      {/* Clear filters */}
+      {(filter || courseFilter) && (
+        <button onClick={() => { setFilter(""); setCourseFilter(""); }}
+          style={{ background: "transparent", color: "#888", border: "1.5px solid #E8E2D9", borderRadius: 20, padding: "8px 16px", fontSize: 13, cursor: "pointer", fontFamily: "'Gilroy', sans-serif" }}>
+          ✕ Clear
+        </button>
+      )}
     </div>
+
   </div>
 </div>
 
