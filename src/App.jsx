@@ -662,6 +662,15 @@ const [showCustomCall, setShowCustomCall] = useState(false);
       .replace(/\(|\)/g, "")
       .replace(/honours/g, "hons")
       .replace(/honor/g, "hons")
+      .replace(/\bhonours\b/g, "hons")
+      .replace(/\bprogramme\b/g, "prog")
+      .replace(/\bprogram\b/g, "prog")
+      .replace(/\bball\s*b\b/g, "ballb")
+      .replace(/\bba\s*llb\b/g, "ballb")
+      .replace(/\bh\b/g, "hons")
+      .replace(/b\s*com/g, "bcom")
+      .replace(/b\s*sc/g, "bsc")
+      .replace(/b\s*a\b/g, "ba")
       .replace(/\s+/g, " ")
       .trim();
   };
