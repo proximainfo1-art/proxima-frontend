@@ -2271,18 +2271,64 @@ function GroupDiscovery() {
 
   const spotsLeft = (s) => s.maxParticipants - (s.participants?.length || 0);
 
+  const RAZORPAY_KEY = import.meta.env.VITE_RAZORPAY_KEY_ID;
+
+  const loadRazorpay = () => new Promise(resolve => {
+    if (window.Razorpay) return resolve(true);
+    const s = document.createElement("script");
+    s.src = "https://checkout.razorpay.com/v1/checkout.js";
+    s.onload = () => resolve(true);
+    s.onerror = () => resolve(false);
+    document.body.appendChild(s);
+  });
+
   const handleBook = async () => {
     if (!form.name || !form.email || !form.phone) { setErr("Please fill all fields."); return; }
     setBooking(true); setErr("");
     try {
-      await apiFetch(`/group-sessions/${selected._id}/book`, {
+      const loaded = await loadRazorpay();
+      if (!loaded) throw new Error("Razorpay failed to load");
+
+      const { orderId, amount } = await apiFetch(`/group-sessions/${selected._id}/create-order`, {
         method: "POST",
-        body: { name: form.name, email: form.email, phone: form.phone },
+        body: { name: form.name },
       });
-      setBooked(true);
+
+      const options = {
+        key: RAZORPAY_KEY,
+        amount,
+        currency: "INR",
+        name: "Proxima",
+        description: `${selected.topic} — Group Session`,
+        image: "https://res.cloudinary.com/dlzqb06u6/image/upload/v1775389312/wbzrczuoo9swrhfvxhrx.png",
+        order_id: orderId,
+        prefill: { name: form.name, email: form.email, contact: form.phone },
+        theme: { color: "#E93800" },
+        handler: async (response) => {
+          const verified = await apiFetch(`/group-sessions/${selected._id}/verify`, {
+            method: "POST",
+            body: {
+              razorpay_order_id: response.razorpay_order_id,
+              razorpay_payment_id: response.razorpay_payment_id,
+              razorpay_signature: response.razorpay_signature,
+            },
+          });
+          if (!verified.success) throw new Error("Payment verification failed");
+
+          await apiFetch(`/group-sessions/${selected._id}/book`, {
+            method: "POST",
+            body: { name: form.name, email: form.email, phone: form.phone, paymentId: response.razorpay_payment_id },
+          });
+          setBooked(true);
+          setBooking(false);
+        },
+      };
+
+      new window.Razorpay(options).open();
     } catch (e) {
-      setErr(e.message.includes("full") ? "Sorry, this session just filled up!" : "Something went wrong. Try again.");
-    } finally { setBooking(false); }
+      setErr(e.message.includes("full") ? "Sorry, this session just filled up!" : "Payment failed. Try again.");
+      setBooking(false);
+    }
   };
 
   const inp = { border: "1.5px solid #ddd", borderRadius: 8, padding: "10px 12px", fontSize: 14, outline: "none", fontFamily: "'Gilroy', sans-serif", color: "#111", background: "#fff", width: "100%", boxSizing: "border-box" };
@@ -2421,8 +2467,7 @@ function GroupDiscovery() {
 
                   <button onClick={handleBook} disabled={booking}
                     style={{ width: "100%", background: booking ? "#ccc" : "#111", color: "#fff", border: "none", borderRadius: 10, padding: "13px", fontSize: 15, fontWeight: 700, cursor: booking ? "not-allowed" : "pointer", fontFamily: "'Gilroy', sans-serif" }}>
-                    {booking ? "Booking..." : "Confirm Spot — ₹99 →"}
-                  </button>
+{booking ? "Processing..." : `Confirm Spot — ₹${selected?.price || 99} →`}                  </button>
                   <div style={{ fontSize: 12, color: "#aaa", textAlign: "center", marginTop: 10 }}>Payment collected offline / via UPI before session</div>
                 </div>
               </div>
