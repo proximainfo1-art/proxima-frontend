@@ -620,6 +620,7 @@ function MentorDiscovery({ onBook }) {
   const [mentors, setMentors] = useState([]);
   const [filter, setFilter] = useState("");
   const [courseFilter, setCourseFilter] = useState("");
+  const [priceFilter, setPriceFilter] = useState("");
   const [search, setSearch] = useState("");
   const [selected, setSelected] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -688,8 +689,9 @@ const [showCustomCall, setShowCustomCall] = useState(false);
     .filter(m => {
       const matchCollege = !filter || m.college === filter;
       const matchCourse = !courseFilter || normalizeCourse(m.course) === normalizeCourse(courseFilter);
+      const matchPrice = !priceFilter || m.price <= Number(priceFilter);
       const matchSearch = !search || m.name.toLowerCase().includes(search.toLowerCase()) || m.college.toLowerCase().includes(search.toLowerCase()) || (m.course || "").toLowerCase().includes(search.toLowerCase());
-      return matchCollege && matchCourse && matchSearch;
+      return matchCollege && matchCourse && matchSearch && matchPrice;
     })
     .sort((a, b) => {
       const aAvail = (a.slots || []).some(s => s.day === todayName && s.status !== "booked");
@@ -727,9 +729,6 @@ const [showCustomCall, setShowCustomCall] = useState(false);
       <button onClick={() => setShowCustomCall(true)} style={{ background: "#111", color: "#fff", border: "none", borderRadius: 20, padding: "12px 18px", fontSize: 14, fontWeight: 700, cursor: "pointer", fontFamily: "'Gilroy', sans-serif", whiteSpace: "nowrap", flexShrink: 0 }}>
         ✦ Custom Call
       </button>
-      <button onClick={() => window.location.hash = "group"} style={{ background: "#E93800", color: "#fff", border: "none", borderRadius: 20, padding: "12px 18px", fontSize: 14, fontWeight: 700, cursor: "pointer", fontFamily: "'Gilroy', sans-serif", whiteSpace: "nowrap", flexShrink: 0 }}>
-         Group Sessions
-      </button>
     </div>
 
     {/* Dropdowns row */}
@@ -748,9 +747,19 @@ const [showCustomCall, setShowCustomCall] = useState(false);
         {courses.map(c => <option key={c} value={c}>{c}</option>)}
       </select>
 
+      {/* Price dropdown */}
+      <select value={priceFilter} onChange={e => setPriceFilter(e.target.value)}
+        style={{ background: "#FAF7F2", color: "#111", border: `1.5px solid ${priceFilter ? "#E93800" : "#E8E2D9"}`, borderRadius: 20, padding: "8px 16px", fontSize: 14, fontWeight: 500, cursor: "pointer", fontFamily: "'Gilroy', sans-serif", outline: "none" }}>
+        <option value="">Any Price</option>
+        <option value={149}>Up to ₹149</option>
+        <option value={199}>Up to ₹199</option>
+        <option value={249}>Up to ₹249</option>
+        <option value={299}>Up to ₹299</option>
+      </select>
+
       {/* Clear filters */}
-      {(filter || courseFilter) && (
-        <button onClick={() => { setFilter(""); setCourseFilter(""); }}
+      {(filter || courseFilter || priceFilter) && (
+        <button onClick={() => { setFilter(""); setCourseFilter(""); setPriceFilter(""); }}
           style={{ background: "transparent", color: "#888", border: "1.5px solid #E8E2D9", borderRadius: 20, padding: "8px 16px", fontSize: 13, cursor: "pointer", fontFamily: "'Gilroy', sans-serif" }}>
           ✕ Clear
         </button>
@@ -1328,13 +1337,13 @@ function MentorDashboard({ mentor, onLogout }) {
   const [bio, setBio] = useState(mentor.bio || "");
   const [savingBio, setSavingBio] = useState(false);
   const [editingDetails, setEditingDetails] = useState(false);
-const [details, setDetails] = useState({ year: mentor.year || '', pin: mentor.pin || '', bio: mentor.bio || '' });
+const [details, setDetails] = useState({ year: mentor.year || '', pin: mentor.pin || '', bio: mentor.bio || '', price: mentor.price || 299 });
 const [savingDetails, setSavingDetails] = useState(false);
 
 const saveDetails = async () => {
   setSavingDetails(true);
   try {
-    await apiFetch(`/mentors/${mentor._id}`, { method: "PUT", body: { year: details.year, pin: details.pin, bio: details.bio } });
+    await apiFetch(`/mentors/${mentor._id}`, { method: "PUT", body: { year: details.year, pin: details.pin, bio: details.bio, price: details.price } });
     setEditingDetails(false);
     alert("Details updated!");
   } catch { alert("Failed to update"); } finally { setSavingDetails(false); }
@@ -1404,6 +1413,16 @@ const saveDetails = async () => {
                 <option value="2nd">2nd Year</option>
                 <option value="3rd">3rd Year</option>
                 <option value="4th">4th Year</option>
+              </select>
+            </div>
+            <div>
+              <label style={{ fontSize: 12, color: "#666", display: "block", marginBottom: 4 }}>Session Price</label>
+              <select value={details.price || 299} onChange={e => setDetails(d => ({ ...d, price: Number(e.target.value) }))}
+                style={{ background: "#FAF7F2", border: "1px solid #E8E2D9", color: "#111", borderRadius: 8, padding: "8px 12px", fontSize: 13, width: "100%", fontFamily: "'Gilroy', sans-serif", outline: "none" }}>
+                <option value={149}>₹149</option>
+                <option value={199}>₹199</option>
+                <option value={249}>₹249</option>
+                <option value={299}>₹299</option>
               </select>
             </div>
             <div>
@@ -2546,6 +2565,7 @@ export default function App() {
   const [view, setView] = useState("landing");
   const [bookData, setBookData] = useState(null);
   const [adminLoggedIn, setAdminLoggedIn] = useState(false);
+  const [showCallOverlay, setShowCallOverlay] = useState(false);
   const [mentorSession, setMentorSession] = useState(() => { try { return JSON.parse(localStorage.getItem("proxima_mentor")||"null"); } catch { return null; } });
 
   useEffect(() => {
@@ -2570,7 +2590,56 @@ export default function App() {
   return (
     <>
       <style>{css}</style>
-{view === "landing" && <Landing onMentee={() => navigate("discovery")} onMentor={() => navigate("register")} onGroup={() => navigate("group")} />}      {view === "group" && <GroupDiscovery />}
+{view === "landing" && <Landing onMentee={() => setShowCallOverlay(true)} onMentor={() => navigate("register")} onGroup={() => navigate("group")} />}
+      {showCallOverlay && (
+        <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.5)", zIndex: 2000, display: "flex", alignItems: "center", justifyContent: "center", padding: 20, fontFamily: "'Gilroy', sans-serif" }}
+          onClick={e => e.target === e.currentTarget && setShowCallOverlay(false)}>
+          <div style={{ background: "#fff", borderRadius: 20, width: "100%", maxWidth: 600, padding: "36px 32px", position: "relative" }}>
+            <button onClick={() => setShowCallOverlay(false)} style={{ position: "absolute", top: 16, right: 20, background: "none", border: "none", fontSize: 22, cursor: "pointer", color: "#888" }}>✕</button>
+            
+            <div style={{ textAlign: "center", marginBottom: 32 }}>
+              <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: 3, color: "#888", textTransform: "uppercase", marginBottom: 12 }}>Get Guidance</div>
+              <h2 style={{ fontSize: 24, fontWeight: 800, color: "#111", marginBottom: 8 }}>How would you like to connect?</h2>
+              <p style={{ color: "#666", fontSize: 14 }}>Choose the format that works best for you</p>
+            </div>
+
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
+              {/* 1-on-1 */}
+              <div onClick={() => { setShowCallOverlay(false); navigate("discovery"); }}
+                style={{ border: "1.5px solid #E8E2D9", borderRadius: 16, padding: 24, cursor: "pointer", transition: "all 0.2s" }}
+                onMouseEnter={e => { e.currentTarget.style.borderColor = "#E93800"; e.currentTarget.style.boxShadow = "0 4px 20px rgba(233,56,0,0.08)"; }}
+                onMouseLeave={e => { e.currentTarget.style.borderColor = "#E8E2D9"; e.currentTarget.style.boxShadow = "none"; }}>
+                <div style={{ fontSize: 32, marginBottom: 12 }}>🎯</div>
+                <div style={{ fontWeight: 700, fontSize: 17, color: "#111", marginBottom: 8 }}>1-on-1 Call</div>
+                <div style={{ color: "#666", fontSize: 13, lineHeight: 1.6, marginBottom: 16 }}>A private 30-minute call with a college senior. Ask anything, get honest answers.</div>
+                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                  <div style={{ fontWeight: 700, color: "#111", fontSize: 15 }}>Starting ₹149</div>
+                  <div style={{ background: "#111", color: "#fff", borderRadius: 8, padding: "8px 14px", fontSize: 13, fontWeight: 600 }}>Book →</div>
+                </div>
+              </div>
+
+              {/* Group Call */}
+              <div onClick={() => { setShowCallOverlay(false); navigate("group"); }}
+                style={{ border: "1.5px solid #E8E2D9", borderRadius: 16, padding: 24, cursor: "pointer", transition: "all 0.2s", position: "relative", overflow: "hidden" }}
+                onMouseEnter={e => { e.currentTarget.style.borderColor = "#E93800"; e.currentTarget.style.boxShadow = "0 4px 20px rgba(233,56,0,0.08)"; }}
+                onMouseLeave={e => { e.currentTarget.style.borderColor = "#E8E2D9"; e.currentTarget.style.boxShadow = "none"; }}>
+                <div style={{ position: "absolute", top: 12, right: 12, background: "#FFF0EB", color: "#E93800", fontSize: 11, fontWeight: 700, padding: "3px 10px", borderRadius: 20 }}>POPULAR</div>
+                <div style={{ fontSize: 32, marginBottom: 12 }}>👥</div>
+                <div style={{ fontWeight: 700, fontSize: 17, color: "#111", marginBottom: 8 }}>Group Session</div>
+                <div style={{ color: "#666", fontSize: 13, lineHeight: 1.6, marginBottom: 16 }}>Join a live session with 4 other students. Same real insights, fraction of the price.</div>
+                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                  <div style={{ fontWeight: 700, color: "#111", fontSize: 15 }}>Starting ₹99</div>
+                  <div style={{ background: "#E93800", color: "#fff", borderRadius: 8, padding: "8px 14px", fontSize: 13, fontWeight: 600 }}>Join →</div>
+                </div>
+              </div>
+            </div>
+
+            <div style={{ textAlign: "center", marginTop: 20 }}>
+              <span style={{ fontSize: 12, color: "#aaa" }}>Not sure? <span onClick={() => { setShowCallOverlay(false); navigate("discovery"); }} style={{ color: "#E93800", cursor: "pointer", fontWeight: 600 }}>Browse all mentors first →</span></span>
+            </div>
+          </div>
+        </div>
+      )}      {view === "group" && <GroupDiscovery />}
       {view === "discovery" && <MentorDiscovery onBook={(m,s) => { setBookData({mentor:m,slot:s}); navigate("booking"); }} />}
       {view === "booking" && bookData && <BookingFlow mentor={bookData.mentor} slot={bookData.slot} onDone={() => { setBookData(null); navigate("discovery"); }} />}
       {view === "register" && <MentorRegistration onDone={() => navigate("landing")} />}
