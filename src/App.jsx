@@ -728,7 +728,7 @@ const [showCustomCall, setShowCustomCall] = useState(false);
         ✦ Custom Call
       </button>
       <button onClick={() => window.location.hash = "group"} style={{ background: "#E93800", color: "#fff", border: "none", borderRadius: 20, padding: "12px 18px", fontSize: 14, fontWeight: 700, cursor: "pointer", fontFamily: "'Gilroy', sans-serif", whiteSpace: "nowrap", flexShrink: 0 }}>
-        👥 Group Sessions
+         Group Sessions
       </button>
     </div>
 
