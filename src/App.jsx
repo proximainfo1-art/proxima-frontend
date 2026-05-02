@@ -2516,8 +2516,7 @@ export default function App() {
   return (
     <>
       <style>{css}</style>
-      {view === "landing" && <Landing onMentee={() => navigate("discovery")} onMentor={() => navigate("register")} onGroup={() => navigate("group")} />}
-      {view === "group" && <GroupDiscovery />}
+{view === "landing" && <Landing onMentee={() => navigate("discovery")} onMentor={() => navigate("register")} onGroup={() => navigate("group")} />}      {view === "group" && <GroupDiscovery />}
       {view === "discovery" && <MentorDiscovery onBook={(m,s) => { setBookData({mentor:m,slot:s}); navigate("booking"); }} />}
       {view === "booking" && bookData && <BookingFlow mentor={bookData.mentor} slot={bookData.slot} onDone={() => { setBookData(null); navigate("discovery"); }} />}
       {view === "register" && <MentorRegistration onDone={() => navigate("landing")} />}
