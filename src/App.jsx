@@ -734,44 +734,44 @@ const [showCustomCall, setShowCustomCall] = useState(false);
       </button>
     </div>
 
-    {/* Dropdowns row */}
-    <div style={{ display: "flex", gap: 8, alignItems: "center", overflowX: "auto", paddingBottom: 4, WebkitOverflowScrolling: "touch", scrollbarWidth: "none" }}>
-      {/* College dropdown */}
-      <select value={filter} onChange={e => setFilter(e.target.value)}
-        style={{ background: "#FAF7F2", color: "#111", border: `1.5px solid ${filter ? "#E93800" : "#E8E2D9"}`, borderRadius: 20, padding: "8px 14px", fontSize: 13, fontWeight: 500, cursor: "pointer", fontFamily: "'Gilroy', sans-serif", outline: "none", flexShrink: 0, whiteSpace: "nowrap" }}>
-        <option value="">All Colleges</option>
+    {/* Dropdowns row — horizontally scrollable on mobile */}
+    <style>{`
+      .filter-bar::-webkit-scrollbar { display: none; }
+      .filter-select { background: #FAF7F2; color: #111; border-radius: 20px; font-family: 'Gilroy', sans-serif; font-size: 12px; font-weight: 500; cursor: pointer; outline: none; flex-shrink: 0; white-space: nowrap; appearance: none; -webkit-appearance: none; padding: 7px 10px; }
+    `}</style>
+    <div className="filter-bar" style={{ display: "flex", gap: 6, alignItems: "center", overflowX: "auto", paddingBottom: 2, WebkitOverflowScrolling: "touch", scrollbarWidth: "none", msOverflowStyle: "none" }}>
+
+      <select value={filter} onChange={e => setFilter(e.target.value)} className="filter-select"
+        style={{ border: `1.5px solid ${filter ? "#E93800" : "#E8E2D9"}`, color: filter ? "#E93800" : "#111", fontWeight: filter ? 700 : 500 }}>
+        <option value="">🎓 College</option>
         {colleges.map(c => <option key={c} value={c}>{c}</option>)}
       </select>
 
-      {/* Course dropdown */}
-      <select value={courseFilter} onChange={e => setCourseFilter(e.target.value)}
-        style={{ background: "#FAF7F2", color: "#111", border: `1.5px solid ${courseFilter ? "#E93800" : "#E8E2D9"}`, borderRadius: 20, padding: "8px 14px", fontSize: 13, fontWeight: 500, cursor: "pointer", fontFamily: "'Gilroy', sans-serif", outline: "none", flexShrink: 0, whiteSpace: "nowrap" }}>
-        <option value="">All Courses</option>
+      <select value={courseFilter} onChange={e => setCourseFilter(e.target.value)} className="filter-select"
+        style={{ border: `1.5px solid ${courseFilter ? "#E93800" : "#E8E2D9"}`, color: courseFilter ? "#E93800" : "#111", fontWeight: courseFilter ? 700 : 500 }}>
+        <option value="">📖 Course</option>
         {courses.map(c => <option key={c} value={c}>{c}</option>)}
       </select>
 
-      {/* Price filter dropdown */}
-      <select value={priceFilter} onChange={e => setPriceFilter(e.target.value)}
-        style={{ background: "#FAF7F2", color: "#111", border: `1.5px solid ${priceFilter ? "#E93800" : "#E8E2D9"}`, borderRadius: 20, padding: "8px 14px", fontSize: 13, fontWeight: 500, cursor: "pointer", fontFamily: "'Gilroy', sans-serif", outline: "none", flexShrink: 0, whiteSpace: "nowrap" }}>
-        <option value="">Any Price</option>
+      <select value={priceFilter} onChange={e => setPriceFilter(e.target.value)} className="filter-select"
+        style={{ border: `1.5px solid ${priceFilter ? "#E93800" : "#E8E2D9"}`, color: priceFilter ? "#E93800" : "#111", fontWeight: priceFilter ? 700 : 500 }}>
+        <option value="">💰 Price</option>
         <option value={149}>Up to ₹149</option>
         <option value={199}>Up to ₹199</option>
         <option value={249}>Up to ₹249</option>
         <option value={299}>Up to ₹299</option>
       </select>
 
-      {/* Price sort dropdown */}
-      <select value={priceSort} onChange={e => setPriceSort(e.target.value)}
-        style={{ background: "#FAF7F2", color: "#111", border: `1.5px solid ${priceSort ? "#E93800" : "#E8E2D9"}`, borderRadius: 20, padding: "8px 14px", fontSize: 13, fontWeight: 500, cursor: "pointer", fontFamily: "'Gilroy', sans-serif", outline: "none", flexShrink: 0, whiteSpace: "nowrap" }}>
-        <option value="">Sort by Price</option>
-        <option value="lowtohigh">Price: Low to High</option>
-        <option value="hightolow">Price: High to Low</option>
+      <select value={priceSort} onChange={e => setPriceSort(e.target.value)} className="filter-select"
+        style={{ border: `1.5px solid ${priceSort ? "#E93800" : "#E8E2D9"}`, color: priceSort ? "#E93800" : "#111", fontWeight: priceSort ? 700 : 500 }}>
+        <option value="">↕ Sort</option>
+        <option value="lowtohigh">Low to High</option>
+        <option value="hightolow">High to Low</option>
       </select>
 
-      {/* Clear filters */}
       {(filter || courseFilter || priceFilter || priceSort) && (
         <button onClick={() => { setFilter(""); setCourseFilter(""); setPriceFilter(""); setPriceSort(""); }}
-          style={{ background: "transparent", color: "#888", border: "1.5px solid #E8E2D9", borderRadius: 20, padding: "8px 14px", fontSize: 13, cursor: "pointer", fontFamily: "'Gilroy', sans-serif", flexShrink: 0, whiteSpace: "nowrap" }}>
+          style={{ background: "transparent", color: "#888", border: "1.5px solid #E8E2D9", borderRadius: 20, padding: "7px 10px", fontSize: 12, cursor: "pointer", fontFamily: "'Gilroy', sans-serif", flexShrink: 0, whiteSpace: "nowrap" }}>
           ✕ Clear
         </button>
       )}
