@@ -725,34 +725,34 @@ const [showCustomCall, setShowCustomCall] = useState(false);
   <div style={{ maxWidth: 1100, margin: "0 auto", display: "flex", flexDirection: "column", gap: 12 }}>
 
     {/* Search + buttons row */}
-    <div style={{ display: "flex", gap: 10, alignItems: "center", flexWrap: "wrap" }}>
+    <div style={{ display: "flex", gap: 8, alignItems: "center", flexWrap: "wrap" }}>
       <input placeholder="Search by name, college, course..." value={search} onChange={e => setSearch(e.target.value)}
-        style={{ background: "#FAF7F2", border: "1.5px solid #E8E2D9", borderRadius: 20, padding: "12px 20px", fontSize: 14, outline: "none", fontFamily: "'Gilroy', sans-serif", color: "#111", flex: 1, minWidth: 200, boxSizing: "border-box" }}
+        style={{ background: "#FAF7F2", border: "1.5px solid #E8E2D9", borderRadius: 20, padding: "11px 16px", fontSize: 14, outline: "none", fontFamily: "'Gilroy', sans-serif", color: "#111", flex: 1, minWidth: 140, boxSizing: "border-box" }}
         onFocus={e => e.target.style.borderColor="#E93800"} onBlur={e => e.target.style.borderColor="#E8E2D9"} />
-      <button onClick={() => setShowCustomCall(true)} style={{ background: "#111", color: "#fff", border: "none", borderRadius: 20, padding: "12px 18px", fontSize: 14, fontWeight: 700, cursor: "pointer", fontFamily: "'Gilroy', sans-serif", whiteSpace: "nowrap", flexShrink: 0 }}>
+      <button onClick={() => setShowCustomCall(true)} style={{ background: "#111", color: "#fff", border: "none", borderRadius: 20, padding: "11px 14px", fontSize: 13, fontWeight: 700, cursor: "pointer", fontFamily: "'Gilroy', sans-serif", whiteSpace: "nowrap", flexShrink: 0 }}>
         ✦ Custom Call
       </button>
     </div>
 
     {/* Dropdowns row */}
-    <div style={{ display: "flex", gap: 10, flexWrap: "wrap", alignItems: "center" }}>
+    <div style={{ display: "flex", gap: 8, alignItems: "center", overflowX: "auto", paddingBottom: 4, WebkitOverflowScrolling: "touch", scrollbarWidth: "none" }}>
       {/* College dropdown */}
       <select value={filter} onChange={e => setFilter(e.target.value)}
-        style={{ background: "#FAF7F2", color: "#111", border: `1.5px solid ${filter ? "#E93800" : "#E8E2D9"}`, borderRadius: 20, padding: "8px 16px", fontSize: 14, fontWeight: 500, cursor: "pointer", fontFamily: "'Gilroy', sans-serif", outline: "none" }}>
+        style={{ background: "#FAF7F2", color: "#111", border: `1.5px solid ${filter ? "#E93800" : "#E8E2D9"}`, borderRadius: 20, padding: "8px 14px", fontSize: 13, fontWeight: 500, cursor: "pointer", fontFamily: "'Gilroy', sans-serif", outline: "none", flexShrink: 0, whiteSpace: "nowrap" }}>
         <option value="">All Colleges</option>
         {colleges.map(c => <option key={c} value={c}>{c}</option>)}
       </select>
 
       {/* Course dropdown */}
       <select value={courseFilter} onChange={e => setCourseFilter(e.target.value)}
-        style={{ background: "#FAF7F2", color: "#111", border: `1.5px solid ${courseFilter ? "#E93800" : "#E8E2D9"}`, borderRadius: 20, padding: "8px 16px", fontSize: 14, fontWeight: 500, cursor: "pointer", fontFamily: "'Gilroy', sans-serif", outline: "none" }}>
+        style={{ background: "#FAF7F2", color: "#111", border: `1.5px solid ${courseFilter ? "#E93800" : "#E8E2D9"}`, borderRadius: 20, padding: "8px 14px", fontSize: 13, fontWeight: 500, cursor: "pointer", fontFamily: "'Gilroy', sans-serif", outline: "none", flexShrink: 0, whiteSpace: "nowrap" }}>
         <option value="">All Courses</option>
         {courses.map(c => <option key={c} value={c}>{c}</option>)}
       </select>
 
       {/* Price filter dropdown */}
       <select value={priceFilter} onChange={e => setPriceFilter(e.target.value)}
-        style={{ background: "#FAF7F2", color: "#111", border: `1.5px solid ${priceFilter ? "#E93800" : "#E8E2D9"}`, borderRadius: 20, padding: "8px 16px", fontSize: 14, fontWeight: 500, cursor: "pointer", fontFamily: "'Gilroy', sans-serif", outline: "none" }}>
+        style={{ background: "#FAF7F2", color: "#111", border: `1.5px solid ${priceFilter ? "#E93800" : "#E8E2D9"}`, borderRadius: 20, padding: "8px 14px", fontSize: 13, fontWeight: 500, cursor: "pointer", fontFamily: "'Gilroy', sans-serif", outline: "none", flexShrink: 0, whiteSpace: "nowrap" }}>
         <option value="">Any Price</option>
         <option value={149}>Up to ₹149</option>
         <option value={199}>Up to ₹199</option>
@@ -762,7 +762,7 @@ const [showCustomCall, setShowCustomCall] = useState(false);
 
       {/* Price sort dropdown */}
       <select value={priceSort} onChange={e => setPriceSort(e.target.value)}
-        style={{ background: "#FAF7F2", color: "#111", border: `1.5px solid ${priceSort ? "#E93800" : "#E8E2D9"}`, borderRadius: 20, padding: "8px 16px", fontSize: 14, fontWeight: 500, cursor: "pointer", fontFamily: "'Gilroy', sans-serif", outline: "none" }}>
+        style={{ background: "#FAF7F2", color: "#111", border: `1.5px solid ${priceSort ? "#E93800" : "#E8E2D9"}`, borderRadius: 20, padding: "8px 14px", fontSize: 13, fontWeight: 500, cursor: "pointer", fontFamily: "'Gilroy', sans-serif", outline: "none", flexShrink: 0, whiteSpace: "nowrap" }}>
         <option value="">Sort by Price</option>
         <option value="lowtohigh">Price: Low to High</option>
         <option value="hightolow">Price: High to Low</option>
@@ -771,7 +771,7 @@ const [showCustomCall, setShowCustomCall] = useState(false);
       {/* Clear filters */}
       {(filter || courseFilter || priceFilter || priceSort) && (
         <button onClick={() => { setFilter(""); setCourseFilter(""); setPriceFilter(""); setPriceSort(""); }}
-          style={{ background: "transparent", color: "#888", border: "1.5px solid #E8E2D9", borderRadius: 20, padding: "8px 16px", fontSize: 13, cursor: "pointer", fontFamily: "'Gilroy', sans-serif" }}>
+          style={{ background: "transparent", color: "#888", border: "1.5px solid #E8E2D9", borderRadius: 20, padding: "8px 14px", fontSize: 13, cursor: "pointer", fontFamily: "'Gilroy', sans-serif", flexShrink: 0, whiteSpace: "nowrap" }}>
           ✕ Clear
         </button>
       )}
@@ -2631,7 +2631,7 @@ export default function App() {
       {showCallOverlay && (
         <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.5)", zIndex: 2000, display: "flex", alignItems: "center", justifyContent: "center", padding: 20, fontFamily: "'Gilroy', sans-serif" }}
           onClick={e => e.target === e.currentTarget && setShowCallOverlay(false)}>
-          <div style={{ background: "#fff", borderRadius: 20, width: "100%", maxWidth: 600, padding: "36px 32px", position: "relative" }}>
+          <div style={{ background: "#fff", borderRadius: 20, width: "100%", maxWidth: 600, padding: "clamp(20px,4vw,36px) clamp(16px,4vw,32px)", position: "relative", maxHeight: "90vh", overflowY: "auto" }}>
             <button onClick={() => setShowCallOverlay(false)} style={{ position: "absolute", top: 16, right: 20, background: "none", border: "none", fontSize: 22, cursor: "pointer", color: "#888" }}>✕</button>
             
             <div style={{ textAlign: "center", marginBottom: 32 }}>
@@ -2640,7 +2640,7 @@ export default function App() {
               <p style={{ color: "#666", fontSize: 14 }}>Choose the format that works best for you</p>
             </div>
 
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
+            <div style={{ display: "grid", gridTemplateColumns: window.innerWidth < 500 ? "1fr" : "1fr 1fr", gap: 16 }}>
               {/* 1-on-1 */}
               <div onClick={() => { setShowCallOverlay(false); navigate("discovery"); }}
                 style={{ border: "1.5px solid #E8E2D9", borderRadius: 16, padding: 24, cursor: "pointer", transition: "all 0.2s" }}
