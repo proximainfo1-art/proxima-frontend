@@ -721,7 +721,7 @@ const [showCustomCall, setShowCustomCall] = useState(false);
       </div>
 
       {/* Filters + Search */}
-<div style={{ background: "#fff", padding: "16px clamp(16px,4vw,48px)", borderBottom: "1px solid #F0EDE8" }}>
+<div style={{ background: "#fff", padding: "16px clamp(16px,4vw,48px)", borderBottom: "1px solid #F0EDE8", overflow: "hidden" }}>
   <div style={{ maxWidth: 1100, margin: "0 auto", display: "flex", flexDirection: "column", gap: 12 }}>
 
     {/* Search + buttons row */}
@@ -739,7 +739,7 @@ const [showCustomCall, setShowCustomCall] = useState(false);
       .filter-bar::-webkit-scrollbar { display: none; }
       .filter-select { background: #FAF7F2; color: #111; border-radius: 20px; font-family: 'Gilroy', sans-serif; font-size: 12px; font-weight: 500; cursor: pointer; outline: none; flex-shrink: 0; white-space: nowrap; appearance: none; -webkit-appearance: none; padding: 7px 10px; }
     `}</style>
-    <div className="filter-bar" style={{ display: "flex", gap: 6, alignItems: "center", overflowX: "auto", paddingBottom: 2, WebkitOverflowScrolling: "touch", scrollbarWidth: "none", msOverflowStyle: "none" }}>
+    <div className="filter-bar" style={{ display: "flex", gap: 6, alignItems: "center", overflowX: "auto", paddingBottom: 2, WebkitOverflowScrolling: "touch", scrollbarWidth: "none", msOverflowStyle: "none", flexWrap: "nowrap", width: "100%" }}>
 
       <select value={filter} onChange={e => setFilter(e.target.value)} className="filter-select"
         style={{ border: `1.5px solid ${filter ? "#E93800" : "#E8E2D9"}`, color: filter ? "#E93800" : "#111", fontWeight: filter ? 700 : 500 }}>
