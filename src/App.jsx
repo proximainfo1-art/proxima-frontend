@@ -621,6 +621,7 @@ function MentorDiscovery({ onBook }) {
   const [filter, setFilter] = useState("");
   const [courseFilter, setCourseFilter] = useState("");
   const [priceFilter, setPriceFilter] = useState("");
+  const [priceSort, setPriceSort] = useState("");
   const [search, setSearch] = useState("");
   const [selected, setSelected] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -694,6 +695,8 @@ const [showCustomCall, setShowCustomCall] = useState(false);
       return matchCollege && matchCourse && matchSearch && matchPrice;
     })
     .sort((a, b) => {
+      if (priceSort === "lowtohigh") return (a.price || 299) - (b.price || 299);
+      if (priceSort === "hightolow") return (b.price || 299) - (a.price || 299);
       const aAvail = (a.slots || []).some(s => s.day === todayName && s.status !== "booked");
       const bAvail = (b.slots || []).some(s => s.day === todayName && s.status !== "booked");
       if (aAvail && !bAvail) return -1;
@@ -747,7 +750,7 @@ const [showCustomCall, setShowCustomCall] = useState(false);
         {courses.map(c => <option key={c} value={c}>{c}</option>)}
       </select>
 
-      {/* Price dropdown */}
+      {/* Price filter dropdown */}
       <select value={priceFilter} onChange={e => setPriceFilter(e.target.value)}
         style={{ background: "#FAF7F2", color: "#111", border: `1.5px solid ${priceFilter ? "#E93800" : "#E8E2D9"}`, borderRadius: 20, padding: "8px 16px", fontSize: 14, fontWeight: 500, cursor: "pointer", fontFamily: "'Gilroy', sans-serif", outline: "none" }}>
         <option value="">Any Price</option>
@@ -757,9 +760,17 @@ const [showCustomCall, setShowCustomCall] = useState(false);
         <option value={299}>Up to ₹299</option>
       </select>
 
+      {/* Price sort dropdown */}
+      <select value={priceSort} onChange={e => setPriceSort(e.target.value)}
+        style={{ background: "#FAF7F2", color: "#111", border: `1.5px solid ${priceSort ? "#E93800" : "#E8E2D9"}`, borderRadius: 20, padding: "8px 16px", fontSize: 14, fontWeight: 500, cursor: "pointer", fontFamily: "'Gilroy', sans-serif", outline: "none" }}>
+        <option value="">Sort by Price</option>
+        <option value="lowtohigh">Price: Low to High</option>
+        <option value="hightolow">Price: High to Low</option>
+      </select>
+
       {/* Clear filters */}
-      {(filter || courseFilter || priceFilter) && (
-        <button onClick={() => { setFilter(""); setCourseFilter(""); setPriceFilter(""); }}
+      {(filter || courseFilter || priceFilter || priceSort) && (
+        <button onClick={() => { setFilter(""); setCourseFilter(""); setPriceFilter(""); setPriceSort(""); }}
           style={{ background: "transparent", color: "#888", border: "1.5px solid #E8E2D9", borderRadius: 20, padding: "8px 16px", fontSize: 13, cursor: "pointer", fontFamily: "'Gilroy', sans-serif" }}>
           ✕ Clear
         </button>
