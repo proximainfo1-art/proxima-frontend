@@ -1337,13 +1337,15 @@ function MentorDashboard({ mentor, onLogout }) {
   const [bio, setBio] = useState(mentor.bio || "");
   const [savingBio, setSavingBio] = useState(false);
   const [editingDetails, setEditingDetails] = useState(false);
-const [details, setDetails] = useState({ year: mentor.year || '', pin: mentor.pin || '', bio: mentor.bio || '', price: mentor.price || 299 });
+const [details, setDetails] = useState({ year: mentor.year || '', pin: mentor.pin || '', bio: mentor.bio || '', price: mentor.price || 299, photo: "", uploadingPhoto: false });
 const [savingDetails, setSavingDetails] = useState(false);
 
 const saveDetails = async () => {
   setSavingDetails(true);
   try {
-    await apiFetch(`/mentors/${mentor._id}`, { method: "PUT", body: { year: details.year, pin: details.pin, bio: details.bio, price: details.price } });
+    const updateBody = { year: details.year, pin: details.pin, bio: details.bio, price: details.price };
+    if (details.photo) updateBody.photo = details.photo;
+    await apiFetch(`/mentors/${mentor._id}`, { method: "PUT", body: updateBody });
     setEditingDetails(false);
     alert("Details updated!");
   } catch { alert("Failed to update"); } finally { setSavingDetails(false); }
@@ -1435,6 +1437,30 @@ const saveDetails = async () => {
               <textarea value={details.bio} onChange={e => setDetails(d => ({ ...d, bio: e.target.value }))} maxLength={200} rows={3}
                 style={{ background: "#FAF7F2", border: "1px solid #E8E2D9", color: "#111", borderRadius: 8, padding: "8px 12px", fontSize: 13, width: "100%", fontFamily: "'Gilroy', sans-serif", outline: "none", resize: "none", boxSizing: "border-box" }} />
               <div style={{ fontSize: 11, color: "#aaa", textAlign: "right" }}>{details.bio.length}/200</div>
+            </div>
+            <div>
+              <label style={{ fontSize: 12, color: "#666", display: "block", marginBottom: 4 }}>Profile Photo</label>
+              <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+                <img src={details.photo || mentor.photo || `https://ui-avatars.com/api/?name=${encodeURIComponent(mentor.name)}&background=FFF0EB&color=E93800&size=80`}
+                  alt="preview" style={{ width: 52, height: 52, borderRadius: "50%", objectFit: "cover", border: "2px solid #E93800", flexShrink: 0 }} />
+                <label style={{ display: "flex", alignItems: "center", gap: 8, padding: "8px 16px", background: details.uploadingPhoto ? "#ccc" : "#111", border: "none", borderRadius: 8, cursor: details.uploadingPhoto ? "not-allowed" : "pointer", color: "#fff", fontFamily: "'Gilroy', sans-serif", fontWeight: 600, fontSize: 12, flex: 1, justifyContent: "center", boxSizing: "border-box" }}>
+                  {details.uploadingPhoto ? "Uploading..." : details.photo ? "Replace Photo" : "Upload Photo"}
+                  <input type="file" accept="image/*" style={{ display: "none" }} disabled={details.uploadingPhoto}
+                    onChange={async (e) => {
+                      const file = e.target.files[0];
+                      if (!file) return;
+                      setDetails(d => ({ ...d, uploadingPhoto: true }));
+                      try {
+                        const url = await uploadToCloudinary(file);
+                        setDetails(d => ({ ...d, photo: url, uploadingPhoto: false }));
+                      } catch {
+                        alert("Upload failed. Try again.");
+                        setDetails(d => ({ ...d, uploadingPhoto: false }));
+                      }
+                    }} />
+                </label>
+              </div>
+              {details.photo && <div style={{ fontSize: 11, color: "#22C55E", marginTop: 6 }}>✓ Photo ready — save to apply</div>}
             </div>
             <div style={{ display: "flex", gap: 8 }}>
               <button onClick={saveDetails} disabled={savingDetails} style={{ background: "#111", color: "#fff", border: "none", padding: "8px 20px", borderRadius: 8, fontSize: 13, fontWeight: 600, cursor: "pointer", fontFamily: "'Gilroy', sans-serif" }}>
