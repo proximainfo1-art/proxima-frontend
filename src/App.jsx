@@ -1081,7 +1081,7 @@ function BookingFlow({ mentor, slot, onDone }) {
             method: "POST",
             body: { mentorId: mentor._id, mentorName: mentor.name, slot, studentName: form.name, studentEmail: form.email, studentPhone: form.phone, message: form.message, referralCode: form.code, paymentId: response.razorpay_payment_id },
           });
-          wa(mentor.whatsapp, `New booking! Student: ${form.name}, Slot: ${slot}`);
+          
           setDone(true);
         },
       };
@@ -1572,12 +1572,11 @@ const saveDetails = async () => {
         <button onClick={async () => {
           const link = document.getElementById(`meet-${b._id}`)?.value;
           if (!link) return;
-          await apiFetch(`/bookings/${b._id}/meetlink`, { method: "PUT", body: { meetLink: link, meetSent: false } });
-          wa(ADMIN_WHATSAPP, `Meet link from mentor ${mentor.name} for student ${b.studentName} (Slot: ${b.slot}):\n${link}\n\nPlease forward this to the student.`);
-          alert("Meet link sent to admin!");
+          await apiFetch(`/bookings/${b._id}/meetlink`, { method: "PUT", body: { meetLink: link, meetSent: true, sendToStudent: true } });
+          alert(`Meet link sent directly to ${b.studentName}'s email!`);
           window.location.reload();
-        }} style={{ background: S.accent, color: "#fff", border: "none", padding: "8px 18px", borderRadius: 8, fontSize: 15, cursor: "pointer" }}>
-          Send to Admin
+        }} style={{ background: S.accent, color: "#fff", border: "none", padding: "8px 18px", borderRadius: 8, fontSize: 15, cursor: "pointer", fontFamily: "'Gilroy', sans-serif", fontWeight: 600 }}>
+          Send to Student
         </button>
       </div>
     )}
@@ -2209,15 +2208,20 @@ const tabs = ["stats", "mentors", "registrations", "bookings", "customcalls", "g
                     <div style={{ fontSize: 11, fontWeight: 600, color: "#aaa", textTransform: "uppercase", letterSpacing: 1, marginBottom: 8 }}>Meet Link</div>
                     {b.meetLink ? (
                       <div>
-                        <div style={{ background: "#EFF6FF", border: "1px solid #BFDBFE", borderRadius: 8, padding: "10px 14px", fontSize: 15, color: "#2563EB", wordBreak: "break-all", marginBottom: 10 }}>{b.meetLink}</div>
-                        <button onClick={() => {
-                          wa(b.studentPhone, `Hi ${b.studentName}, your Proxima session is confirmed!\nSlot: ${b.slot}\nMeet Link: ${b.meetLink}\n\nSee you soon!`);
-                          apiFetch(`/bookings/${b._id}/meetlink`, { method: "PUT", body: { meetLink: b.meetLink, meetSent: true } });
-                          setSentMeet(s => ({ ...s, [b._id]: true }));
-                        }} className="ap-btn-blue">{sentMeet[b._id] ? "✓ Forwarded" : "📤 Forward to Student"}</button>
+                        <div style={{ background: "#EFF6FF", border: "1px solid #BFDBFE", borderRadius: 8, padding: "10px 14px", fontSize: 13, color: "#2563EB", wordBreak: "break-all", marginBottom: 10 }}>{b.meetLink}</div>
+                        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                          {b.meetSent ? (
+                            <span style={{ background: "#F0FBF6", border: "1px solid #BBF0D6", color: "#16A34A", padding: "6px 14px", borderRadius: 8, fontSize: 13, fontWeight: 700 }}>✓ Link sent to student</span>
+                          ) : (
+                            <span style={{ background: "#FFF0EB", border: "1px solid #F0D5CB", color: "#E93800", padding: "6px 14px", borderRadius: 8, fontSize: 13, fontWeight: 700 }}>⏳ Link not yet sent</span>
+                          )}
+                        </div>
                       </div>
                     ) : (
-                      <div style={{ background: "#FAF7F2", border: "1.5px dashed #E8E2D9", borderRadius: 8, padding: 16, fontSize: 15, color: "#aaa", textAlign: "center" }}>⏳ Waiting for guide to share link</div>
+                      <div style={{ background: "#FAF7F2", border: "1.5px dashed #E8E2D9", borderRadius: 8, padding: 16, fontSize: 13, color: "#aaa", textAlign: "center" }}>
+                        ⏳ Waiting for mentor to share link
+                        <div style={{ marginTop: 4, fontSize: 11 }}>{b.meetSent ? "" : "Not sent yet"}</div>
+                      </div>
                     )}
                   </div>
                 </div>
