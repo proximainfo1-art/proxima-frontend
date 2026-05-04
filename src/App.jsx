@@ -293,7 +293,6 @@ html,body { margin:0; padding:0; width:100%; overflow-x:hidden; }
               
 {[
   { name: "logo1", url: "https://res.cloudinary.com/dlzqb06u6/image/upload/v1776108712/logo1_qumizn.png" },
-  { name: "logo2", url: "https://res.cloudinary.com/dlzqb06u6/image/upload/v1776108713/logo2_kbemdj.png" },
   { name: "logo3", url: "https://res.cloudinary.com/dlzqb06u6/image/upload/v1776108714/logo3_oxri4g.png" },
 ].map(p => (
   <img key={p.name} src={p.url} alt={p.name} style={{ height: 48, objectFit: "contain" }} />
