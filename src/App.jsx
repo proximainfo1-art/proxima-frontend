@@ -1613,7 +1613,6 @@ function MentorRegistration({ onDone }) {
     setSubmitting(true);
     try {
       await apiFetch("/registrations", { method: "POST", body: form });
-      wa(ADMIN_WHATSAPP, `New Mentor Application!\nName: ${form.name}\nCollege: ${form.college}\nCourse: ${form.course}\nEmail: ${form.email}\nPhone: ${form.whatsapp}`);
       setStep(TOTAL);
     } catch { alert("Submission failed. Try again."); } finally { setSubmitting(false); }
   };
