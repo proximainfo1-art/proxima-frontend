@@ -1945,22 +1945,26 @@ function AdminPanel({ onLogout }) {
   const [groupSessions, setGroupSessions] = useState([]);
   const [showAddGroup, setShowAddGroup] = useState(false);
   const [newGroup, setNewGroup] = useState({ mentorId: "", topic: "", slot: "", price: 99, maxParticipants: 5 });
+  const [influencers, setInfluencers] = useState([]);
+  const [showAddInfluencer, setShowAddInfluencer] = useState(false);
+  const [newInfluencer, setNewInfluencer] = useState({ name: "", email: "" });
 
 
   const newMentorData = useRef({ name: "", college: "", course: "", year: "1st", bio: "", photo: "", email: "", whatsapp: "", price: 299, rating: 5, sessions: 0, referralCode: "", pin: "0000" });
   const editMentorData = useRef({});
 
   const load = useCallback(async () => {
-    const [m, b, r, s, cc, gs] = await Promise.all([
+    const [m, b, r, s, cc, gs, inf] = await Promise.all([
   apiFetch("/mentors?all=true").catch(() => []),
   apiFetch("/bookings").catch(() => []),
   apiFetch("/registrations").catch(() => []),
   apiFetch("/stats").catch(() => ({})),
   apiFetch("/custom-calls").catch(() => []),
   apiFetch("/group-sessions/admin").catch(() => []),
+  apiFetch("/influencers").catch(() => []),
 ]);
 setMentors(m); setBookings(b); setRegs(r); setStats(s); setCustomCalls(cc);
-setGroupSessions(gs);
+setGroupSessions(gs); setInfluencers(inf);
     const n = {}; b.forEach(bk => { if (bk.notes) n[bk._id] = bk.notes; });
     setNotes(n);
     const ml = {}; const sm = {};
@@ -1991,7 +1995,7 @@ setGroupSessions(gs);
   };
 
   
-const tabs = ["stats", "mentors", "registrations", "bookings", "customcalls", "groupsessions"];
+const tabs = ["stats", "mentors", "registrations", "bookings", "customcalls", "groupsessions", "influencers"];
 
   return (
     <div style={{ minHeight: "100vh", background: "#FAF7F2", fontFamily: "'Gilroy', sans-serif" }}>
@@ -2359,6 +2363,88 @@ const tabs = ["stats", "mentors", "registrations", "bookings", "customcalls", "g
     ))}
   </div>
 )}
+     
+     {tab === "influencers" && (
+  <div>
+    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 24 }}>
+      <div style={{ fontSize: 22, fontWeight: 800, color: "#111" }}>Influencers ({influencers.length})</div>
+      <button onClick={() => setShowAddInfluencer(true)} style={{ background: "#111", color: "#fff", border: "none", padding: "10px 20px", borderRadius: 8, fontSize: 14, fontWeight: 600, cursor: "pointer", fontFamily: "'Gilroy', sans-serif" }}>+ Add Influencer</button>
+    </div>
+
+    {showAddInfluencer && (
+      <div style={{ background: "#fff", border: "1px solid #E8E2D9", borderRadius: 16, padding: 24, marginBottom: 24 }}>
+        <div style={{ fontWeight: 700, fontSize: 15, marginBottom: 16 }}>New Influencer</div>
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginBottom: 12 }}>
+          <div>
+            <label style={{ fontSize: 12, color: "#888", display: "block", marginBottom: 4 }}>Name (becomes the code)</label>
+            <input className="ap-input" placeholder="e.g. Rahul — code will be RAHUL" value={newInfluencer.name} onChange={e => setNewInfluencer(i => ({ ...i, name: e.target.value }))} />
+          </div>
+          <div>
+            <label style={{ fontSize: 12, color: "#888", display: "block", marginBottom: 4 }}>Email (for records)</label>
+            <input className="ap-input" placeholder="influencer@email.com" value={newInfluencer.email} onChange={e => setNewInfluencer(i => ({ ...i, email: e.target.value }))} />
+          </div>
+        </div>
+        {newInfluencer.name && (
+          <div style={{ background: "#FFF0EB", border: "1px solid #F0D5CB", borderRadius: 8, padding: "10px 14px", marginBottom: 12, fontSize: 13 }}>
+            Referral code will be: <strong style={{ color: "#E93800", fontSize: 15 }}>{newInfluencer.name.trim().toUpperCase().replace(/\s+/g, "")}</strong>
+          </div>
+        )}
+        <div style={{ display: "flex", gap: 10 }}>
+          <button onClick={async () => {
+            if (!newInfluencer.name) return alert("Enter a name");
+            await apiFetch("/influencers", { method: "POST", body: newInfluencer });
+            setShowAddInfluencer(false);
+            setNewInfluencer({ name: "", email: "" });
+            load();
+          }} style={{ background: "#111", color: "#fff", border: "none", padding: "10px 24px", borderRadius: 8, fontSize: 14, fontWeight: 600, cursor: "pointer", fontFamily: "'Gilroy', sans-serif" }}>Create</button>
+          <button onClick={() => setShowAddInfluencer(false)} style={{ background: "transparent", color: "#888", border: "1.5px solid #E8E2D9", padding: "10px 24px", borderRadius: 8, fontSize: 14, cursor: "pointer", fontFamily: "'Gilroy', sans-serif" }}>Cancel</button>
+        </div>
+      </div>
+    )}
+
+    {influencers.length === 0 ? (
+      <div style={{ background: "#fff", border: "1px solid #E8E2D9", borderRadius: 16, padding: 60, textAlign: "center", color: "#888" }}>
+        <div style={{ fontSize: 40, marginBottom: 12 }}>🌟</div>
+        <div style={{ fontWeight: 600 }}>No influencers yet</div>
+      </div>
+    ) : (
+      <div style={{ background: "#fff", border: "1px solid #E8E2D9", borderRadius: 16, overflow: "hidden" }}>
+        <table className="ap-table">
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Code</th>
+              <th>Email</th>
+              <th>Bookings</th>
+              <th>Earnings</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {influencers.map(inf => (
+              <tr key={inf._id}>
+                <td style={{ fontWeight: 600 }}>{inf.name}</td>
+                <td><span style={{ background: "#FFF0EB", color: "#E93800", padding: "3px 10px", borderRadius: 20, fontSize: 13, fontWeight: 700 }}>{inf.code}</span></td>
+                <td style={{ color: "#555", fontSize: 13 }}>{inf.email || "—"}</td>
+                <td><span className="ap-badge" style={{ background: "#EFF6FF", color: "#2563EB" }}>{inf.totalBookings}</span></td>
+                <td><span className="ap-badge" style={{ background: "#F0FBF6", color: "#16A34A" }}>₹{inf.totalEarnings}</span></td>
+                <td>
+                  <button onClick={async () => {
+                    if (window.confirm(`Delete ${inf.name}?`)) {
+                      await apiFetch(`/influencers/${inf._id}`, { method: "DELETE" });
+                      load();
+                    }
+                  }} className="ap-btn-red">🗑</button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    )}
+  </div>
+)}
+
       {showAddMentor && <MentorForm data={newMentorData.current} onChange={handleNewMentorChange} onSave={addMentor} onCancel={() => setShowAddMentor(false)} />}
       {editMentor && <MentorForm data={editMentor} onChange={handleEditMentorChange} onSave={saveMentor} onCancel={() => setEditMentor(null)} />}
     </div>
