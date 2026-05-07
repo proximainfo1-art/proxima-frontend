@@ -703,6 +703,8 @@ const [showCustomCall, setShowCustomCall] = useState(false);
     .sort((a, b) => {
       if (priceSort === "lowtohigh") return (a.price || 299) - (b.price || 299);
       if (priceSort === "hightolow") return (b.price || 299) - (a.price || 299);
+      if (a.featured && !b.featured) return -1;
+      if (!a.featured && b.featured) return 1;
       const aAvail = (a.slots || []).some(s => s.day === todayName && s.status !== "booked");
       const bAvail = (b.slots || []).some(s => s.day === todayName && s.status !== "booked");
       if (aAvail && !bAvail) return -1;
@@ -2131,6 +2133,7 @@ const tabs = ["stats", "mentors", "registrations", "bookings", "customcalls", "g
                       </td>
                       <td>
                         <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+                          <button onClick={async () => { await apiFetch(`/mentors/${m._id}`, { method: "PUT", body: { featured: !m.featured } }); load(); }} style={{ background: m.featured ? "#FEF9C3" : "transparent", border: `1px solid ${m.featured ? "#EAB308" : "#E8E2D9"}`, color: m.featured ? "#854D0E" : "#888", padding: "8px 16px", borderRadius: 8, fontSize: 13, fontWeight: 600, cursor: "pointer", fontFamily: "'Gilroy', sans-serif" }}>{m.featured ? "⭐ Featured" : "Feature"}</button>
                           <button onClick={() => toggleVisibility(m)} className={m.visible ? "ap-btn-green" : "ap-btn-red"}>{m.visible ? "✓ Visible" : "Hidden"}</button>
                           <button onClick={() => { editMentorData.current = { ...m }; setEditMentor(m); }} className="ap-btn-blue">✏ Edit</button>
                           <button onClick={() => deleteMentor(m._id)} className="ap-btn-red">🗑</button>
