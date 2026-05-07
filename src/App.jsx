@@ -836,6 +836,11 @@ function MentorModal({ mentor: initialMentor, onClose, onBook, initialScreen = "
   const [screen, setScreen] = useState(initialScreen);
 
   useEffect(() => {
+    document.body.style.overflow = "hidden";
+    return () => { document.body.style.overflow = ""; };
+  }, []);
+
+  useEffect(() => {
     apiFetch(`/mentors/public`).then(data => {
       const fresh = data.find(m => m._id === initialMentor._id);
       if (fresh) setMentor(fresh);
@@ -843,8 +848,7 @@ function MentorModal({ mentor: initialMentor, onClose, onBook, initialScreen = "
   }, [initialMentor._id]);
   const [selectedDay, setSelectedDay] = useState(null);
   const [selectedSlot, setSelectedSlot] = useState(null);
-  const [form, setForm] = useState({ name: "", email: "", phone: "", code: "", message: "" });
-  const upd = (k, v) => setForm(f => ({ ...f, [k]: v }));
+const [form, setForm] = useState({ name: "", email: "", phone: "", code: sessionStorage.getItem("proxima_ref") || new URLSearchParams(window.location.search).get("ref")?.toUpperCase() || "", message: "" });  const upd = (k, v) => setForm(f => ({ ...f, [k]: v }));
 
   const days = ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
   const shortDays = ["SUN","MON","TUE","WED","THU","FRI","SAT"];
@@ -922,8 +926,8 @@ function MentorModal({ mentor: initialMentor, onClose, onBook, initialScreen = "
     : { flex: 1, padding: "28px 24px", overflowY: "auto", minWidth: 0, maxWidth: "calc(100% - 220px)", boxSizing: "border-box" };
 
   return (
-    <div className="modal-overlay" onClick={onClose}>
-      <div style={{ background: "#fff", borderRadius: 16, width: "100%", maxWidth: screen === "invoice" ? 560 : 680, maxHeight: "92vh", overflowY: "auto", position: "relative", fontFamily: "'Gilroy', sans-serif", color: "#111", overflow: "hidden", marginBottom: 0 }} onClick={e => e.stopPropagation()}>
+    <div className="modal-overlay" onClick={onClose} onWheel={e => e.stopPropagation()}>
+      <div style={{ background: "#fff", borderRadius: 16, width: "100%", maxWidth: screen === "invoice" ? 560 : 680, maxHeight: "92vh", overflowY: "auto", position: "relative", fontFamily: "'Gilroy', sans-serif", color: "#111", overflow: "hidden", marginBottom: 0 }} onClick={e => e.stopPropagation()} onWheel={e => e.stopPropagation()}>
         <button onClick={onClose} style={{ position: "absolute", top: 16, right: 16, background: "none", border: "none", cursor: "pointer", color: "#888", fontSize: 20, zIndex: 10 }}>✕</button>
 
         {/* PROFILE SCREEN */}
@@ -1009,8 +1013,7 @@ function MentorModal({ mentor: initialMentor, onClose, onBook, initialScreen = "
             <div style={RS}>
               <div style={{ fontWeight: 600, fontSize: 15, color: "#111", marginBottom: 18 }}>Please fill your details to confirm booking</div>
               <div style={{ display: "flex", flexDirection: "column", gap: 12, marginBottom: 12, width: "100%" }}>
-                {[["Enter Full Name*","name","text","John Doe"],["Enter Email*","email","email","johnydoe@gmail.com"],["Enter Phone Number*","phone","tel","9876543210"],["Referral Code (optional)","code","text","0000"]].map(([label,key,type,ph]) => (
-                  <div key={key} style={{ display: "flex", flexDirection: "column", gap: 5 }}>
+{[["Enter Full Name*","name","text","John Doe"],["Enter Email*","email","email","johnydoe@gmail.com"],["Enter Phone Number*","phone","tel","9876543210"],["Referral Code (optional)","code","text","Enter referral code"]].map(([label,key,type,ph]) => (                  <div key={key} style={{ display: "flex", flexDirection: "column", gap: 5 }}>
                     <label style={{ fontSize: 12, color: "#555", fontWeight: 500 }}>{label}</label>
                     <input type={type} placeholder={ph} value={form[key]} onChange={e => upd(key, e.target.value)}
                       style={{ border: "1.5px solid #ddd", borderRadius: 8, padding: "10px 12px", fontSize: 14, outline: "none", fontFamily: "'Gilroy', sans-serif", color: "#111", background: "#fff", width: "100%", boxSizing: "border-box" }}
