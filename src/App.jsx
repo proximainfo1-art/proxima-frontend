@@ -685,6 +685,13 @@ const [showCustomCall, setShowCustomCall] = useState(false);
   const courses = Object.values(courseMap).sort();
   const todayName = ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"][new Date().getDay()];
 
+  const PRIORITY_COLLEGES = ["SRCC", "SSCBS", "IIM Indore", "IIM Rohtak", "IIM Jammu", "IIM Kozhikode", "IIM Ranchi", "St. Stephen's", "Hindu", "Hansraj", "LSR", "Maitreyi", "NMIMS"];
+
+  const collegeRank = (college) => {
+    const idx = PRIORITY_COLLEGES.findIndex(c => college?.toLowerCase().includes(c.toLowerCase()));
+    return idx === -1 ? 999 : idx;
+  };
+
   const filtered = mentors
     .filter(m => {
       const matchCollege = !filter || m.college === filter;
@@ -700,7 +707,7 @@ const [showCustomCall, setShowCustomCall] = useState(false);
       const bAvail = (b.slots || []).some(s => s.day === todayName && s.status !== "booked");
       if (aAvail && !bAvail) return -1;
       if (!aAvail && bAvail) return 1;
-      return 0;
+      return collegeRank(a.college) - collegeRank(b.college);
     });
 
   return (
