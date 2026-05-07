@@ -162,7 +162,7 @@ function Stars({ rating }) {
 
 function Landing({ onMentee, onMentor, onGroup }) {
   const LIGHT_LOGO = "https://res.cloudinary.com/dlzqb06u6/image/upload/v1775389312/wbzrczuoo9swrhfvxhrx.png";
-  const STUDENT_PHOTO = "https://res.cloudinary.com/dlzqb06u6/image/upload/v1775809175/shauryachaur_ddobkh.png";
+  const STUDENT_PHOTO = "https://res.cloudinary.com/dlzqb06u6/image/upload/v1778185633/proxima_landing_levrra.png";
   const [mentorCount, setMentorCount] = useState(0);
   const [collegeCount, setCollegeCount] = useState(0);
   const [openFaq, setOpenFaq] = useState(0);
