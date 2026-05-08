@@ -231,8 +231,8 @@ html,body { margin:0; padding:0; width:100%; overflow-x:hidden; }
   .l-nav .btn-out { display:block; }
   .l-nav .btn-dark { display:block; }
   .l-hero { grid-template-columns:1fr; padding:24px 16px; gap:20px; }
-  .l-right { order:1; }
-  .bubble { display:none !important; }
+.l-right { order:1; justify-content:center !important; display:flex !important; }
+.l-right img { max-width:340px !important; height:380px !important; margin:0 auto; }  .bubble { display:none !important; }
   .ticker-wrap { padding:12px 0; }
   .why-grid { grid-template-columns:1fr; gap:16px; }
   .service-grid { grid-template-columns:1fr; }
@@ -246,8 +246,8 @@ html,body { margin:0; padding:0; width:100%; overflow-x:hidden; }
   .l-nav .btn-out { display:block; }
   .l-nav .btn-dark { display:block; }
   .l-hero { grid-template-columns:1fr; padding:28px 16px; gap:20px; }
-  .l-right { order:1; }
-  .bubble { display:none !important; }
+.l-right { order:1; justify-content:center !important; display:flex !important; }
+.l-right img { max-width:340px !important; height:380px !important; margin:0 auto; }  .bubble { display:none !important; }
   .bubble-2 { display:none !important; }
   .why-grid { grid-template-columns:1fr; gap:16px; }
   .service-grid { grid-template-columns:1fr; }
@@ -302,7 +302,7 @@ html,body { margin:0; padding:0; width:100%; overflow-x:hidden; }
           </div>
         </div>
         <div className="l-right fade-up" style={{ position: "relative", display: "flex", justifyContent: "center", animationDelay: "0.15s" }}>
-          <img src={STUDENT_PHOTO} alt="Student" style={{ width: "100%", maxWidth: 420, height: 440, objectFit: "cover", objectPosition: "top", borderRadius: 24 }} />
+          <img src={STUDENT_PHOTO} alt="Student" style={{ width: "100%", maxWidth: 520, height: 540, objectFit: "cover", objectPosition: "top", borderRadius: 24 }} />
           <div className="bubble" style={{ top: 32, right: -10, fontSize: 14 }}>Are societies actually worth joining?</div>
 <div className="bubble bubble-2" style={{ top: "42%", left: -30, fontSize: 14 }}>Should I prioritise brand name or course?</div>
 <div className="bubble" style={{ bottom: 48, right: -10, fontSize: 14 }}>Is attendance strict in Delhi University colleges?</div>
@@ -942,7 +942,6 @@ const [form, setForm] = useState({ name: "", email: "", phone: "", code: session
                 <h2 style={{ fontSize: 22, fontWeight: 700, color: "#111", marginBottom: 8 }}>{mentor.name}</h2>
                 <div style={{ display: "flex", alignItems: "center", gap: 6, color: "#555", fontSize: 15, marginBottom: 4 }}>📍 {mentor.college}</div>
                 <div style={{ display: "flex", alignItems: "center", gap: 6, color: "#555", fontSize: 15, marginBottom: 4 }}>🎓 {mentor.course} · {mentor.year}</div>
-                <div style={{ fontSize: 15, color: "#888", marginBottom: 8 }}>{mentor.sessions || 0} sessions taken</div>
                 <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
                   {["DU", "Admissions", "Campus Life", "Academics"].map(t => (
                     <span key={t} style={{ background: "#f5f5f5", borderRadius: 20, padding: "3px 10px", fontSize: 12, color: "#555" }}>{t}</span>
