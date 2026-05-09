@@ -2683,13 +2683,7 @@ const tabs = ["stats", "mentors", "registrations", "bookings", "customcalls", "g
 
 function GroupDiscovery() {
   const [sessions, setSessions] = useState([]);
-  const [freeSessions, setFreeSessions] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [freeBooking, setFreeBooking] = useState(null);
-  const [freeForm, setFreeForm] = useState({ name: "", email: "", phone: "" });
-  const [freeBooking2, setFreeBooking2] = useState(false);
-  const [freeErr, setFreeErr] = useState("");
-  const [freeBooked, setFreeBooked] = useState(false);
   const [selected, setSelected] = useState(null);
   const [form, setForm] = useState({ name: "", email: "", phone: "" });
   const [booking, setBooking] = useState(false);
