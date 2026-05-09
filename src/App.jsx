@@ -619,6 +619,12 @@ const [error, setError] = useState('');
 function MentorDiscovery({ onBook }) {
   const [mentors, setMentors] = useState([]);
   const [filter, setFilter] = useState("");
+  const [freeSessions, setFreeSessions] = useState([]);
+  const [freeBooking, setFreeBooking] = useState(null);
+  const [freeForm, setFreeForm] = useState({ name: "", email: "", phone: "" });
+  const [freeBooking2, setFreeBooking2] = useState(false);
+  const [freeErr, setFreeErr] = useState("");
+  const [freeBooked, setFreeBooked] = useState(false);
   const [courseFilter, setCourseFilter] = useState("");
   const [priceFilter, setPriceFilter] = useState("");
   const [priceSort, setPriceSort] = useState("");
