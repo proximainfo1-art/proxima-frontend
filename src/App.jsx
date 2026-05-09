@@ -657,7 +657,12 @@ const [showCustomCall, setShowCustomCall] = useState(false);
     } finally { setLoading(false); }
   }, []);
 
-  useEffect(() => { load(); const t = setInterval(() => { if (document.visibilityState === 'visible') load(); }, 30000); return () => clearInterval(t); }, [load]);
+  useEffect(() => {
+    apiFetch("/free-sessions").then(setFreeSessions).catch(() => setFreeSessions([]));
+    load();
+    const t = setInterval(() => { if (document.visibilityState === 'visible') load(); }, 30000);
+    return () => clearInterval(t);
+  }, [load]);
 
   const colleges = [...new Set(mentors.map(m => m.college))].sort();
 
