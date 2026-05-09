@@ -168,7 +168,6 @@ function Landing({ onMentee, onMentor, onGroup }) {
   const [openFaq, setOpenFaq] = useState(0);
 
 useEffect(() => {
-    apiFetch("/free-sessions").then(setFreeSessions).catch(() => setFreeSessions([]));
     apiFetch("/mentors").then(data => {
       setMentorCount(data.length);
       setCollegeCount(new Set(data.map(m => m.college)).size);
