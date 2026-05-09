@@ -168,6 +168,7 @@ function Landing({ onMentee, onMentor, onGroup }) {
   const [openFaq, setOpenFaq] = useState(0);
 
 useEffect(() => {
+    apiFetch("/free-sessions").then(setFreeSessions).catch(() => setFreeSessions([]));
     apiFetch("/mentors").then(data => {
       setMentorCount(data.length);
       setCollegeCount(new Set(data.map(m => m.college)).size);
@@ -791,6 +792,101 @@ const [showCustomCall, setShowCustomCall] = useState(false);
       {/* Mentor List */}
       <div style={{ maxWidth: 1100, margin: "0 auto", padding: "24px clamp(16px,4vw,48px)" }}>
         <div style={{ fontWeight: 600, fontSize: 15, color: "#111", marginBottom: 20 }}>{filtered.length} Mentor{filtered.length !== 1 ? "s" : ""} Available</div>
+        {freeSessions.length > 0 && (
+          <div style={{ marginBottom: 28 }}>
+            <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: 2, color: "#16A34A", textTransform: "uppercase", marginBottom: 12 }}>🎁 Free Sessions Available</div>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(280px,1fr))", gap: 16 }}>
+              {freeSessions.map(s => {
+                const full = (s.participants?.length || 0) >= s.maxParticipants;
+                return (
+                  <div key={s._id} style={{ background: "#fff", border: "2px solid #22C55E", borderRadius: 16, padding: 20, position: "relative", opacity: full ? 0.7 : 1 }}>
+                    <div style={{ position: "absolute", top: 12, right: 12, background: "#F0FBF6", color: "#16A34A", fontSize: 11, fontWeight: 700, padding: "3px 10px", borderRadius: 20 }}>FREE</div>
+                    <div style={{ display: "flex", gap: 10, alignItems: "center", marginBottom: 12 }}>
+                      <img src={s.mentorPhoto || `https://ui-avatars.com/api/?name=${encodeURIComponent(s.mentorName)}&background=FFF0EB&color=E93800`} alt={s.mentorName} style={{ width: 44, height: 44, borderRadius: "50%", objectFit: "cover", flexShrink: 0 }} />
+                      <div>
+                        <div style={{ fontWeight: 700, fontSize: 14, color: "#111" }}>{s.mentorName}</div>
+                        <div style={{ fontSize: 12, color: "#E93800", fontWeight: 600 }}>{s.mentorCollege}</div>
+                        <div style={{ fontSize: 11, color: "#888" }}>{s.mentorCourse}</div>
+                      </div>
+                    </div>
+                    {s.topic && <div style={{ fontSize: 13, fontWeight: 600, color: "#111", marginBottom: 6 }}>{s.topic}</div>}
+                    <div style={{ fontSize: 13, color: "#555", marginBottom: 10 }}>📅 {s.slot}</div>
+                    {s.maxParticipants > 1 && (
+                      <div style={{ marginBottom: 10 }}>
+                        <div style={{ display: "flex", justifyContent: "space-between", fontSize: 11, color: "#888", marginBottom: 4 }}>
+                          <span>{full ? "Full" : `${s.maxParticipants - (s.participants?.length || 0)} spots left`}</span>
+                          <span>{s.participants?.length || 0}/{s.maxParticipants}</span>
+                        </div>
+                        <div style={{ height: 5, background: "#F0EDE8", borderRadius: 4 }}>
+                          <div style={{ height: "100%", width: `${((s.participants?.length || 0) / s.maxParticipants) * 100}%`, background: "#22C55E", borderRadius: 4 }} />
+                        </div>
+                      </div>
+                    )}
+                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                      <div style={{ fontWeight: 700, fontSize: 16, color: "#16A34A" }}>Free</div>
+                      <button onClick={() => { if (!full) { setFreeBooking(s); setFreeBooked(false); setFreeForm({ name: "", email: "", phone: "" }); setFreeErr(""); }}}
+                        disabled={full} style={{ background: full ? "#ccc" : "#16A34A", color: "#fff", border: "none", borderRadius: 8, padding: "8px 16px", fontSize: 13, fontWeight: 600, cursor: full ? "not-allowed" : "pointer", fontFamily: "'Gilroy', sans-serif" }}>
+                        {full ? "Full" : "Book Free →"}
+                      </button>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        )}
+
+        {/* Free session booking modal */}
+        {freeBooking && (
+          <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.5)", zIndex: 1000, display: "flex", alignItems: "center", justifyContent: "center", padding: 20, fontFamily: "'Gilroy', sans-serif" }}
+            onClick={e => e.target === e.currentTarget && setFreeBooking(null)}>
+            <div style={{ background: "#fff", borderRadius: 20, width: "100%", maxWidth: 440, padding: 32, position: "relative" }}>
+              <button onClick={() => setFreeBooking(null)} style={{ position: "absolute", top: 16, right: 20, background: "none", border: "none", fontSize: 20, cursor: "pointer", color: "#888" }}>✕</button>
+              {freeBooked ? (
+                <div style={{ textAlign: "center", padding: "20px 0" }}>
+                  <div style={{ fontSize: 48, marginBottom: 12 }}>🎉</div>
+                  <h2 style={{ fontWeight: 800, fontSize: 20, marginBottom: 8 }}>You're booked!</h2>
+                  <p style={{ color: "#666", fontSize: 14, marginBottom: 8 }}>Your free session with <strong>{freeBooking.mentorName}</strong> is confirmed.</p>
+                  <p style={{ color: "#E93800", fontSize: 14, marginBottom: 20 }}>📅 {freeBooking.slot}</p>
+                  <p style={{ color: "#888", fontSize: 13, marginBottom: 24 }}>Meet link will be sent to your email before the session.</p>
+                  <button onClick={() => setFreeBooking(null)} style={{ background: "#111", color: "#fff", border: "none", borderRadius: 10, padding: "12px 32px", fontWeight: 700, fontSize: 15, cursor: "pointer", fontFamily: "'Gilroy', sans-serif" }}>Done</button>
+                </div>
+              ) : (
+                <>
+                  <div style={{ marginBottom: 20 }}>
+                    <div style={{ display: "inline-block", background: "#F0FBF6", color: "#16A34A", fontSize: 11, fontWeight: 700, padding: "3px 10px", borderRadius: 20, marginBottom: 10 }}>FREE SESSION</div>
+                    <div style={{ fontWeight: 700, fontSize: 17, color: "#111" }}>{freeBooking.mentorName}</div>
+                    <div style={{ fontSize: 13, color: "#E93800", fontWeight: 600 }}>{freeBooking.mentorCollege}</div>
+                    <div style={{ fontSize: 13, color: "#555", marginTop: 6 }}>📅 {freeBooking.slot}</div>
+                  </div>
+                  <div style={{ display: "flex", flexDirection: "column", gap: 12, marginBottom: 16 }}>
+                    {[["Full Name *", "name", "text", "Rahul Sharma"], ["Email *", "email", "email", "rahul@email.com"], ["Phone *", "phone", "tel", "9876543210"]].map(([label, key, type, ph]) => (
+                      <div key={key}>
+                        <label style={{ fontSize: 12, color: "#555", fontWeight: 500, display: "block", marginBottom: 5 }}>{label}</label>
+                        <input type={type} placeholder={ph} value={freeForm[key]} onChange={e => setFreeForm(f => ({ ...f, [key]: e.target.value }))}
+                          style={{ border: "1.5px solid #ddd", borderRadius: 8, padding: "10px 12px", fontSize: 14, outline: "none", fontFamily: "'Gilroy', sans-serif", color: "#111", background: "#fff", width: "100%", boxSizing: "border-box" }} />
+                      </div>
+                    ))}
+                  </div>
+                  {freeErr && <div style={{ color: "#DC2626", fontSize: 13, marginBottom: 12 }}>{freeErr}</div>}
+                  <button onClick={async () => {
+                    if (!freeForm.name || !freeForm.email || !freeForm.phone) { setFreeErr("Please fill all fields."); return; }
+                    setFreeBooking2(true); setFreeErr("");
+                    try {
+                      await apiFetch(`/free-sessions/${freeBooking._id}/book`, { method: "POST", body: freeForm });
+                      setFreeBooked(true);
+                    } catch (e) {
+                      setFreeErr(e.message.includes("full") ? "Sorry, this session just filled up!" : "Something went wrong. Try again.");
+                    } finally { setFreeBooking2(false); }
+                  }} style={{ width: "100%", background: freeBooking2 ? "#ccc" : "#16A34A", color: "#fff", border: "none", borderRadius: 10, padding: 13, fontSize: 15, fontWeight: 700, cursor: freeBooking2 ? "not-allowed" : "pointer", fontFamily: "'Gilroy', sans-serif" }}>
+                    {freeBooking2 ? "Booking..." : "Confirm Free Session →"}
+                  </button>
+                </>
+              )}
+            </div>
+          </div>
+        )}
+
         {loading ? (
           <div>
             {[1,2,3].map(i => (
@@ -1959,13 +2055,17 @@ function AdminPanel({ onLogout }) {
   const [influencers, setInfluencers] = useState([]);
   const [showAddInfluencer, setShowAddInfluencer] = useState(false);
   const [newInfluencer, setNewInfluencer] = useState({ name: "", email: "" });
+  const [freeSessions, setFreeSessions] = useState([]);
+  const [showAddFree, setShowAddFree] = useState(false);
+  const [newFree, setNewFree] = useState({ type: "onetoone", mentorId: "", slot: "", topic: "", maxParticipants: 1 });
+  const [freeSlots, setFreeSlots] = useState([]);
 
 
   const newMentorData = useRef({ name: "", college: "", course: "", year: "1st", bio: "", photo: "", email: "", whatsapp: "", price: 299, rating: 5, sessions: 0, referralCode: "", pin: "0000" });
   const editMentorData = useRef({});
 
   const load = useCallback(async () => {
-    const [m, b, r, s, cc, gs, inf] = await Promise.all([
+    const [m, b, r, s, cc, gs, inf, fs] = await Promise.all([
   apiFetch("/mentors?all=true").catch(() => []),
   apiFetch("/bookings").catch(() => []),
   apiFetch("/registrations").catch(() => []),
@@ -1973,9 +2073,10 @@ function AdminPanel({ onLogout }) {
   apiFetch("/custom-calls").catch(() => []),
   apiFetch("/group-sessions/admin").catch(() => []),
   apiFetch("/influencers").catch(() => []),
+  apiFetch("/free-sessions/admin").catch(() => []),
 ]);
 setMentors(m); setBookings(b); setRegs(r); setStats(s); setCustomCalls(cc);
-setGroupSessions(gs); setInfluencers(inf);
+setGroupSessions(gs); setInfluencers(inf); setFreeSessions(fs);
     const n = {}; b.forEach(bk => { if (bk.notes) n[bk._id] = bk.notes; });
     setNotes(n);
     const ml = {}; const sm = {};
@@ -2006,7 +2107,7 @@ setGroupSessions(gs); setInfluencers(inf);
   };
 
   
-const tabs = ["stats", "mentors", "registrations", "bookings", "customcalls", "groupsessions", "influencers"];
+const tabs = ["stats", "mentors", "registrations", "bookings", "customcalls", "groupsessions", "influencers", "freesessions"];
 
   return (
     <div style={{ minHeight: "100vh", background: "#FAF7F2", fontFamily: "'Gilroy', sans-serif" }}>
@@ -2457,6 +2558,117 @@ const tabs = ["stats", "mentors", "registrations", "bookings", "customcalls", "g
   </div>
 )}
 
+{tab === "freesessions" && (
+  <div>
+    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 24 }}>
+      <div style={{ fontSize: 22, fontWeight: 800, color: "#111" }}>Free Sessions ({freeSessions.length})</div>
+      <button onClick={() => setShowAddFree(true)} style={{ background: "#111", color: "#fff", border: "none", padding: "10px 20px", borderRadius: 8, fontSize: 14, fontWeight: 600, cursor: "pointer", fontFamily: "'Gilroy', sans-serif" }}>+ Create Free Session</button>
+    </div>
+
+    {showAddFree && (
+      <div style={{ background: "#fff", border: "1px solid #E8E2D9", borderRadius: 16, padding: 24, marginBottom: 24 }}>
+        <div style={{ fontWeight: 700, fontSize: 15, marginBottom: 16 }}>New Free Session</div>
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginBottom: 12 }}>
+          <div>
+            <label style={{ fontSize: 12, color: "#888", display: "block", marginBottom: 4 }}>Type</label>
+            <select className="ap-input" value={newFree.type} onChange={e => setNewFree(f => ({ ...f, type: e.target.value, maxParticipants: e.target.value === "onetoone" ? 1 : 5 }))}>
+              <option value="onetoone">1-on-1 Call</option>
+              <option value="group">Group Session</option>
+            </select>
+          </div>
+          <div>
+            <label style={{ fontSize: 12, color: "#888", display: "block", marginBottom: 4 }}>Select Mentor</label>
+            <select className="ap-input" value={newFree.mentorId} onChange={async e => {
+              const m = mentors.find(x => x._id === e.target.value);
+              setNewFree(f => ({ ...f, mentorId: m._id, mentorName: m.name, mentorPhoto: m.photo, mentorCollege: m.college, mentorCourse: m.course, mentorYear: m.year }));
+              const slots = await apiFetch(`/mentors/${m._id}/slots`);
+              setFreeSlots(slots.filter(s => s.status !== "booked"));
+            }}>
+              <option value="">Choose mentor...</option>
+              {mentors.filter(m => m.visible).map(m => <option key={m._id} value={m._id}>{m.name} — {m.college}</option>)}
+            </select>
+          </div>
+          <div>
+            <label style={{ fontSize: 12, color: "#888", display: "block", marginBottom: 4 }}>Select Slot</label>
+            <select className="ap-input" value={newFree.slot} onChange={e => setNewFree(f => ({ ...f, slot: e.target.value }))}>
+              <option value="">Choose slot...</option>
+              {freeSlots.map(s => <option key={s._id} value={s.display}>{s.display}</option>)}
+            </select>
+          </div>
+          {newFree.type === "group" && (
+            <div>
+              <label style={{ fontSize: 12, color: "#888", display: "block", marginBottom: 4 }}>Topic</label>
+              <input className="ap-input" placeholder="e.g. SRCC Admissions Q&A" value={newFree.topic} onChange={e => setNewFree(f => ({ ...f, topic: e.target.value }))} />
+            </div>
+          )}
+          {newFree.type === "group" && (
+            <div>
+              <label style={{ fontSize: 12, color: "#888", display: "block", marginBottom: 4 }}>Max Students</label>
+              <select className="ap-input" value={newFree.maxParticipants} onChange={e => setNewFree(f => ({ ...f, maxParticipants: Number(e.target.value) }))}>
+                <option value={5}>5 students</option>
+                <option value={4}>4 students</option>
+                <option value={3}>3 students</option>
+              </select>
+            </div>
+          )}
+        </div>
+        <div style={{ display: "flex", gap: 10 }}>
+          <button onClick={async () => {
+            if (!newFree.mentorId || !newFree.slot) return alert("Select mentor and slot");
+            await apiFetch("/free-sessions", { method: "POST", body: newFree });
+            setShowAddFree(false);
+            setNewFree({ type: "onetoone", mentorId: "", slot: "", topic: "", maxParticipants: 1 });
+            setFreeSlots([]);
+            load();
+          }} style={{ background: "#111", color: "#fff", border: "none", padding: "10px 24px", borderRadius: 8, fontSize: 14, fontWeight: 600, cursor: "pointer", fontFamily: "'Gilroy', sans-serif" }}>Create</button>
+          <button onClick={() => { setShowAddFree(false); setFreeSlots([]); }} style={{ background: "transparent", color: "#888", border: "1.5px solid #E8E2D9", padding: "10px 24px", borderRadius: 8, fontSize: 14, cursor: "pointer", fontFamily: "'Gilroy', sans-serif" }}>Cancel</button>
+        </div>
+      </div>
+    )}
+
+    {freeSessions.length === 0 ? (
+      <div style={{ background: "#fff", border: "1px solid #E8E2D9", borderRadius: 16, padding: 60, textAlign: "center", color: "#888" }}>
+        <div style={{ fontSize: 40, marginBottom: 12 }}>🎁</div>
+        <div style={{ fontWeight: 600 }}>No free sessions yet</div>
+      </div>
+    ) : freeSessions.map(s => (
+      <div key={s._id} className="ap-card">
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", flexWrap: "wrap", gap: 16 }}>
+          <div style={{ flex: 1 }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 4 }}>
+              <span style={{ background: "#F0FBF6", color: "#16A34A", fontSize: 11, fontWeight: 700, padding: "2px 10px", borderRadius: 20 }}>FREE</span>
+              <span style={{ background: "#FFF0EB", color: "#E93800", fontSize: 11, fontWeight: 700, padding: "2px 10px", borderRadius: 20 }}>{s.type === "onetoone" ? "1-on-1" : "Group"}</span>
+            </div>
+            <div style={{ fontWeight: 700, fontSize: 16, color: "#111", marginBottom: 4 }}>{s.mentorName} — {s.mentorCollege}</div>
+            {s.topic && <div style={{ fontSize: 14, color: "#555", marginBottom: 4 }}>{s.topic}</div>}
+            <div style={{ fontSize: 13, color: "#E93800", marginBottom: 8 }}>📅 {s.slot}</div>
+            <div style={{ fontSize: 13, color: "#555" }}>👥 {s.participants?.length || 0}/{s.maxParticipants} booked</div>
+            {s.participants?.length > 0 && (
+              <div style={{ marginTop: 8 }}>
+                {s.participants.map((p, i) => (
+                  <div key={i} style={{ fontSize: 12, color: "#888" }}>• {p.name} — {p.phone} — {p.email}</div>
+                ))}
+              </div>
+            )}
+          </div>
+          <div style={{ display: "flex", gap: 8 }}>
+            <button onClick={async () => {
+              await apiFetch(`/free-sessions/${s._id}`, { method: "PUT", body: { visible: !s.visible } });
+              load();
+            }} className={s.visible ? "ap-btn-green" : "ap-btn-red"}>{s.visible ? "✓ Visible" : "Hidden"}</button>
+            <button onClick={async () => {
+              await apiFetch(`/free-sessions/${s._id}`, { method: "PUT", body: { status: s.status === "upcoming" ? "completed" : "upcoming" } });
+              load();
+            }} className="ap-btn-blue">{s.status === "upcoming" ? "Mark Complete" : "Mark Upcoming"}</button>
+            <button onClick={async () => {
+              if (window.confirm("Delete?")) { await apiFetch(`/free-sessions/${s._id}`, { method: "DELETE" }); load(); }
+            }} className="ap-btn-red">🗑</button>
+          </div>
+        </div>
+      </div>
+    ))}
+  </div>
+)}
       {showAddMentor && <MentorForm data={newMentorData.current} onChange={handleNewMentorChange} onSave={addMentor} onCancel={() => setShowAddMentor(false)} />}
       {editMentor && <MentorForm data={editMentor} onChange={handleEditMentorChange} onSave={saveMentor} onCancel={() => setEditMentor(null)} />}
     </div>
@@ -2465,7 +2677,13 @@ const tabs = ["stats", "mentors", "registrations", "bookings", "customcalls", "g
 
 function GroupDiscovery() {
   const [sessions, setSessions] = useState([]);
+  const [freeSessions, setFreeSessions] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [freeBooking, setFreeBooking] = useState(null);
+  const [freeForm, setFreeForm] = useState({ name: "", email: "", phone: "" });
+  const [freeBooking2, setFreeBooking2] = useState(false);
+  const [freeErr, setFreeErr] = useState("");
+  const [freeBooked, setFreeBooked] = useState(false);
   const [selected, setSelected] = useState(null);
   const [form, setForm] = useState({ name: "", email: "", phone: "" });
   const [booking, setBooking] = useState(false);
