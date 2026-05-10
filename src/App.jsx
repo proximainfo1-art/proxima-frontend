@@ -2598,11 +2598,8 @@ const tabs = ["stats", "mentors", "registrations", "bookings", "customcalls", "g
             </select>
           </div>
           <div>
-            <label style={{ fontSize: 12, color: "#888", display: "block", marginBottom: 4 }}>Select Slot</label>
-            <select className="ap-input" value={newFree.slot} onChange={e => setNewFree(f => ({ ...f, slot: e.target.value }))}>
-              <option value="">Choose slot...</option>
-              {freeSlots.map(s => <option key={s._id} value={s.display}>{s.display}</option>)}
-            </select>
+            <label style={{ fontSize: 12, color: "#888", display: "block", marginBottom: 4 }}>Date & Time</label>
+            <input className="ap-input" placeholder="e.g. Saturday, May 10 · 5:00 PM" value={newFree.slot} onChange={e => setNewFree(f => ({ ...f, slot: e.target.value }))} />
           </div>
           {newFree.type === "group" && (
             <div>
