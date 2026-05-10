@@ -2067,7 +2067,7 @@ function AdminPanel({ onLogout }) {
   const [newInfluencer, setNewInfluencer] = useState({ name: "", email: "" });
   const [freeSessions, setFreeSessions] = useState([]);
   const [showAddFree, setShowAddFree] = useState(false);
-  const [newFree, setNewFree] = useState({ type: "onetoone", mentorId: "", slot: "", topic: "", maxParticipants: 1 });
+  const [newFree, setNewFree] = useState({ type: "onetoone", mentorId: "", slot: "", topic: "", maxParticipants: 30 });
   const [freeSlots, setFreeSlots] = useState([]);
 
 
@@ -2615,8 +2615,10 @@ const tabs = ["stats", "mentors", "registrations", "bookings", "customcalls", "g
             <div>
               <label style={{ fontSize: 12, color: "#888", display: "block", marginBottom: 4 }}>Max Students</label>
               <select className="ap-input" value={newFree.maxParticipants} onChange={e => setNewFree(f => ({ ...f, maxParticipants: Number(e.target.value) }))}>
+                <option value={30}>30 students</option>
+                <option value={20}>20 students</option>
+                <option value={10}>10 students</option>
                 <option value={5}>5 students</option>
-                <option value={4}>4 students</option>
                 <option value={3}>3 students</option>
               </select>
             </div>
