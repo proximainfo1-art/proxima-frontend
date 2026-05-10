@@ -821,17 +821,6 @@ const [showCustomCall, setShowCustomCall] = useState(false);
                     </div>
                     {s.topic && <div style={{ fontSize: 13, fontWeight: 600, color: "#111", marginBottom: 6 }}>{s.topic}</div>}
                     <div style={{ fontSize: 13, color: "#555", marginBottom: 10 }}>📅 {s.slot}</div>
-                    {s.maxParticipants > 1 && (
-                      <div style={{ marginBottom: 10 }}>
-                        <div style={{ display: "flex", justifyContent: "space-between", fontSize: 11, color: "#888", marginBottom: 4 }}>
-                          <span>{full ? "Full" : `${s.maxParticipants - (s.participants?.length || 0)} spots left`}</span>
-                          <span>{s.participants?.length || 0}/{s.maxParticipants}</span>
-                        </div>
-                        <div style={{ height: 5, background: "#F0EDE8", borderRadius: 4 }}>
-                          <div style={{ height: "100%", width: `${((s.participants?.length || 0) / s.maxParticipants) * 100}%`, background: "#22C55E", borderRadius: 4 }} />
-                        </div>
-                      </div>
-                    )}
                     <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                       <div style={{ fontWeight: 700, fontSize: 16, color: "#16A34A" }}>Free</div>
                       <button onClick={() => { if (!full) { setFreeBooking(s); setFreeBooked(false); setFreeForm({ name: "", email: "", phone: "" }); setFreeErr(""); }}}
