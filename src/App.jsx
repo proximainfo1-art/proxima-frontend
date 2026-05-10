@@ -2674,18 +2674,23 @@ const tabs = ["stats", "mentors", "registrations", "bookings", "customcalls", "g
 
 function GroupDiscovery() {
   const [sessions, setSessions] = useState([]);
+  const [freeSessions, setFreeSessions] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selected, setSelected] = useState(null);
   const [form, setForm] = useState({ name: "", email: "", phone: "" });
   const [booking, setBooking] = useState(false);
   const [booked, setBooked] = useState(false);
   const [err, setErr] = useState("");
+  const [freeBooking, setFreeBooking] = useState(null);
+  const [freeForm, setFreeForm] = useState({ name: "", email: "", phone: "" });
+  const [freeBooking2, setFreeBooking2] = useState(false);
+  const [freeErr, setFreeErr] = useState("");
+  const [freeBooked, setFreeBooked] = useState(false);
 
   useEffect(() => {
-    apiFetch("/group-sessions")
-      .then(setSessions)
-      .catch(() => setSessions([]))
-      .finally(() => setLoading(false));
+    apiFetch("/group-sessions").then(setSessions).catch(() => setSessions([]).finally(() => setLoading(false)));
+    apiFetch("/free-sessions").then(setFreeSessions).catch(() => setFreeSessions([]));
+    setLoading(false);
   }, []);
 
   const spotsLeft = (s) => s.maxParticipants - (s.participants?.length || 0);
@@ -2772,6 +2777,42 @@ function GroupDiscovery() {
 
       {/* Sessions */}
       <div style={{ maxWidth: 1100, margin: "0 auto", padding: "32px clamp(16px,4vw,48px)" }}>
+        {freeSessions.length > 0 && (
+          <div style={{ marginBottom: 32 }}>
+            <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: 2, color: "#16A34A", textTransform: "uppercase", marginBottom: 16 }}>🎁 Free Sessions</div>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(320px, 1fr))", gap: 20 }}>
+              {freeSessions.map(s => {
+                const full = (s.participants?.length || 0) >= s.maxParticipants;
+                return (
+                  <div key={s._id} style={{ background: "#fff", border: "2px solid #22C55E", borderRadius: 16, padding: 24, position: "relative", opacity: full ? 0.7 : 1 }}
+                    onMouseEnter={e => { if (!full) { e.currentTarget.style.boxShadow = "0 4px 20px rgba(34,197,94,0.15)"; }}}
+                    onMouseLeave={e => { e.currentTarget.style.boxShadow = "none"; }}>
+                    <div style={{ position: "absolute", top: 12, right: 12, background: "#F0FBF6", color: "#16A34A", fontSize: 11, fontWeight: 700, padding: "3px 10px", borderRadius: 20 }}>FREE</div>
+                    <div style={{ display: "flex", gap: 12, alignItems: "center", marginBottom: 16 }}>
+                      <img src={s.mentorPhoto || `https://ui-avatars.com/api/?name=${encodeURIComponent(s.mentorName)}&background=FFF0EB&color=E93800&size=80`}
+                        alt={s.mentorName} style={{ width: 52, height: 52, borderRadius: "50%", objectFit: "cover", flexShrink: 0 }} />
+                      <div>
+                        <div style={{ fontWeight: 700, fontSize: 15, color: "#111" }}>{s.mentorName}</div>
+                        <div style={{ fontSize: 13, color: "#E93800", fontWeight: 600 }}>{s.mentorCollege}</div>
+                        <div style={{ fontSize: 12, color: "#888" }}>{s.mentorCourse}</div>
+                      </div>
+                    </div>
+                    {s.topic && <div style={{ fontWeight: 700, fontSize: 16, color: "#111", marginBottom: 10 }}>{s.topic}</div>}
+                    <div style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 14, color: "#555", marginBottom: 16 }}>📅 {s.slot}</div>
+                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                      <div style={{ fontWeight: 700, fontSize: 18, color: "#16A34A" }}>Free</div>
+                      <button onClick={() => !full && setFreeBooking(s)}
+                        disabled={full} style={{ background: full ? "#ccc" : "#16A34A", color: "#fff", border: "none", borderRadius: 8, padding: "10px 20px", fontSize: 14, fontWeight: 600, cursor: full ? "not-allowed" : "pointer", fontFamily: "'Gilroy', sans-serif" }}>
+                        {full ? "Full" : "Book Free →"}
+                      </button>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        )}
+
         {loading ? (
           <div style={{ textAlign: "center", color: "#888", padding: 60 }}>Loading sessions...</div>
         ) : sessions.length === 0 ? (
@@ -2890,6 +2931,56 @@ function GroupDiscovery() {
                   <div style={{ fontSize: 12, color: "#aaa", textAlign: "center", marginTop: 10 }}>Payment collected offline / via UPI before session</div>
                 </div>
               </div>
+            )}
+          </div>
+        </div>
+      )}
+
+      {freeBooking && (
+        <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.5)", zIndex: 1000, display: "flex", alignItems: "center", justifyContent: "center", padding: 20, fontFamily: "'Gilroy', sans-serif" }}
+          onClick={e => e.target === e.currentTarget && setFreeBooking(null)}>
+          <div style={{ background: "#fff", borderRadius: 20, width: "100%", maxWidth: 440, padding: 32, position: "relative" }}>
+            <button onClick={() => setFreeBooking(null)} style={{ position: "absolute", top: 16, right: 20, background: "none", border: "none", fontSize: 20, cursor: "pointer", color: "#888" }}>✕</button>
+            {freeBooked ? (
+              <div style={{ textAlign: "center", padding: "20px 0" }}>
+                <div style={{ fontSize: 48, marginBottom: 12 }}>🎉</div>
+                <h2 style={{ fontWeight: 800, fontSize: 20, marginBottom: 8 }}>You're booked!</h2>
+                <p style={{ color: "#666", fontSize: 14, marginBottom: 8 }}>Your free session with <strong>{freeBooking.mentorName}</strong> is confirmed.</p>
+                <p style={{ color: "#E93800", fontSize: 14, marginBottom: 20 }}>📅 {freeBooking.slot}</p>
+                <p style={{ color: "#888", fontSize: 13, marginBottom: 24 }}>Meet link will be sent to your email before the session.</p>
+                <button onClick={() => setFreeBooking(null)} style={{ background: "#111", color: "#fff", border: "none", borderRadius: 10, padding: "12px 32px", fontWeight: 700, fontSize: 15, cursor: "pointer", fontFamily: "'Gilroy', sans-serif" }}>Done</button>
+              </div>
+            ) : (
+              <>
+                <div style={{ marginBottom: 20 }}>
+                  <div style={{ display: "inline-block", background: "#F0FBF6", color: "#16A34A", fontSize: 11, fontWeight: 700, padding: "3px 10px", borderRadius: 20, marginBottom: 10 }}>FREE SESSION</div>
+                  <div style={{ fontWeight: 700, fontSize: 17, color: "#111" }}>{freeBooking.mentorName}</div>
+                  <div style={{ fontSize: 13, color: "#E93800", fontWeight: 600 }}>{freeBooking.mentorCollege}</div>
+                  <div style={{ fontSize: 13, color: "#555", marginTop: 6 }}>📅 {freeBooking.slot}</div>
+                </div>
+                <div style={{ display: "flex", flexDirection: "column", gap: 12, marginBottom: 16 }}>
+                  {[["Full Name *", "name", "text", "Rahul Sharma"], ["Email *", "email", "email", "rahul@email.com"], ["Phone *", "phone", "tel", "9876543210"]].map(([label, key, type, ph]) => (
+                    <div key={key}>
+                      <label style={{ fontSize: 12, color: "#555", fontWeight: 500, display: "block", marginBottom: 5 }}>{label}</label>
+                      <input type={type} placeholder={ph} value={freeForm[key]} onChange={e => setFreeForm(f => ({ ...f, [key]: e.target.value }))}
+                        style={{ border: "1.5px solid #ddd", borderRadius: 8, padding: "10px 12px", fontSize: 14, outline: "none", fontFamily: "'Gilroy', sans-serif", color: "#111", background: "#fff", width: "100%", boxSizing: "border-box" }} />
+                    </div>
+                  ))}
+                </div>
+                {freeErr && <div style={{ color: "#DC2626", fontSize: 13, marginBottom: 12 }}>{freeErr}</div>}
+                <button onClick={async () => {
+                  if (!freeForm.name || !freeForm.email || !freeForm.phone) { setFreeErr("Please fill all fields."); return; }
+                  setFreeBooking2(true); setFreeErr("");
+                  try {
+                    await apiFetch(`/free-sessions/${freeBooking._id}/book`, { method: "POST", body: freeForm });
+                    setFreeBooked(true);
+                  } catch (e) {
+                    setFreeErr(e.message.includes("full") ? "Sorry, this session just filled up!" : "Something went wrong. Try again.");
+                  } finally { setFreeBooking2(false); }
+                }} style={{ width: "100%", background: freeBooking2 ? "#ccc" : "#16A34A", color: "#fff", border: "none", borderRadius: 10, padding: 13, fontSize: 15, fontWeight: 700, cursor: freeBooking2 ? "not-allowed" : "pointer", fontFamily: "'Gilroy', sans-serif" }}>
+                  {freeBooking2 ? "Booking..." : "Confirm Free Session →"}
+                </button>
+              </>
             )}
           </div>
         </div>
