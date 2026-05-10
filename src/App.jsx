@@ -2588,16 +2588,10 @@ const tabs = ["stats", "mentors", "registrations", "bookings", "customcalls", "g
           </div>
           <div>
             <label style={{ fontSize: 12, color: "#888", display: "block", marginBottom: 4 }}>Select Mentor</label>
-            <select className="ap-input" value={newFree.mentorId} onChange={async e => {
+            <select className="ap-input" value={newFree.mentorId} onChange={e => {
               const m = mentors.find(x => x._id === e.target.value);
               if (!m) return;
               setNewFree(f => ({ ...f, mentorId: m._id, mentorName: m.name, mentorPhoto: m.photo, mentorCollege: m.college, mentorCourse: m.course, mentorYear: m.year, slot: "" }));
-              setFreeSlots([]);
-              try {
-                const slots = await apiFetch(`/mentors/${m._id}/slots`);
-                const available = (slots || []).filter(s => s.status !== "booked");
-                setFreeSlots(available);
-              } catch (e) { console.error("Failed to load slots:", e); }
             }}>
               <option value="">Choose mentor...</option>
               {mentors.filter(m => m.visible).map(m => <option key={m._id} value={m._id}>{m.name} — {m.college}</option>)}
