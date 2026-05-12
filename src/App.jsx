@@ -875,7 +875,11 @@ const [showCustomCall, setShowCustomCall] = useState(false);
                       await apiFetch(`/free-sessions/${freeBooking._id}/book`, { method: "POST", body: freeForm });
                       setFreeBooked(true);
                     } catch (e) {
-                      setFreeErr(e.message.includes("full") ? "Sorry, this session just filled up!" : "Something went wrong. Try again.");
+                      setFreeErr(
+                        e.message.includes("full") ? "Sorry, this session just filled up!" :
+                        e.message.includes("already") ? "You've already registered for this session." :
+                        "Something went wrong. Try again."
+                      );
                     } finally { setFreeBooking2(false); }
                   }} style={{ width: "100%", background: freeBooking2 ? "#ccc" : "#16A34A", color: "#fff", border: "none", borderRadius: 10, padding: 13, fontSize: 15, fontWeight: 700, cursor: freeBooking2 ? "not-allowed" : "pointer", fontFamily: "'Gilroy', sans-serif" }}>
                     {freeBooking2 ? "Booking..." : "Confirm Free Session →"}
@@ -2056,7 +2060,7 @@ function AdminPanel({ onLogout }) {
   const [newInfluencer, setNewInfluencer] = useState({ name: "", email: "" });
   const [freeSessions, setFreeSessions] = useState([]);
   const [showAddFree, setShowAddFree] = useState(false);
-  const [newFree, setNewFree] = useState({ type: "onetoone", mentorId: "", slot: "", topic: "", maxParticipants: 30 });
+  const [newFree, setNewFree] = useState({ type: "onetoone", mentorId: "", slot: "", topic: "", maxParticipants: 1000 });
   const [freeSlots, setFreeSlots] = useState([]);
 
 
@@ -2600,11 +2604,12 @@ const tabs = ["stats", "mentors", "registrations", "bookings", "customcalls", "g
             <div>
               <label style={{ fontSize: 12, color: "#888", display: "block", marginBottom: 4 }}>Max Students</label>
               <select className="ap-input" value={newFree.maxParticipants} onChange={e => setNewFree(f => ({ ...f, maxParticipants: Number(e.target.value) }))}>
+                <option value={1000}>1000 students</option>
+                <option value={500}>500 students</option>
+                <option value={100}>100 students</option>
+                <option value={50}>50 students</option>
                 <option value={30}>30 students</option>
-                <option value={20}>20 students</option>
                 <option value={10}>10 students</option>
-                <option value={5}>5 students</option>
-                <option value={3}>3 students</option>
               </select>
             </div>
           )}
