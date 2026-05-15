@@ -716,6 +716,7 @@ const [showCustomCall, setShowCustomCall] = useState(false);
       if (priceSort === "hightolow") return (b.price || 299) - (a.price || 299);
       if (a.featured && !b.featured) return -1;
       if (!a.featured && b.featured) return 1;
+      if (a.featured && b.featured) return (a.featuredOrder || 0) - (b.featuredOrder || 0);
       const aAvail = (a.slots || []).some(s => s.day === todayName && s.status !== "booked");
       const bAvail = (b.slots || []).some(s => s.day === todayName && s.status !== "booked");
       if (aAvail && !bAvail) return -1;
@@ -2237,6 +2238,11 @@ const tabs = ["stats", "mentors", "registrations", "bookings", "customcalls", "g
                       <td>
                         <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
                           <button onClick={async () => { await apiFetch(`/mentors/${m._id}`, { method: "PUT", body: { featured: !m.featured } }); load(); }} style={{ background: m.featured ? "#FEF9C3" : "transparent", border: `1px solid ${m.featured ? "#EAB308" : "#E8E2D9"}`, color: m.featured ? "#854D0E" : "#888", padding: "8px 16px", borderRadius: 8, fontSize: 13, fontWeight: 600, cursor: "pointer", fontFamily: "'Gilroy', sans-serif" }}>{m.featured ? "⭐ Featured" : "Feature"}</button>
+                          {m.featured && (
+                            <input type="number" min={1} placeholder="Order" defaultValue={m.featuredOrder || 0}
+                              onBlur={async e => { await apiFetch(`/mentors/${m._id}`, { method: "PUT", body: { featuredOrder: Number(e.target.value) } }); load(); }}
+                              style={{ width: 60, background: "#FAF7F2", border: "1px solid #EAB308", borderRadius: 8, padding: "8px 10px", fontSize: 13, textAlign: "center", fontFamily: "'Gilroy', sans-serif", outline: "none" }} />
+                          )}
                           <button onClick={() => toggleVisibility(m)} className={m.visible ? "ap-btn-green" : "ap-btn-red"}>{m.visible ? "✓ Visible" : "Hidden"}</button>
                           <button onClick={() => { editMentorData.current = { ...m }; setEditMentor(m); }} className="ap-btn-blue">✏ Edit</button>
                           <button onClick={() => deleteMentor(m._id)} className="ap-btn-red">🗑</button>
