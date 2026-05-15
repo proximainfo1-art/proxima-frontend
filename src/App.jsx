@@ -3008,6 +3008,7 @@ export default function App() {
   const [bookData, setBookData] = useState(null);
   const [adminLoggedIn, setAdminLoggedIn] = useState(false);
   const [showCallOverlay, setShowCallOverlay] = useState(false);
+  const [showMentorClosed, setShowMentorClosed] = useState(false);
   const [mentorSession, setMentorSession] = useState(() => { try { return JSON.parse(localStorage.getItem("proxima_mentor")||"null"); } catch { return null; } });
 
   useEffect(() => {
@@ -3032,7 +3033,20 @@ export default function App() {
   return (
     <>
       <style>{css}</style>
-{view === "landing" && <Landing onMentee={() => setShowCallOverlay(true)} onMentor={() => navigate("register")} onGroup={() => navigate("group")} />}
+{view === "landing" && <Landing onMentee={() => setShowCallOverlay(true)} onMentor={() => setShowMentorClosed(true)} onGroup={() => navigate("group")} />}
+{showMentorClosed && (
+  <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.5)", zIndex: 2000, display: "flex", alignItems: "center", justifyContent: "center", padding: 20, fontFamily: "'Gilroy', sans-serif" }}
+    onClick={e => e.target === e.currentTarget && setShowMentorClosed(false)}>
+    <div style={{ background: "#fff", borderRadius: 20, width: "100%", maxWidth: 440, padding: "40px 36px", position: "relative", textAlign: "center" }}>
+      <button onClick={() => setShowMentorClosed(false)} style={{ position: "absolute", top: 16, right: 20, background: "none", border: "none", fontSize: 22, cursor: "pointer", color: "#888" }}>✕</button>
+      <div style={{ fontSize: 48, marginBottom: 16 }}>🙏</div>
+      <h2 style={{ fontSize: 22, fontWeight: 800, color: "#111", marginBottom: 12 }}>Applications Paused</h2>
+      <p style={{ color: "#666", fontSize: 15, lineHeight: 1.7, marginBottom: 24 }}>We're not accepting new guide applications at the moment. We have a strong team of mentors and want to ensure the best experience for students first.</p>
+      <p style={{ color: "#888", fontSize: 13, marginBottom: 28 }}>Check back soon — we'll open applications again when we're ready to grow the team.</p>
+      <button onClick={() => setShowMentorClosed(false)} style={{ background: "#111", color: "#fff", border: "none", borderRadius: 10, padding: "12px 32px", fontWeight: 700, fontSize: 15, cursor: "pointer", fontFamily: "'Gilroy', sans-serif" }}>Got it</button>
+    </div>
+  </div>
+)}
       {showCallOverlay && (
         <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.5)", zIndex: 2000, display: "flex", alignItems: "center", justifyContent: "center", padding: 20, fontFamily: "'Gilroy', sans-serif" }}
           onClick={e => e.target === e.currentTarget && setShowCallOverlay(false)}>
