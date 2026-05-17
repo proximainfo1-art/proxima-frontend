@@ -431,7 +431,12 @@ html,body { margin:0; padding:0; width:100%; overflow-x:hidden; }
 function MentorCard({ mentor, onClick, onBook }) {
   const today = new Date();
   const dayName = ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"][today.getDay()];
-  const hasToday = (mentor.slots || []).some(s => s.day === dayName && s.status !== "booked");
+  const nowMinutes = today.getHours() * 60 + today.getMinutes();
+  const hasToday = (mentor.slots || []).some(s => {
+    if (s.day !== dayName || s.status === "booked") return false;
+    const [h, m] = s.time.split(":").map(Number);
+    return (h * 60 + m) > nowMinutes;
+  });
 
   const collegeLocation = {
     "SRCC": "New Delhi, India",
@@ -1024,12 +1029,12 @@ const [form, setForm] = useState({ name: "", email: "", phone: "", code: session
     ? { background: "#FFF0EB", padding: "16px", width: "100%", display: "flex", flexDirection: "row", flexWrap: "wrap", gap: 8, borderBottom: "1px solid #F0D5CB" }
     : { background: "#FFF0EB", padding: "28px 24px", width: 220, flexShrink: 0, display: "flex", flexDirection: "column", gap: 12 };
   const RS = isMobile
-    ? { flex: 1, padding: "16px", overflowY: "auto", width: "100%", boxSizing: "border-box" }
-    : { flex: 1, padding: "28px 24px", overflowY: "auto", minWidth: 0, maxWidth: "calc(100% - 220px)", boxSizing: "border-box" };
+    ? { flex: 1, padding: "16px", overflowY: "auto", width: "100%", boxSizing: "border-box", maxHeight: "80vh" }
+    : { flex: 1, padding: "28px 24px", overflowY: "auto", minWidth: 0, maxWidth: "calc(100% - 220px)", boxSizing: "border-box", maxHeight: "80vh" };
 
   return (
     <div className="modal-overlay" onClick={onClose} onWheel={e => e.stopPropagation()}>
-      <div style={{ background: "#fff", borderRadius: 16, width: "100%", maxWidth: screen === "invoice" ? 560 : 680, maxHeight: "92vh", overflowY: "auto", position: "relative", fontFamily: "'Gilroy', sans-serif", color: "#111", overflow: "hidden", marginBottom: 0 }} onClick={e => e.stopPropagation()} onWheel={e => e.stopPropagation()}>
+      <div style={{ background: "#fff", borderRadius: 16, width: "100%", maxWidth: screen === "invoice" ? 560 : 680, maxHeight: "92vh", position: "relative", fontFamily: "'Gilroy', sans-serif", color: "#111", marginBottom: 0, display: "flex", flexDirection: "column" }} onClick={e => e.stopPropagation()} onWheel={e => e.stopPropagation()}>
         <button onClick={onClose} style={{ position: "absolute", top: 16, right: 16, background: "none", border: "none", cursor: "pointer", color: "#888", fontSize: 20, zIndex: 10 }}>✕</button>
 
         {/* PROFILE SCREEN */}
