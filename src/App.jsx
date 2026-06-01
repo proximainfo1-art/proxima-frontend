@@ -2,6 +2,28 @@ import { useState, useEffect, useCallback, useRef } from "react";
 import { inject } from "@vercel/analytics";
 inject();
 import { ShieldCheck, MessageSquare, Users, Wallet, Target, Zap } from "https://esm.sh/lucide-react@0.383.0";
+
+import { createClient } from "@supabase/supabase-js";
+
+const supabase = createClient(
+  import.meta.env.VITE_SUPABASE_URL,
+  import.meta.env.VITE_SUPABASE_ANON_KEY
+);
+
+async function uploadToCloudinary(file) {
+  // Same function name — nothing else in the code needs to change
+  const ext = file.name.split(".").pop();
+  const path = `photos/${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
+  const { data, error } = await supabase.storage
+    .from("mentor-images")
+    .upload(path, file, { upsert: true, contentType: file.type });
+  if (error) throw new Error(error.message);
+  const { data: { publicUrl } } = supabase.storage
+    .from("mentor-images")
+    .getPublicUrl(data.path);
+  return publicUrl;
+}
+
 const Shield = () => <span>✓</span>;
 const MessageCircle = () => <span>💬</span>;
 const Clock = () => <span>⏱</span>;
@@ -22,8 +44,6 @@ const Search = () => <span>🔍</span>;
 const Star = () => <span>★</span>;
 
 const ADMIN_WHATSAPP = "919354249942";
-const CLOUDINARY_CLOUD_NAME = "dlzqb06u6";
-const CLOUDINARY_UPLOAD_PRESET = "proxima_mentors";
 const API_BASE = "https://proxima-backend-hdho.onrender.com/api";
 
 const DAYS = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
@@ -73,14 +93,7 @@ async function apiFetch(path, options = {}) {
   return res.json();
 }
 
-async function uploadToCloudinary(file) {
-  const formData = new FormData();
-  formData.append("file", file);
-  formData.append("upload_preset", CLOUDINARY_UPLOAD_PRESET);
-  const res = await fetch(`https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/image/upload`, { method: "POST", body: formData });
-  const data = await res.json();
-  return data.secure_url;
-}
+
 
 const S = {
   bg: "#111111", text: "#FFFFFF", accent: "#E93800", accentLight: "#FF6B35", blue: "#3B82F6",
@@ -161,8 +174,8 @@ function Stars({ rating }) {
 }
 
 function Landing({ onMentee, onMentor, onGroup }) {
-  const LIGHT_LOGO = "https://res.cloudinary.com/dlzqb06u6/image/upload/v1775389312/wbzrczuoo9swrhfvxhrx.png";
-  const STUDENT_PHOTO = "https://res.cloudinary.com/dlzqb06u6/image/upload/v1778187215/Frame_1410082307-Picsart-AiImageEnhancer_woolpr.png";
+  const LIGHT_LOGO = "/images/Logo_Dark Mode.png";
+  const STUDENT_PHOTO = "/images/proxima landing.png";
   const [mentorCount, setMentorCount] = useState(0);
   const [collegeCount, setCollegeCount] = useState(0);
   const [openFaq, setOpenFaq] = useState(0);
@@ -292,8 +305,8 @@ html,body { margin:0; padding:0; width:100%; overflow-x:hidden; }
             <div style={{ display: "flex", alignItems: "center", gap: 12, flexWrap: "wrap" }}>
               
 {[
-  { name: "logo1", url: "https://res.cloudinary.com/dlzqb06u6/image/upload/v1776108712/logo1_qumizn.png" },
-  { name: "logo3", url: "https://res.cloudinary.com/dlzqb06u6/image/upload/v1776108714/logo3_oxri4g.png" },
+  { name: "logo1", url: "/images/logo1.png" },
+  { name: "logo3", url: "/images/logo3.png" },
 ].map(p => (
   <img key={p.name} src={p.url} alt={p.name} style={{ height: 48, objectFit: "contain" }} />
 ))}
@@ -338,7 +351,7 @@ html,body { margin:0; padding:0; width:100%; overflow-x:hidden; }
         <h2 style={{ textAlign: "center", fontSize: "clamp(24px,3vw,36px)", fontWeight: 800, marginBottom: 40 }}>Services We Offer</h2>
         <div className="service-grid">
           {[
-            { title: "Get Real College Guidance", color: "#E93800", bg: "#FFF0EB", desc: "Talk to current students and understand academics, campus life, placements, and everything that actually matters before you decide.", action: onMentee, img: "https://res.cloudinary.com/dlzqb06u6/image/upload/v1776108563/leftservices_uvt4sc.png" },
+            { title: "Get Real College Guidance", color: "#E93800", bg: "#FFF0EB", desc: "Talk to current students and understand academics, campus life, placements, and everything that actually matters before you decide.", action: onMentee, img: "/images/leftservices.png" },
             { title: "Join As A Guide", color: "#0000AF", bg: "#EEEEFF", desc: "Help juniors make better decisions, earn on your own schedule, and build a strong CV with real mentoring experience.", action: onMentor, img: "https://res.cloudinary.com/dlzqb06u6/image/upload/v1776108563/right_services_yetwgu.png" },
           ].map((s, i) => (
             <div key={i} style={{ background: s.bg, borderRadius: 20, overflow: "hidden", border: `1px solid ${i===0?"#F0D5CB":"#D5D5F0"}` }}>
@@ -406,7 +419,7 @@ html,body { margin:0; padding:0; width:100%; overflow-x:hidden; }
 
             <div key={i} className="cta-card">
 
-              <img src={i === 0 ? "https://res.cloudinary.com/dlzqb06u6/image/upload/v1776670802/icon1_lh1exz.jpg" : "https://res.cloudinary.com/dlzqb06u6/image/upload/v1776670792/icon2_z78wck.jpg"} alt="" style={{ width: 48, height: 48, objectFit: "contain", marginBottom: 16 }} />
+              <img src={i === 0 ? "/images/icon1.jpeg" : "/images/icon2.jpeg"} alt="" style={{ width: 48, height: 48, objectFit: "contain", marginBottom: 16 }} />
               <div style={{ fontWeight: 700, fontSize: 17, marginBottom: 10 }}>{c.title}</div>
               <div style={{ color: "#666", fontSize: 14, lineHeight: 1.7, marginBottom: 24 }}>{c.desc}</div>
               <button onClick={c.action} className={c.dark ? "btn-dark" : "btn-out"} style={{ padding: "11px 24px" }}>{c.btn}</button>
@@ -416,7 +429,7 @@ html,body { margin:0; padding:0; width:100%; overflow-x:hidden; }
       </div>
 
       <div className="l-footer">
-        <a href="/"><img src="https://res.cloudinary.com/dlzqb06u6/image/upload/v1775449181/Logo_Dark_Mode_hhg8xt.png" alt="Proxima" style={{ height: 28, objectFit: "contain" }} /></a>
+        <a href="/"><img src="/images/Logo_Dark Mode.png" alt="Proxima" style={{ height: 28, objectFit: "contain" }} /></a>
         <div style={{ display: "flex", gap: 24, flexWrap: "wrap", alignItems: "center" }}>
           <span style={{ fontSize: 15, color: "#aaa" }}>📞 +91 9354249942</span>
           <span style={{ fontSize: 15, color: "#aaa" }}>📞 +91 8130900858</span>
@@ -733,7 +746,7 @@ const [showCustomCall, setShowCustomCall] = useState(false);
     <div style={{ minHeight: "100vh", background: "#fff", fontFamily: "'Gilroy', sans-serif", color: "#111" }}>
       {/* Header */}
       <div style={{ background: "#fff", borderBottom: "1px solid #E8E2D9", padding: "14px 24px", position: "sticky", top: 0, zIndex: 100 }}>
-  <a href="/"><img src="https://res.cloudinary.com/dlzqb06u6/image/upload/v1775389312/wbzrczuoo9swrhfvxhrx.png" alt="Proxima" style={{ height: 24, objectFit: "contain" }} /></a>
+  <a href="/"><img src="/images/Logo_Dark Mode.png" alt="Proxima" style={{ height: 24, objectFit: "contain" }} /></a>
 </div>
 <div style={{ background: "#FFF0EB", padding: "clamp(24px,4vw,40px) clamp(16px,4vw,48px) clamp(20px,3vw,32px)" }}>
         <div style={{ maxWidth: 1100, margin: "0 auto" }}>
@@ -926,7 +939,7 @@ const [showCustomCall, setShowCustomCall] = useState(false);
       {selected && <MentorModal mentor={selected.mentor} initialScreen={selected.screen} onClose={() => setSelected(null)} onBook={(m, slot, form) => { setSelected(null); onBook(m, slot, form); }} />}
       {showCustomCall && <CustomCallModal onClose={() => setShowCustomCall(false)} />}
       <div style={{ background: "#111", color: "#fff", padding: "32px 48px", display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: 16, marginTop: 40 }}>
-        <a href="/"><img src="https://res.cloudinary.com/dlzqb06u6/image/upload/v1775449181/Logo_Dark_Mode_hhg8xt.png" alt="Proxima" style={{ height: 28, objectFit: "contain" }} /></a>
+        <a href="/"><img src="/images/Logo_Dark Mode.png" alt="Proxima" style={{ height: 28, objectFit: "contain" }} /></a>
         <div style={{ display: "flex", gap: 24, flexWrap: "wrap", alignItems: "center" }}>
           <span style={{ fontSize: 15, color: "#aaa" }}>+91 9354249942</span>
           <span style={{ fontSize: 15, color: "#aaa" }}>+91 8130900858</span>
@@ -1182,7 +1195,7 @@ function BookingFlow({ mentor, slot, onDone }) {
         currency: "INR",
         name: "Proxima",
         description: `Session with ${mentor.name} — ${slot}`,
-        image: "https://res.cloudinary.com/dlzqb06u6/image/upload/v1775389312/wbzrczuoo9swrhfvxhrx.png",
+        image: "/images/Logo_Dark Mode.png",
         order_id: orderId,
         prefill: { name: form.name, email: form.email, contact: form.phone },
         theme: { color: "#E93800" },
@@ -1262,7 +1275,7 @@ function MentorLogin({ onLogin }) {
 
         {/* Logo / Brand */}
         <div style={{ textAlign: "center", marginBottom: 48 }}>
-          <img src="https://res.cloudinary.com/dlzqb06u6/image/upload/v1775389312/wbzrczuoo9swrhfvxhrx.png" alt="Proxima" style={{ height: 40, objectFit: "contain", marginBottom: 8 }} />
+          <img src="/images/Logo_Dark Mode.png" alt="Proxima" style={{ height: 40, objectFit: "contain", marginBottom: 8 }} />
           <div style={{ color: "#555", fontSize: 15, marginTop: 8, letterSpacing: 2, textTransform: "uppercase" }}>Mentor Portal</div>
         </div>
 
@@ -1503,7 +1516,7 @@ const saveDetails = async () => {
 
       {/* Header */}
       <div style={{ background: "#fff", borderBottom: "1px solid #E8E2D9", padding: "16px 32px", display: "flex", alignItems: "center", justifyContent: "space-between", position: "sticky", top: 0, zIndex: 100 }}>
-<a href="/"><img src="https://res.cloudinary.com/dlzqb06u6/image/upload/v1775389312/wbzrczuoo9swrhfvxhrx.png" alt="Proxima" style={{ height: 36, objectFit: "contain", filter: "none" }} /></a>        <button onClick={onLogout} style={{ background: "none", border: "1.5px solid #111", color: "#111", padding: "8px 18px", borderRadius: 8, fontSize: 15, cursor: "pointer", display: "flex", alignItems: "center", gap: 6, fontFamily: "'Gilroy', sans-serif" }}>
+<a href="/"><img src="/images/Logo_Dark Mode.png" alt="Proxima" style={{ height: 36, objectFit: "contain", filter: "none" }} /></a>        <button onClick={onLogout} style={{ background: "none", border: "1.5px solid #111", color: "#111", padding: "8px 18px", borderRadius: 8, fontSize: 15, cursor: "pointer", display: "flex", alignItems: "center", gap: 6, fontFamily: "'Gilroy', sans-serif" }}>
           <LogOut /> Sign out
         </button>
       </div>
@@ -1869,7 +1882,7 @@ function MentorRegistration({ onDone }) {
 
       {/* Top nav */}
       <div style={{ background: "#fff", borderBottom: "1px solid #E8E2D9", padding: "14px 32px", display: "flex", alignItems: "center", justifyContent: "space-between", position: "sticky", top: 0, zIndex: 100 }}>
-        <a href="/"><img src="https://res.cloudinary.com/dlzqb06u6/image/upload/v1775389312/wbzrczuoo9swrhfvxhrx.png" alt="Proxima" style={{ height: 24, objectFit: "contain" }} /></a>
+        <a href="/"><img src="/images/Logo_Dark Mode.png" alt="Proxima" style={{ height: 24, objectFit: "contain" }} /></a>
         <button onClick={onDone} style={{ background: "none", border: "none", color: "#888", fontSize: 14, cursor: "pointer", fontFamily: "'Gilroy', sans-serif" }}>✕ Exit</button>
       </div>
 
@@ -2147,7 +2160,7 @@ const tabs = ["stats", "mentors", "registrations", "bookings", "customcalls", "g
       <div style={{ background: "#fff", borderBottom: "1px solid #E8E2D9", padding: "0 40px", position: "sticky", top: 0, zIndex: 100 }}>
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", paddingTop: 16, paddingBottom: 0 }}>
           <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-            <img src="https://res.cloudinary.com/dlzqb06u6/image/upload/v1775389312/wbzrczuoo9swrhfvxhrx.png" alt="Proxima" style={{ height: 28, objectFit: "contain" }} />
+            <img src="/images/Logo_Dark Mode.png" alt="Proxima" style={{ height: 28, objectFit: "contain" }} />
             <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: 3, color: "#aaa", textTransform: "uppercase" }}>Admin</span>
           </div>
           <button onClick={onLogout} style={{ background: "none", border: "1.5px solid #E8E2D9", color: "#555", padding: "8px 18px", borderRadius: 8, fontSize: 15, cursor: "pointer", fontFamily: "'Gilroy', sans-serif", fontWeight: 500, marginBottom: 8 }}>Sign Out</button>
@@ -2740,7 +2753,7 @@ function GroupDiscovery() {
         currency: "INR",
         name: "Proxima",
         description: `${selected.topic} — Group Session`,
-        image: "https://res.cloudinary.com/dlzqb06u6/image/upload/v1775389312/wbzrczuoo9swrhfvxhrx.png",
+        image: "/images/Logo_Dark Mode.png",
         order_id: orderId,
         prefill: { name: form.name, email: form.email, contact: form.phone },
         theme: { color: "#E93800" },
@@ -2777,7 +2790,7 @@ function GroupDiscovery() {
     <div style={{ minHeight: "100vh", background: "#fff", fontFamily: "'Gilroy', sans-serif", color: "#111" }}>
       {/* Header */}
       <div style={{ background: "#fff", borderBottom: "1px solid #E8E2D9", padding: "14px 24px", position: "sticky", top: 0, zIndex: 100 }}>
-        <a href="/"><img src="https://res.cloudinary.com/dlzqb06u6/image/upload/v1775389312/wbzrczuoo9swrhfvxhrx.png" alt="Proxima" style={{ height: 24, objectFit: "contain" }} /></a>
+        <a href="/"><img src="/images/Logo_Dark Mode.png" alt="Proxima" style={{ height: 24, objectFit: "contain" }} /></a>
       </div>
 
       {/* Hero */}
@@ -3004,7 +3017,7 @@ function GroupDiscovery() {
 
       {/* Footer */}
       <div style={{ background: "#111", color: "#fff", padding: "32px 48px", display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: 16, marginTop: 40 }}>
-        <a href="/"><img src="https://res.cloudinary.com/dlzqb06u6/image/upload/v1775449181/Logo_Dark_Mode_hhg8xt.png" alt="Proxima" style={{ height: 28, objectFit: "contain" }} /></a>
+        <a href="/"><img src="/images/Logo_Dark Mode.png" alt="Proxima" style={{ height: 28, objectFit: "contain" }} /></a>
         <div style={{ display: "flex", gap: 24, flexWrap: "wrap", alignItems: "center" }}>
           <span style={{ fontSize: 15, color: "#aaa" }}>+91 9354249942</span>
           <span style={{ fontSize: 15, color: "#aaa" }}>proxima.info1@gmail.com</span>
