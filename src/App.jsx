@@ -1485,6 +1485,8 @@ const saveDetails = async () => {
     const updateBody = { year: details.year, pin: details.pin, bio: details.bio, price: details.price };
     if (details.photo) updateBody.photo = details.photo;
     await apiFetch(`/mentors/${mentor._id}`, { method: "PUT", body: updateBody });
+    // ADD THIS LINE:
+    localStorage.setItem("proxima_mentor", JSON.stringify({ ...mentor, ...updateBody }));
     setEditingDetails(false);
     alert("Details updated!");
   } catch { alert("Failed to update"); } finally { setSavingDetails(false); }
