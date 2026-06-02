@@ -174,7 +174,7 @@ function Stars({ rating }) {
 }
 
 function Landing({ onMentee, onMentor, onGroup }) {
-  const LIGHT_LOGO = "/images/Logo_Dark Mode.png";
+  const LIGHT_LOGO = "/images/logo-dark.png";
   const STUDENT_PHOTO = "/images/proxima landing.png";
   const [mentorCount, setMentorCount] = useState(0);
   const [collegeCount, setCollegeCount] = useState(0);
@@ -316,9 +316,6 @@ html,body { margin:0; padding:0; width:100%; overflow-x:hidden; }
         </div>
         <div className="l-right fade-up" style={{ position: "relative", display: "flex", justifyContent: "center", animationDelay: "0.15s" }}>
           <img src={STUDENT_PHOTO} alt="Student" style={{ width: "100%", maxWidth: 520, height: 540, objectFit: "cover", objectPosition: "top", borderRadius: 24 }} />
-          <div className="bubble" style={{ top: 32, right: -10, fontSize: 14 }}>Are societies actually worth joining?</div>
-<div className="bubble bubble-2" style={{ top: "42%", left: -30, fontSize: 14 }}>Should I prioritise brand name or course?</div>
-<div className="bubble" style={{ bottom: 48, right: -10, fontSize: 14 }}>Is attendance strict in Delhi University colleges?</div>
         </div>
       </div>
       </div>
@@ -352,7 +349,7 @@ html,body { margin:0; padding:0; width:100%; overflow-x:hidden; }
         <div className="service-grid">
           {[
             { title: "Get Real College Guidance", color: "#E93800", bg: "#FFF0EB", desc: "Talk to current students and understand academics, campus life, placements, and everything that actually matters before you decide.", action: onMentee, img: "/images/leftservices.png" },
-            { title: "Join As A Guide", color: "#0000AF", bg: "#EEEEFF", desc: "Help juniors make better decisions, earn on your own schedule, and build a strong CV with real mentoring experience.", action: onMentor, img: "/images/leftservices.png" },
+            { title: "Join As A Guide", color: "#0000AF", bg: "#EEEEFF", desc: "Help juniors make better decisions, earn on your own schedule, and build a strong CV with real mentoring experience.", action: onMentor, img: "/images/right-services.png" },
           ].map((s, i) => (
             <div key={i} style={{ background: s.bg, borderRadius: 20, overflow: "hidden", border: `1px solid ${i===0?"#F0D5CB":"#D5D5F0"}` }}>
               <img src={s.img} alt={s.title} style={{ width: "100%", height: 240, objectFit: "cover", display: "block" }} />
@@ -429,7 +426,7 @@ html,body { margin:0; padding:0; width:100%; overflow-x:hidden; }
       </div>
 
       <div className="l-footer">
-        <a href="/"><img src="/images/Logo_Dark Mode.png" alt="Proxima" style={{ height: 28, objectFit: "contain" }} /></a>
+        <a href="/"><img src="/images/logo-dark.png" alt="Proxima" style={{ height: 28, objectFit: "contain" }} /></a>
         <div style={{ display: "flex", gap: 24, flexWrap: "wrap", alignItems: "center" }}>
           <span style={{ fontSize: 15, color: "#aaa" }}>📞 +91 9354249942</span>
           <span style={{ fontSize: 15, color: "#aaa" }}>📞 +91 8130900858</span>
@@ -746,7 +743,7 @@ const [showCustomCall, setShowCustomCall] = useState(false);
     <div style={{ minHeight: "100vh", background: "#fff", fontFamily: "'Gilroy', sans-serif", color: "#111" }}>
       {/* Header */}
       <div style={{ background: "#fff", borderBottom: "1px solid #E8E2D9", padding: "14px 24px", position: "sticky", top: 0, zIndex: 100 }}>
-  <a href="/"><img src="/images/Logo_Dark Mode.png" alt="Proxima" style={{ height: 24, objectFit: "contain" }} /></a>
+  <a href="/"><img src="/images/logo-dark.png" alt="Proxima" style={{ height: 24, objectFit: "contain" }} /></a>
 </div>
 <div style={{ background: "#FFF0EB", padding: "clamp(24px,4vw,40px) clamp(16px,4vw,48px) clamp(20px,3vw,32px)" }}>
         <div style={{ maxWidth: 1100, margin: "0 auto" }}>
@@ -939,7 +936,7 @@ const [showCustomCall, setShowCustomCall] = useState(false);
       {selected && <MentorModal mentor={selected.mentor} initialScreen={selected.screen} onClose={() => setSelected(null)} onBook={(m, slot, form) => { setSelected(null); onBook(m, slot, form); }} />}
       {showCustomCall && <CustomCallModal onClose={() => setShowCustomCall(false)} />}
       <div style={{ background: "#111", color: "#fff", padding: "32px 48px", display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: 16, marginTop: 40 }}>
-        <a href="/"><img src="/images/Logo_Dark Mode.png" alt="Proxima" style={{ height: 28, objectFit: "contain" }} /></a>
+        <a href="/"><img src="/images/logo-dark.png" alt="Proxima" style={{ height: 28, objectFit: "contain" }} /></a>
         <div style={{ display: "flex", gap: 24, flexWrap: "wrap", alignItems: "center" }}>
           <span style={{ fontSize: 15, color: "#aaa" }}>+91 9354249942</span>
           <span style={{ fontSize: 15, color: "#aaa" }}>+91 8130900858</span>
@@ -1195,7 +1192,7 @@ function BookingFlow({ mentor, slot, onDone }) {
         currency: "INR",
         name: "Proxima",
         description: `Session with ${mentor.name} — ${slot}`,
-        image: "/images/Logo_Dark Mode.png",
+        image: "/images/logo-dark.png",
         order_id: orderId,
         prefill: { name: form.name, email: form.email, contact: form.phone },
         theme: { color: "#E93800" },
@@ -1275,7 +1272,7 @@ function MentorLogin({ onLogin }) {
 
         {/* Logo / Brand */}
         <div style={{ textAlign: "center", marginBottom: 48 }}>
-          <img src="/images/Logo_Dark Mode.png" alt="Proxima" style={{ height: 40, objectFit: "contain", marginBottom: 8 }} />
+          <img src="/images/logo-dark.png" alt="Proxima" style={{ height: 40, objectFit: "contain", marginBottom: 8 }} />
           <div style={{ color: "#555", fontSize: 15, marginTop: 8, letterSpacing: 2, textTransform: "uppercase" }}>Mentor Portal</div>
         </div>
 
@@ -1518,7 +1515,7 @@ const saveDetails = async () => {
 
       {/* Header */}
       <div style={{ background: "#fff", borderBottom: "1px solid #E8E2D9", padding: "16px 32px", display: "flex", alignItems: "center", justifyContent: "space-between", position: "sticky", top: 0, zIndex: 100 }}>
-<a href="/"><img src="/images/Logo_Dark Mode.png" alt="Proxima" style={{ height: 36, objectFit: "contain", filter: "none" }} /></a>        <button onClick={onLogout} style={{ background: "none", border: "1.5px solid #111", color: "#111", padding: "8px 18px", borderRadius: 8, fontSize: 15, cursor: "pointer", display: "flex", alignItems: "center", gap: 6, fontFamily: "'Gilroy', sans-serif" }}>
+<a href="/"><img src="/images/logo-dark.png" alt="Proxima" style={{ height: 36, objectFit: "contain", filter: "none" }} /></a>        <button onClick={onLogout} style={{ background: "none", border: "1.5px solid #111", color: "#111", padding: "8px 18px", borderRadius: 8, fontSize: 15, cursor: "pointer", display: "flex", alignItems: "center", gap: 6, fontFamily: "'Gilroy', sans-serif" }}>
           <LogOut /> Sign out
         </button>
       </div>
@@ -1884,7 +1881,7 @@ function MentorRegistration({ onDone }) {
 
       {/* Top nav */}
       <div style={{ background: "#fff", borderBottom: "1px solid #E8E2D9", padding: "14px 32px", display: "flex", alignItems: "center", justifyContent: "space-between", position: "sticky", top: 0, zIndex: 100 }}>
-        <a href="/"><img src="/images/Logo_Dark Mode.png" alt="Proxima" style={{ height: 24, objectFit: "contain" }} /></a>
+        <a href="/"><img src="/images/logo-dark.png" alt="Proxima" style={{ height: 24, objectFit: "contain" }} /></a>
         <button onClick={onDone} style={{ background: "none", border: "none", color: "#888", fontSize: 14, cursor: "pointer", fontFamily: "'Gilroy', sans-serif" }}>✕ Exit</button>
       </div>
 
@@ -2162,7 +2159,7 @@ const tabs = ["stats", "mentors", "registrations", "bookings", "customcalls", "g
       <div style={{ background: "#fff", borderBottom: "1px solid #E8E2D9", padding: "0 40px", position: "sticky", top: 0, zIndex: 100 }}>
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", paddingTop: 16, paddingBottom: 0 }}>
           <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-            <img src="/images/Logo_Dark Mode.png" alt="Proxima" style={{ height: 28, objectFit: "contain" }} />
+            <img src="/images/logo-dark.png" alt="Proxima" style={{ height: 28, objectFit: "contain" }} />
             <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: 3, color: "#aaa", textTransform: "uppercase" }}>Admin</span>
           </div>
           <button onClick={onLogout} style={{ background: "none", border: "1.5px solid #E8E2D9", color: "#555", padding: "8px 18px", borderRadius: 8, fontSize: 15, cursor: "pointer", fontFamily: "'Gilroy', sans-serif", fontWeight: 500, marginBottom: 8 }}>Sign Out</button>
@@ -2755,7 +2752,7 @@ function GroupDiscovery() {
         currency: "INR",
         name: "Proxima",
         description: `${selected.topic} — Group Session`,
-        image: "/images/Logo_Dark Mode.png",
+        image: "/images/logo-dark.png",
         order_id: orderId,
         prefill: { name: form.name, email: form.email, contact: form.phone },
         theme: { color: "#E93800" },
@@ -2792,7 +2789,7 @@ function GroupDiscovery() {
     <div style={{ minHeight: "100vh", background: "#fff", fontFamily: "'Gilroy', sans-serif", color: "#111" }}>
       {/* Header */}
       <div style={{ background: "#fff", borderBottom: "1px solid #E8E2D9", padding: "14px 24px", position: "sticky", top: 0, zIndex: 100 }}>
-        <a href="/"><img src="/images/Logo_Dark Mode.png" alt="Proxima" style={{ height: 24, objectFit: "contain" }} /></a>
+        <a href="/"><img src="/images/logo-dark.png" alt="Proxima" style={{ height: 24, objectFit: "contain" }} /></a>
       </div>
 
       {/* Hero */}
@@ -3019,7 +3016,7 @@ function GroupDiscovery() {
 
       {/* Footer */}
       <div style={{ background: "#111", color: "#fff", padding: "32px 48px", display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: 16, marginTop: 40 }}>
-        <a href="/"><img src="/images/Logo_Dark Mode.png" alt="Proxima" style={{ height: 28, objectFit: "contain" }} /></a>
+        <a href="/"><img src="/images/logo-dark.png" alt="Proxima" style={{ height: 28, objectFit: "contain" }} /></a>
         <div style={{ display: "flex", gap: 24, flexWrap: "wrap", alignItems: "center" }}>
           <span style={{ fontSize: 15, color: "#aaa" }}>+91 9354249942</span>
           <span style={{ fontSize: 15, color: "#aaa" }}>proxima.info1@gmail.com</span>
