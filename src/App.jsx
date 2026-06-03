@@ -3017,7 +3017,7 @@ function GroupDiscovery() {
 
       {/* Footer */}
       <div style={{ background: "#111", color: "#fff", padding: "32px 48px", display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: 16, marginTop: 40 }}>
-        <a href="/"><img src="/images/logo-light.png" alt="Proxima" style={{ height: 28, objectFit: "contain" }} /></a>
+        <a href="/"><img src="/images/logo-dark.png" alt="Proxima" style={{ height: 28, objectFit: "contain" }} /></a>
         <div style={{ display: "flex", gap: 24, flexWrap: "wrap", alignItems: "center" }}>
           <span style={{ fontSize: 15, color: "#aaa" }}>+91 9354249942</span>
           <span style={{ fontSize: 15, color: "#aaa" }}>proxima.info1@gmail.com</span>
