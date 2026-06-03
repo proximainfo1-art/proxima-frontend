@@ -277,11 +277,11 @@ html,body { margin:0; padding:0; width:100%; overflow-x:hidden; }
 }
       `}</style>
 
-     <nav style={{ display:"flex", alignItems:"center", justifyContent:"space-between", padding:"16px 20px", borderBottom:"1px solid #222222", background:"#111111", position:"sticky", top:0, zIndex:100, width:"100%", boxSizing:"border-box" }}>
+     <nav style={{ display:"flex", alignItems:"center", justifyContent:"space-between", padding:"16px 20px", borderBottom:"1px solid #E8E2D9", background:"#ffffff", position:"sticky", top:0, zIndex:100, width:"100%", boxSizing:"border-box" }}>
   <img src={LIGHT_LOGO} alt="Proxima" style={{ height: 24, width: "auto", objectFit: "contain", flexShrink: 0, cursor: "pointer" }} onClick={() => window.location.href = "/"} />
   <div style={{ display:"flex", gap:8, alignItems:"center" }}>
     <button onClick={onMentee} style={{ background:"#E93800", color:"#fff", border:"1.5px solid #111", padding:"9px 14px", borderRadius:8, fontSize:13, fontWeight:600, cursor:"pointer", fontFamily:"'Gilroy',sans-serif", whiteSpace:"nowrap", display: window.innerWidth < 600 ? "none" : "inline-block" }}>Get Guidance</button>
-    <button onClick={onMentor} style={{ background:"transparent", color:"#fff", border:"1.5px solid #fff", padding:"9px 14px", borderRadius:8, fontSize:13, fontWeight:600, cursor:"pointer", fontFamily:"'Gilroy',sans-serif", whiteSpace:"nowrap", display: window.innerWidth < 600 ? "none" : "inline-block" }}>Join As Guide</button>
+    <button onClick={onMentor} style={{ background:"transparent", color:"#111", border:"1.5px solid #111", padding:"9px 14px", borderRadius:8, fontSize:13, fontWeight:600, cursor:"pointer", fontFamily:"'Gilroy',sans-serif", whiteSpace:"nowrap", display: window.innerWidth < 600 ? "none" : "inline-block" }}>Join As Guide</button>
   </div>
 </nav>
 
@@ -2169,7 +2169,7 @@ const tabs = ["stats", "mentors", "registrations", "bookings", "customcalls", "g
           {tabs.map(t => (
   <button key={t} className={`ap-tab ${tab === t ? "active" : ""}`} onClick={() => setTab(t)} style={{ textTransform: "capitalize" }}>
     {t === "registrations" && regs.length > 0
-      ? <>Applications <span style={{ marginLeft:6, background:"#E93800", color:"#fff", borderRadius:20, padding:"2px 8px", fontSize:11, fontWeight:700 }}>{regs.length}</span></>
+      ? <>Applications <span style={{ marginLeft:6, background:"#fff", color:"#111", borderRadius:20, padding:"2px 8px", fontSize:11, fontWeight:700 }}>{regs.length}</span></>
       : t === "customcalls"
       ? <>Custom Calls{customCalls.filter(c=>c.status==='pending').length > 0 && <span style={{ marginLeft:6, background:"#E93800", color:"#fff", borderRadius:20, padding:"2px 8px", fontSize:11, fontWeight:700 }}>{customCalls.filter(c=>c.status==='pending').length}</span>}</>
       : t.charAt(0).toUpperCase() + t.slice(1)
