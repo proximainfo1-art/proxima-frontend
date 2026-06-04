@@ -315,7 +315,7 @@ html,body { margin:0; padding:0; width:100%; overflow-x:hidden; }
           </div>
         </div>
         <div className="l-right fade-up" style={{ position: "relative", display: "flex", justifyContent: "center", animationDelay: "0.15s" }}>
-          <img src={STUDENT_PHOTO} alt="Student" style={{ width: "100%", maxWidth: 520, height: 540, objectFit: "cover", objectPosition: "top", borderRadius: 24 }} />
+          <img src={STUDENT_PHOTO} alt="Student" style={{ width: "100%", maxWidth: 600, height: 540, objectFit: "cover", objectPosition: "center", borderRadius: 24 }} />
         </div>
       </div>
       </div>
