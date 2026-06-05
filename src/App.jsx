@@ -316,7 +316,7 @@ html,body { margin:0; padding:0; width:100%; overflow-x:hidden; }
         </div>
 <div className="l-right fade-up" style={{ position: "relative", display: "flex", justifyContent: "center", animationDelay: "0.15s" }}>
   <img src={STUDENT_PHOTO} alt="Student" style={{ width: "100%", maxWidth: 520, height: 540, objectFit: "cover", objectPosition: "top", borderRadius: 24 }} />
-  <div className="bubble" style={{ position: "absolute", top: 32, right: -10, fontSize: 14, background: "#fff", borderRadius: 12, padding: "11px 15px", boxShadow: "0 4px 20px rgba(0,0,0,0.10)", maxWidth: 210 }}>Are societies actually worth joining?</div>
+  <div className="bubble" style={{ position: "absolute", top: 28, right: -10, fontSize: 14, background: "#fff", borderRadius: 12, padding: "11px 15px", boxShadow: "0 4px 20px rgba(0,0,0,0.10)", maxWidth: 210 }}>Are societies actually worth joining?</div>
   <div className="bubble" style={{ position: "absolute", top: "42%", left: -30, fontSize: 14, background: "#fff", borderRadius: 12, padding: "11px 15px", boxShadow: "0 4px 20px rgba(0,0,0,0.10)", maxWidth: 210 }}>Should I prioritise brand name or course?</div>
   <div className="bubble" style={{ position: "absolute", bottom: 48, right: -10, fontSize: 14, background: "#fff", borderRadius: 12, padding: "11px 15px", boxShadow: "0 4px 20px rgba(0,0,0,0.10)", maxWidth: 210 }}>Is attendance strict in Delhi University colleges?</div>
 </div>
