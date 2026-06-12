@@ -1147,7 +1147,8 @@ const [form, setForm] = useState({ name: "", email: "", phone: "", code: session
                   onFocus={e => e.target.style.borderColor="#E93800"} onBlur={e => e.target.style.borderColor="#ddd"} />
               </div>
               <div style={{ textAlign: "right" }}>
-                <button onClick={() => { if (!form.name||!form.email||!form.phone||!form.message) { alert("Please fill all required fields."); return; } onBook(mentor, `${selectedDay?.dayName} ${selectedSlot}`, form); }}
+                <button onClick={() => { if (!form.name||!form.email||!form.phone||!form.message) { alert("Please fill all required fields."); return; } sessionStorage.setItem("proxima_booking_form", JSON.stringify(form));
+onBook(mentor, `${selectedDay?.dayName} ${selectedSlot}`, form); }}
                   style={{ background: "#111", color: "#fff", border: "none", borderRadius: 8, padding: "12px 24px", fontSize: 14, fontWeight: 600, cursor: "pointer", fontFamily: "'Gilroy', sans-serif" }}>
                   Secure Checkout →
                 </button>
@@ -1162,10 +1163,11 @@ const [form, setForm] = useState({ name: "", email: "", phone: "", code: session
   );
 }
 
-function BookingFlow({ mentor, slot, onDone }) {
+function BookingFlow({ mentor, slot, form: passedForm, onDone }) {
   const [loading, setLoading] = useState(false);
   const [done, setDone] = useState(false);
-  const [form, setForm] = useState(() => {
+  const [form] = useState(() => {
+    if (passedForm && passedForm.name) return passedForm;
     try { return JSON.parse(sessionStorage.getItem("proxima_booking_form") || "{}"); } catch { return {}; }
   });
 
@@ -3170,8 +3172,8 @@ export default function App() {
           </div>
         </div>
       )}      {view === "group" && <GroupDiscovery />}
-      {view === "discovery" && <MentorDiscovery onBook={(m,s) => { setBookData({mentor:m,slot:s}); navigate("booking"); }} />}
-      {view === "booking" && bookData && <BookingFlow mentor={bookData.mentor} slot={bookData.slot} onDone={() => { setBookData(null); navigate("discovery"); }} />}
+      {view === "discovery" && <MentorDiscovery onBook={(m,s,f) => { setBookData({mentor:m,slot:s,form:f}); navigate("booking"); }} />}
+      {view === "booking" && bookData && <BookingFlow mentor={bookData.mentor} slot={bookData.slot} form={bookData.form} onDone={() => { setBookData(null); navigate("discovery"); }} />}
       {view === "register" && <MentorRegistration onDone={() => navigate("landing")} />}
       <footer style={{ textAlign: "center", padding: "20px", borderTop: `1px solid ${S.border}`, color: "#555", fontSize: 12 }}>
         © 2025 Proxima &nbsp;·&nbsp;
