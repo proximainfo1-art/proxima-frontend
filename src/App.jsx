@@ -1134,7 +1134,7 @@ const [form, setForm] = useState({ name: "", email: "", phone: "", code: session
               <div style={{ display: "flex", flexDirection: "column", gap: 12, marginBottom: 12, width: "100%" }}>
 {[["Enter Full Name*","name","text","John Doe"],["Enter Email*","email","email","johnydoe@gmail.com"],["Enter Phone Number*","phone","tel","9876543210"],["Referral / Discount Code (optional)","code","text","Enter referral or discount code"]].map(([label,key,type,ph]) => (                  <div key={key} style={{ display: "flex", flexDirection: "column", gap: 5 }}>
                     <label style={{ fontSize: 12, color: "#555", fontWeight: 500 }}>{label}</label>
-                    <input type={type} placeholder={ph} value={form[key]} onChange={e => upd(key, e.target.value)}
+                    <input type={type} placeholder={ph} value={form[key]} onChange={e => upd(key, key === "code" ? e.target.value.toUpperCase() : e.target.value)}
                       style={{ border: "1.5px solid #ddd", borderRadius: 8, padding: "10px 12px", fontSize: 14, outline: "none", fontFamily: "'Gilroy', sans-serif", color: "#111", background: "#fff", width: "100%", boxSizing: "border-box" }}
                       onFocus={e => e.target.style.borderColor="#E93800"} onBlur={e => e.target.style.borderColor="#ddd"} />
                   </div>
