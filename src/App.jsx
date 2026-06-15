@@ -968,7 +968,8 @@ function MentorModal({ mentor: initialMentor, onClose, onBook, initialScreen = "
   }, [initialMentor._id]);
   const [selectedDay, setSelectedDay] = useState(null);
   const [selectedSlot, setSelectedSlot] = useState(null);
-const [form, setForm] = useState({ name: "", email: "", phone: "", code: sessionStorage.getItem("proxima_ref") || new URLSearchParams(window.location.search).get("ref")?.toUpperCase() || "", message: "" });  const upd = (k, v) => setForm(f => ({ ...f, [k]: v }));
+const [form, setForm] = useState({ name: "", email: "", phone: "", code: sessionStorage.getItem("proxima_ref") || new URLSearchParams(window.location.search).get("ref")?.toUpperCase() || "", message: "" });
+const [codeStatus, setCodeStatus] = useState(null); // null | "valid_discount" | "valid_referral" | "invalid"  const upd = (k, v) => setForm(f => ({ ...f, [k]: v }));
 
   const days = ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
   const shortDays = ["SUN","MON","TUE","WED","THU","FRI","SAT"];
@@ -1132,13 +1133,51 @@ const [form, setForm] = useState({ name: "", email: "", phone: "", code: session
             <div style={RS}>
               <div style={{ fontWeight: 600, fontSize: 15, color: "#111", marginBottom: 18 }}>Please fill your details to confirm booking</div>
               <div style={{ display: "flex", flexDirection: "column", gap: 12, marginBottom: 12, width: "100%" }}>
-{[["Enter Full Name*","name","text","John Doe"],["Enter Email*","email","email","johnydoe@gmail.com"],["Enter Phone Number*","phone","tel","9876543210"],["Referral / Discount Code (optional)","code","text","Enter referral or discount code"]].map(([label,key,type,ph]) => (                  <div key={key} style={{ display: "flex", flexDirection: "column", gap: 5 }}>
+{[["Enter Full Name*","name","text","John Doe"],["Enter Email*","email","email","johnydoe@gmail.com"],["Enter Phone Number*","phone","tel","9876543210"]].map(([label,key,type,ph]) => (                  <div key={key} style={{ display: "flex", flexDirection: "column", gap: 5 }}>
                     <label style={{ fontSize: 12, color: "#555", fontWeight: 500 }}>{label}</label>
-                    <input type={type} placeholder={ph} value={form[key]} onChange={e => upd(key, key === "code" ? e.target.value.toUpperCase() : e.target.value)}
+                    <input type={type} placeholder={ph} value={form[key]} onChange={e => upd(key, e.target.value)}
                       style={{ border: "1.5px solid #ddd", borderRadius: 8, padding: "10px 12px", fontSize: 14, outline: "none", fontFamily: "'Gilroy', sans-serif", color: "#111", background: "#fff", width: "100%", boxSizing: "border-box" }}
                       onFocus={e => e.target.style.borderColor="#E93800"} onBlur={e => e.target.style.borderColor="#ddd"} />
                   </div>
                 ))}
+                <div style={{ display: "flex", flexDirection: "column", gap: 5 }}>
+                  <label style={{ fontSize: 12, color: "#555", fontWeight: 500 }}>Referral / Discount Code (optional)</label>
+                  <div style={{ display: "flex", gap: 8 }}>
+                    <input type="text" placeholder="Enter referral or discount code" value={form.code}
+                      onChange={e => { upd("code", e.target.value.toUpperCase()); setCodeStatus(null); }}
+                      style={{ border: `1.5px solid ${codeStatus === "invalid" ? "#DC2626" : codeStatus ? "#16A34A" : "#ddd"}`, borderRadius: 8, padding: "10px 12px", fontSize: 14, outline: "none", fontFamily: "'Gilroy', sans-serif", color: "#111", background: "#fff", flex: 1, boxSizing: "border-box" }}
+                      onFocus={e => e.target.style.borderColor = codeStatus === "invalid" ? "#DC2626" : codeStatus ? "#16A34A" : "#E93800"}
+                      onBlur={e => e.target.style.borderColor = codeStatus === "invalid" ? "#DC2626" : codeStatus ? "#16A34A" : "#ddd"} />
+                    <button type="button" onClick={async () => {
+                      const code = form.code.trim().toUpperCase();
+                      if (!code) return;
+                      if (code === "PROXIMA20") { setCodeStatus("valid_discount"); return; }
+                      try {
+                        const mentors = await apiFetch("/mentors/public");
+                        const match = mentors.find(m => m.referralCode?.toUpperCase() === code);
+                        if (match) { setCodeStatus("valid_referral"); }
+                        else { setCodeStatus("invalid"); }
+                      } catch { setCodeStatus("invalid"); }
+                    }} style={{ background: "#111", color: "#fff", border: "none", borderRadius: 8, padding: "10px 16px", fontSize: 13, fontWeight: 700, cursor: "pointer", fontFamily: "'Gilroy', sans-serif", whiteSpace: "nowrap" }}>
+                      Apply
+                    </button>
+                  </div>
+                  {codeStatus === "valid_discount" && (
+                    <div style={{ display: "flex", alignItems: "center", gap: 6, background: "#F0FBF6", border: "1px solid #BBF0D6", borderRadius: 8, padding: "8px 12px", fontSize: 13, color: "#16A34A", fontWeight: 600 }}>
+                      ✓ 20% discount applied! You save ₹{Math.round((mentor.price || 299) * 0.2)}
+                    </div>
+                  )}
+                  {codeStatus === "valid_referral" && (
+                    <div style={{ display: "flex", alignItems: "center", gap: 6, background: "#F0FBF6", border: "1px solid #BBF0D6", borderRadius: 8, padding: "8px 12px", fontSize: 13, color: "#16A34A", fontWeight: 600 }}>
+                      ✓ Referral code applied!
+                    </div>
+                  )}
+                  {codeStatus === "invalid" && (
+                    <div style={{ display: "flex", alignItems: "center", gap: 6, background: "#FFF5F5", border: "1px solid #FECACA", borderRadius: 8, padding: "8px 12px", fontSize: 13, color: "#DC2626", fontWeight: 600 }}>
+                      ✗ Invalid code
+                    </div>
+                  )}
+                </div>
               </div>
               <div style={{ display: "flex", flexDirection: "column", gap: 5, marginBottom: 20 }}>
                 <label style={{ fontSize: 12, color: "#555", fontWeight: 500 }}>Please briefly describe your query*</label>
