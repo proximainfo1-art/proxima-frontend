@@ -969,7 +969,8 @@ function MentorModal({ mentor: initialMentor, onClose, onBook, initialScreen = "
   const [selectedDay, setSelectedDay] = useState(null);
   const [selectedSlot, setSelectedSlot] = useState(null);
 const [form, setForm] = useState({ name: "", email: "", phone: "", code: sessionStorage.getItem("proxima_ref") || new URLSearchParams(window.location.search).get("ref")?.toUpperCase() || "", message: "" });
-const [codeStatus, setCodeStatus] = useState(null); // null | "valid_discount" | "valid_referral" | "invalid"  const upd = (k, v) => setForm(f => ({ ...f, [k]: v }));
+const [codeStatus, setCodeStatus] = useState(null);
+const upd = (k, v) => setForm(f => ({ ...f, [k]: v }));
 
   const days = ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
   const shortDays = ["SUN","MON","TUE","WED","THU","FRI","SAT"];
