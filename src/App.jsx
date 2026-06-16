@@ -1154,9 +1154,13 @@ const upd = (k, v) => setForm(f => ({ ...f, [k]: v }));
                       if (!code) return;
                       if (code === "PROXIMA20") { setCodeStatus("valid_discount"); return; }
                       try {
-                        const mentors = await apiFetch("/mentors/public");
-                        const match = mentors.find(m => m.referralCode?.toUpperCase() === code);
-                        if (match) { setCodeStatus("valid_referral"); }
+                        const [mentors, influencers] = await Promise.all([
+                          apiFetch("/mentors/public"),
+                          apiFetch("/influencers").catch(() => []),
+                        ]);
+                        const mentorMatch = mentors.find(m => m.referralCode?.toUpperCase() === code);
+                        const influencerMatch = influencers.find(i => i.code?.toUpperCase() === code);
+                        if (mentorMatch || influencerMatch) { setCodeStatus("valid_referral"); }
                         else { setCodeStatus("invalid"); }
                       } catch { setCodeStatus("invalid"); }
                     }} style={{ background: "#111", color: "#fff", border: "none", borderRadius: 8, padding: "10px 16px", fontSize: 13, fontWeight: 700, cursor: "pointer", fontFamily: "'Gilroy', sans-serif", whiteSpace: "nowrap" }}>
