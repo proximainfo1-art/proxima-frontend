@@ -1518,6 +1518,12 @@ function SlotManager({ mentor, onSave }) {
 function MentorDashboard({ mentor, onLogout }) {
   const [tab, setTab] = useState("bookings");
   const [bookings, setBookings] = useState([]);
+  const [redemptions, setRedemptions] = useState([]);
+  const [upiId, setUpiId] = useState("");
+  const [redeeming, setRedeeming] = useState(false);
+  const [redeemError, setRedeemError] = useState("");
+  const [redeemSuccess, setRedeemSuccess] = useState(false);
+  const [influencerEarnings, setInfluencerEarnings] = useState(0);
   const [editingBio, setEditingBio] = useState(false);
   const [bio, setBio] = useState(mentor.bio || "");
   const [savingBio, setSavingBio] = useState(false);
@@ -1540,6 +1546,12 @@ const saveDetails = async () => {
 
   useEffect(() => {
     apiFetch(`/bookings?mentorId=${mentor._id}`).then(setBookings).catch(() => {});
+    apiFetch(`/redemptions/mentor/${mentor._id}`).then(setRedemptions).catch(() => {});
+    // Check if mentor is also an influencer
+    apiFetch(`/influencers`).then(influencers => {
+      const match = influencers.find(i => i.email?.toLowerCase() === mentor.email?.toLowerCase());
+      if (match) setInfluencerEarnings(match.totalEarnings || 0);
+    }).catch(() => {});
   }, [mentor._id]);
 
   const saveBio = async () => {
@@ -1677,16 +1689,69 @@ const saveDetails = async () => {
         )
       )}
     </div>
-    <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-        <div style={{ textAlign: "center", background: "rgba(233,56,0,0.08)", border: `1px solid rgba(233,56,0,0.2)`, borderRadius: 14, padding: "16px 24px" }}>
-          <div style={{ fontSize: 40, fontWeight: 700, color: "#E93800", fontFamily: "'Gilroy', sans-serif" }}>{mentor.credits || 0}</div>
-          <div style={{ color: "#888", fontSize: 12, marginTop: 2, textTransform: "uppercase", letterSpacing: 1 }}>Referral Credits</div>
-        </div>
-        <div style={{ textAlign: "center", background: "rgba(22,163,74,0.08)", border: `1px solid rgba(22,163,74,0.2)`, borderRadius: 14, padding: "16px 24px" }}>
-          <div style={{ fontSize: 40, fontWeight: 700, color: "#16A34A", fontFamily: "'Gilroy', sans-serif" }}>₹{mentor.totalEarnings || 0}</div>
-          <div style={{ color: "#888", fontSize: 12, marginTop: 2, textTransform: "uppercase", letterSpacing: 1 }}>Total Earnings</div>
-        </div>
-      </div>
+    {(() => {
+        const referralEarnings = (mentor.credits || 0) + influencerEarnings;
+        const sessionEarnings = mentor.totalEarnings || 0;
+        const totalRedeemed = redemptions.filter(r => r.status === "approved").reduce((sum, r) => sum + r.amount, 0);
+        const available = referralEarnings + sessionEarnings - totalRedeemed;
+        return (
+          <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 10 }}>
+              <div style={{ textAlign: "center", background: "rgba(233,56,0,0.08)", border: `1px solid rgba(233,56,0,0.2)`, borderRadius: 14, padding: "14px 10px" }}>
+                <div style={{ fontSize: 26, fontWeight: 700, color: "#E93800", fontFamily: "'Gilroy', sans-serif" }}>₹{referralEarnings}</div>
+                <div style={{ color: "#888", fontSize: 10, marginTop: 2, textTransform: "uppercase", letterSpacing: 1 }}>Referral</div>
+              </div>
+              <div style={{ textAlign: "center", background: "rgba(22,163,74,0.08)", border: `1px solid rgba(22,163,74,0.2)`, borderRadius: 14, padding: "14px 10px" }}>
+                <div style={{ fontSize: 26, fontWeight: 700, color: "#16A34A", fontFamily: "'Gilroy', sans-serif" }}>₹{sessionEarnings}</div>
+                <div style={{ color: "#888", fontSize: 10, marginTop: 2, textTransform: "uppercase", letterSpacing: 1 }}>Sessions</div>
+              </div>
+              <div style={{ textAlign: "center", background: "rgba(37,99,235,0.08)", border: `1px solid rgba(37,99,235,0.2)`, borderRadius: 14, padding: "14px 10px" }}>
+                <div style={{ fontSize: 26, fontWeight: 700, color: "#2563EB", fontFamily: "'Gilroy', sans-serif" }}>₹{totalRedeemed}</div>
+                <div style={{ color: "#888", fontSize: 10, marginTop: 2, textTransform: "uppercase", letterSpacing: 1 }}>Redeemed</div>
+              </div>
+            </div>
+            <div style={{ background: "#FFF0EB", border: "1px solid #F0D5CB", borderRadius: 14, padding: "16px 20px" }}>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 12 }}>
+                <div>
+                  <div style={{ fontSize: 11, color: "#888", textTransform: "uppercase", letterSpacing: 1 }}>Available to Redeem</div>
+                  <div style={{ fontSize: 32, fontWeight: 800, color: "#E93800", fontFamily: "'Gilroy', sans-serif" }}>₹{available}</div>
+                </div>
+              </div>
+              {redeemSuccess ? (
+                <div style={{ background: "#F0FBF6", border: "1px solid #BBF0D6", borderRadius: 10, padding: "12px 16px", fontSize: 14, color: "#16A34A", fontWeight: 600 }}>
+                  ✓ Redemption request sent! We'll process it shortly.
+                </div>
+              ) : redemptions.some(r => r.status === "pending") ? (
+                <div style={{ background: "#FFF9E6", border: "1px solid #FDE68A", borderRadius: 10, padding: "12px 16px", fontSize: 14, color: "#D97706", fontWeight: 600 }}>
+                  ⏳ You have a pending redemption request of ₹{redemptions.find(r => r.status === "pending")?.amount}
+                </div>
+              ) : available > 0 ? (
+                <div style={{ display: "flex", gap: 8 }}>
+                  <input placeholder="Enter your UPI ID (e.g. name@upi)" value={upiId} onChange={e => setUpiId(e.target.value)}
+                    style={{ flex: 1, background: "#fff", border: "1px solid #F0D5CB", borderRadius: 8, padding: "10px 12px", fontSize: 13, fontFamily: "'Gilroy', sans-serif", outline: "none", color: "#111" }} />
+                  <button onClick={async () => {
+                    if (!upiId.trim()) { setRedeemError("Enter your UPI ID"); return; }
+                    setRedeeming(true); setRedeemError("");
+                    try {
+                      await apiFetch("/redemptions", { method: "POST", body: { mentorId: mentor._id, upiId: upiId.trim() } });
+                      setRedeemSuccess(true);
+                      apiFetch(`/redemptions/mentor/${mentor._id}`).then(setRedemptions).catch(() => {});
+                      // Open WhatsApp
+                      window.open(`https://wa.me/918130900858?text=${encodeURIComponent(`💰 Redemption Request\n\nMentor: ${mentor.name}\nEmail: ${mentor.email}\nAmount: ₹${available}\nUPI ID: ${upiId.trim()}\n\nPlease process this payment.`)}`, "_blank");
+                    } catch (e) { setRedeemError(e.message); }
+                    finally { setRedeeming(false); }
+                  }} disabled={redeeming} style={{ background: redeeming ? "#ccc" : "#111", color: "#fff", border: "none", borderRadius: 8, padding: "10px 16px", fontSize: 13, fontWeight: 700, cursor: redeeming ? "not-allowed" : "pointer", fontFamily: "'Gilroy', sans-serif", whiteSpace: "nowrap" }}>
+                    {redeeming ? "..." : "Redeem →"}
+                  </button>
+                </div>
+              ) : (
+                <div style={{ fontSize: 13, color: "#888" }}>No balance available to redeem yet.</div>
+              )}
+              {redeemError && <div style={{ color: "#DC2626", fontSize: 12, marginTop: 8 }}>{redeemError}</div>}
+            </div>
+          </div>
+        );
+      })()}
   </div>
 </div>
 
@@ -1708,8 +1773,10 @@ const saveDetails = async () => {
 
           {/* Tabs */}
           <div style={{ borderBottom: `1px solid ${S.border}`, display: "flex", marginBottom: 28 }}>
-            {["bookings", "slots"].map(t => (
-              <button key={t} className={`dash-tab ${tab === t ? "active" : ""}`} onClick={() => setTab(t)} style={{ textTransform: "capitalize", fontFamily: "'DM Sans', sans-serif" }}>{t === "bookings" ? `Bookings (${bookings.length})` : "Manage Slots"}</button>
+            {["bookings", "slots", "redemptions"].map(t => (
+              <button key={t} className={`dash-tab ${tab === t ? "active" : ""}`} onClick={() => setTab(t)} style={{ textTransform: "capitalize", fontFamily: "'DM Sans', sans-serif" }}>
+                {t === "bookings" ? `Bookings (${bookings.length})` : t === "slots" ? "Manage Slots" : `Redemptions (${redemptions.length})`}
+              </button>
             ))}
           </div>
 
@@ -1770,6 +1837,34 @@ const saveDetails = async () => {
           )}
 
           {tab === "slots" && <SlotManager mentor={mentor} onSave={() => {}} />}
+          {tab === "redemptions" && (
+            <div>
+              {redemptions.length === 0 ? (
+                <div style={{ textAlign: "center", padding: "60px 20px", color: "#555" }}>
+                  <div style={{ fontSize: 48, marginBottom: 16 }}>💰</div>
+                  <div style={{ fontSize: 16, color: "#888" }}>No redemption requests yet</div>
+                </div>
+              ) : redemptions.map(r => (
+                <div key={r._id} className="booking-card">
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                    <div>
+                      <div style={{ fontWeight: 700, fontSize: 16, color: "#111", marginBottom: 4 }}>₹{r.amount}</div>
+                      <div style={{ fontSize: 13, color: "#555", marginBottom: 4 }}>UPI: {r.upiId}</div>
+                      <div style={{ fontSize: 12, color: "#aaa" }}>{new Date(r.createdAt).toLocaleString("en-IN")}</div>
+                    </div>
+                    <span style={{
+                      background: r.status === "approved" ? "#F0FBF6" : r.status === "rejected" ? "#FFF5F5" : "#FFF9E6",
+                      color: r.status === "approved" ? "#16A34A" : r.status === "rejected" ? "#DC2626" : "#D97706",
+                      border: `1px solid ${r.status === "approved" ? "#BBF0D6" : r.status === "rejected" ? "#FECACA" : "#FDE68A"}`,
+                      padding: "6px 14px", borderRadius: 20, fontSize: 13, fontWeight: 700
+                    }}>
+                      {r.status === "approved" ? "✓ Paid" : r.status === "rejected" ? "✗ Rejected" : "⏳ Pending"}
+                    </span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       </div>
     );
@@ -2135,6 +2230,7 @@ function AdminPanel({ onLogout }) {
   const [freeSessions, setFreeSessions] = useState([]);
   const [showAddFree, setShowAddFree] = useState(false);
   const [sentMails, setSentMails] = useState([]);
+  const [redemptions, setRedemptions] = useState([]);
   const [newFree, setNewFree] = useState({ type: "onetoone", mentorId: "", slot: "", topic: "", maxParticipants: 1000 });
   const [freeSlots, setFreeSlots] = useState([]);
 
@@ -2143,7 +2239,7 @@ function AdminPanel({ onLogout }) {
   const editMentorData = useRef({});
 
   const load = useCallback(async () => {
-    const [m, b, r, s, cc, gs, inf, fs, sm] = await Promise.all([
+    const [m, b, r, s, cc, gs, inf, fs, sm, rd] = await Promise.all([
   apiFetch("/mentors?all=true").catch(() => []),
   apiFetch("/bookings").catch(() => []),
   apiFetch("/registrations").catch(() => []),
@@ -2153,9 +2249,11 @@ function AdminPanel({ onLogout }) {
   apiFetch("/influencers").catch(() => []),
   apiFetch("/free-sessions/admin").catch(() => []),
   apiFetch("/sent-mails").catch(() => []),
+  apiFetch("/redemptions").catch(() => []),
 ]);
 setMentors(m); setBookings(b); setRegs(r); setStats(s); setCustomCalls(cc);
-setGroupSessions(gs); setInfluencers(inf); setFreeSessions(fs); setSentMails(sm);
+setGroupSessions(gs); setInfluencers(inf); setFreeSessions(fs); setSentMails(sm); setRedemptions(rd);
+setRedemptions(redemptions_data);
     const n = {}; b.forEach(bk => { if (bk.notes) n[bk._id] = bk.notes; });
     setNotes(n);
     const ml = {}; const meetSentMap = {};
@@ -2186,7 +2284,7 @@ setGroupSessions(gs); setInfluencers(inf); setFreeSessions(fs); setSentMails(sm)
   };
 
   
-const tabs = ["stats", "mentors", "registrations", "bookings", "customcalls", "groupsessions", "influencers", "freesessions", "mails"];
+const tabs = ["stats", "mentors", "registrations", "bookings", "customcalls", "groupsessions", "influencers", "freesessions", "mails", "redemptions"];
 
   return (
     <div style={{ minHeight: "100vh", background: "#FAF7F2", fontFamily: "'Gilroy', sans-serif" }}>
@@ -2752,6 +2850,57 @@ const tabs = ["stats", "mentors", "registrations", "bookings", "customcalls", "g
             <button onClick={async () => {
               if (window.confirm("Delete?")) { await apiFetch(`/free-sessions/${s._id}`, { method: "DELETE" }); load(); }
             }} className="ap-btn-red">🗑</button>
+          </div>
+        </div>
+      </div>
+    ))}
+  </div>
+)}
+{tab === "redemptions" && (
+  <div>
+    <div style={{ fontSize: 22, fontWeight: 800, color: "#111", marginBottom: 24 }}>
+      Redemption Requests ({redemptions.length})
+    </div>
+    {redemptions.length === 0 ? (
+      <div style={{ background: "#fff", border: "1px solid #E8E2D9", borderRadius: 16, padding: 60, textAlign: "center", color: "#888" }}>
+        <div style={{ fontSize: 40, marginBottom: 12 }}>💰</div>
+        <div style={{ fontWeight: 600 }}>No redemption requests yet</div>
+      </div>
+    ) : redemptions.map(r => (
+      <div key={r._id} className="ap-card">
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 16 }}>
+          <div>
+            <div style={{ fontWeight: 700, fontSize: 17, color: "#111", marginBottom: 4 }}>{r.mentorName}</div>
+            <div style={{ fontSize: 13, color: "#555", marginBottom: 2 }}>✉ {r.mentorEmail}</div>
+            <div style={{ fontSize: 13, color: "#555", marginBottom: 2 }}>📱 UPI: <strong>{r.upiId}</strong></div>
+            <div style={{ fontSize: 20, fontWeight: 800, color: "#E93800", marginTop: 8 }}>₹{r.amount}</div>
+            <div style={{ fontSize: 12, color: "#aaa", marginTop: 4 }}>{new Date(r.createdAt).toLocaleString("en-IN")}</div>
+          </div>
+          <div style={{ display: "flex", flexDirection: "column", gap: 8, alignItems: "flex-end" }}>
+            <span style={{
+              background: r.status === "approved" ? "#F0FBF6" : r.status === "rejected" ? "#FFF5F5" : "#FFF9E6",
+              color: r.status === "approved" ? "#16A34A" : r.status === "rejected" ? "#DC2626" : "#D97706",
+              border: `1px solid ${r.status === "approved" ? "#BBF0D6" : r.status === "rejected" ? "#FECACA" : "#FDE68A"}`,
+              padding: "5px 14px", borderRadius: 20, fontSize: 13, fontWeight: 700
+            }}>
+              {r.status === "approved" ? "✓ Paid" : r.status === "rejected" ? "✗ Rejected" : "⏳ Pending"}
+            </span>
+            {r.status === "pending" && (
+              <div style={{ display: "flex", gap: 8 }}>
+                <button onClick={async () => {
+                  await apiFetch(`/redemptions/${r._id}`, { method: "PUT", body: { status: "approved" } });
+                  load();
+                }} style={{ background: "#16A34A", color: "#fff", border: "none", borderRadius: 8, padding: "8px 20px", fontSize: 14, fontWeight: 700, cursor: "pointer", fontFamily: "'Gilroy', sans-serif" }}>
+                  ✓ Approve
+                </button>
+                <button onClick={async () => {
+                  await apiFetch(`/redemptions/${r._id}`, { method: "PUT", body: { status: "rejected" } });
+                  load();
+                }} style={{ background: "#DC2626", color: "#fff", border: "none", borderRadius: 8, padding: "8px 20px", fontSize: 14, fontWeight: 700, cursor: "pointer", fontFamily: "'Gilroy', sans-serif" }}>
+                  ✗ Reject
+                </button>
+              </div>
+            )}
           </div>
         </div>
       </div>
