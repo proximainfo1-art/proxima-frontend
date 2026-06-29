@@ -490,7 +490,11 @@ function MentorCard({ mentor, onClick, onBook }) {
   </div>
 </div>
       <div style={{ borderTop: "1px solid #F0EDE8", paddingTop: 10, display: "flex", alignItems: "center", gap: 16, fontSize: 15 }}>
-        <span style={{ fontWeight: 700, color: "#111" }}>₹{mentor.price || 299}<span style={{ fontWeight: 400, color: "#888" }}> / 30 min</span></span>
+        <span style={{ fontWeight: 700, color: "#111" }}>
+          <span style={{ textDecoration: "line-through", color: "#aaa", fontWeight: 400, fontSize: 13, marginRight: 6 }}>₹{mentor.price || 299}</span>
+          <span style={{ color: "#E93800" }}>₹50</span>
+          <span style={{ fontWeight: 400, color: "#888" }}> / 30 min</span>
+        </span>
         
       </div>
     </div>
@@ -633,6 +637,33 @@ const [error, setError] = useState('');
   );
 }
 
+function FlashSaleBanner() {
+  const endDate = new Date("2026-07-01T23:59:59+05:30");
+  const [timeLeft, setTimeLeft] = useState("");
+
+  useEffect(() => {
+    const calc = () => {
+      const diff = endDate - new Date();
+      if (diff <= 0) { setTimeLeft("Sale ended"); return; }
+      const h = Math.floor(diff / 1000 / 60 / 60);
+      const m = Math.floor((diff / 1000 / 60) % 60);
+      const s = Math.floor((diff / 1000) % 60);
+      setTimeLeft(`${h}h ${m}m ${s}s`);
+    };
+    calc();
+    const t = setInterval(calc, 1000);
+    return () => clearInterval(t);
+  }, []);
+
+  return (
+    <div style={{ background: "#E93800", color: "#fff", padding: "10px 24px", display: "flex", alignItems: "center", justifyContent: "center", gap: 16, flexWrap: "wrap", fontFamily: "'Gilroy', sans-serif", position: "sticky", top: 56, zIndex: 99 }}>
+      <span style={{ fontSize: 13, fontWeight: 800, letterSpacing: 2, textTransform: "uppercase" }}>⚡ Flash Sale</span>
+      <span style={{ fontSize: 14, fontWeight: 600 }}>Every session at <strong>₹50</strong> only — ends in</span>
+      <span style={{ background: "#fff", color: "#E93800", fontWeight: 800, fontSize: 14, padding: "3px 12px", borderRadius: 20 }}>{timeLeft}</span>
+    </div>
+  );
+}
+
 function MentorDiscovery({ onBook }) {
   const [mentors, setMentors] = useState([]);
   const [filter, setFilter] = useState("");
@@ -748,6 +779,8 @@ const [showCustomCall, setShowCustomCall] = useState(false);
       <div style={{ background: "#fff", borderBottom: "1px solid #E8E2D9", padding: "14px 24px", position: "sticky", top: 0, zIndex: 100 }}>
   <a href="/"><img src="/images/logo-light.png" alt="Proxima" style={{ height: 24, objectFit: "contain" }} /></a>
 </div>
+<FlashSaleBanner />
+
 <div style={{ background: "#FFF0EB", padding: "clamp(24px,4vw,40px) clamp(16px,4vw,48px) clamp(20px,3vw,32px)" }}>
         <div style={{ maxWidth: 1100, margin: "0 auto" }}>
           <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: 3, color: "#888", textTransform: "uppercase", marginBottom: 16 }}>Find Your Mentor</div>
@@ -1074,7 +1107,11 @@ const upd = (k, v) => setForm(f => ({ ...f, [k]: v }));
               <p style={{ color: "#555", fontSize: 14, lineHeight: 1.7 }}>{mentor.bio}</p>
             </div>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-              <div style={{ fontWeight: 700, fontSize: 20, color: "#111" }}>₹{mentor.price || 299}<span style={{ color: "#888", fontWeight: 400, fontSize: 15 }}>/30 min</span></div>
+              <div style={{ fontWeight: 700, fontSize: 20, color: "#111" }}>
+                <span style={{ textDecoration: "line-through", color: "#aaa", fontWeight: 400, fontSize: 14, marginRight: 6 }}>₹{mentor.price || 299}</span>
+                <span style={{ color: "#E93800" }}>₹50</span>
+                <span style={{ color: "#888", fontWeight: 400, fontSize: 15 }}>/30 min</span>
+              </div>
               <button onClick={() => setScreen("slots")} style={{ background: "#111", color: "#fff", border: "none", borderRadius: 8, padding: "12px 24px", fontSize: 14, fontWeight: 600, cursor: "pointer", fontFamily: "'Gilroy', sans-serif" }}>Book a Session →</button>
             </div>
           </div>
@@ -1087,7 +1124,7 @@ const upd = (k, v) => setForm(f => ({ ...f, [k]: v }));
               <div style={{ fontSize: 12, color: "#888", marginBottom: 4 }}>Booking a session with</div>
               <div style={{ fontSize: 17, fontWeight: 700, color: "#111" }}>{mentor.name}</div>
               <div style={{ borderBottom: "1px solid #f0d5cb", margin: "10px 0" }} />
-              <div style={{ fontSize: 15, color: "#555" }}>30 min · ₹{mentor.price || 299}</div>
+              <div style={{ fontSize: 15, color: "#555" }}>30 min · <span style={{ textDecoration: "line-through", color: "#aaa", fontSize: 13 }}>₹{mentor.price || 299}</span> <span style={{ color: "#E93800", fontWeight: 700 }}>₹50</span></div>
               <div style={{ fontSize: 12, color: "#888", marginTop: 8 }}>Asia/Kolkata (IST)</div>
             </div>
             <div style={RS}>
@@ -1233,7 +1270,7 @@ function BookingFlow({ mentor, slot, form: passedForm, onDone }) {
       if (!loaded) throw new Error("Razorpay failed to load");
       const { orderId, amount } = await apiFetch("/payment/create-order", {
         method: "POST",
-        body: { amount: mentor.price || 299, mentorId: mentor._id, slot, studentName: form.name, discountCode: form.code },
+        body: { amount: 50, mentorId: mentor._id, slot, studentName: form.name, discountCode: "" },
       });
       const options = {
         key: RAZORPAY_KEY,
@@ -1276,19 +1313,25 @@ function BookingFlow({ mentor, slot, form: passedForm, onDone }) {
   );
 
   return (
-    <div style={{ minHeight: "100vh", background: "#FAF7F2", display: "flex", alignItems: "center", justifyContent: "center", padding: 20 }}>
+    <div style={{ minHeight: "100vh", background: "#FAF7F2" }}>
+      <FlashSaleBanner />
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "center", padding: 20 }}>
       <div style={{ background: "#fff", borderRadius: 16, padding: 32, maxWidth: 480, width: "100%", border: "1px solid #E8E2D9" }}>
         <h2 style={{ fontSize: 22, fontWeight: 800, color: "#111", marginBottom: 8, fontFamily: "'Gilroy', sans-serif" }}>Complete Your Booking</h2>
         <p style={{ color: "#666", fontSize: 14, marginBottom: 24 }}>Session with {mentor.name} · {slot}</p>
         <div style={{ background: "#FFF5F2", borderRadius: 10, padding: "16px 18px", marginBottom: 24 }}>
           <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: 1, color: "#888", marginBottom: 10 }}>INVOICE</div>
-          <div style={{ display: "flex", justifyContent: "space-between", fontSize: 14, padding: "6px 0" }}><span>Session Cost</span><span>₹{mentor.price || 299}</span></div>
-          <div style={{ display: "flex", justifyContent: "space-between", fontSize: 15, fontWeight: 700, borderTop: "1px solid #f0c8b8", marginTop: 4, paddingTop: 10 }}><span>Total</span><span>₹{mentor.price || 299}</span></div>
+          <div style={{ display: "flex", justifyContent: "space-between", fontSize: 14, padding: "6px 0" }}>
+            <span>Session Cost</span>
+            <span><span style={{ textDecoration: "line-through", color: "#aaa", marginRight: 6 }}>₹{mentor.price || 299}</span><span style={{ color: "#E93800", fontWeight: 700 }}>₹50</span></span>
+          </div>
+          <div style={{ display: "flex", justifyContent: "space-between", fontSize: 15, fontWeight: 700, borderTop: "1px solid #f0c8b8", marginTop: 4, paddingTop: 10 }}><span>Total</span><span style={{ color: "#E93800" }}>₹50</span></div>
         </div>
         <button onClick={handlePay} disabled={loading}
           style={{ width: "100%", background: "#111", color: "#fff", border: "none", borderRadius: 8, padding: "14px", fontSize: 15, fontWeight: 600, cursor: loading ? "not-allowed" : "pointer", fontFamily: "'Gilroy', sans-serif", opacity: loading ? 0.7 : 1 }}>
           {loading ? "Processing..." : "Secure Checkout →"}
         </button>
+      </div>
       </div>
     </div>
   );
