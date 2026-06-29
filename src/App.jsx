@@ -284,6 +284,8 @@ html,body { margin:0; padding:0; width:100%; overflow-x:hidden; }
     <button onClick={onMentor} style={{ background:"transparent", color:"#111", border:"1.5px solid #111", padding:"9px 14px", borderRadius:8, fontSize:13, fontWeight:600, cursor:"pointer", fontFamily:"'Gilroy',sans-serif", whiteSpace:"nowrap", display: window.innerWidth < 600 ? "none" : "inline-block" }}>Join As Guide</button>
   </div>
 </nav>
+<FlashSaleBanner />
+
 
       <div style={{ background: "#FFF0EB", width: "100%" }}>
       <div className="l-hero" style={{ background: "transparent" }}>
@@ -492,7 +494,7 @@ function MentorCard({ mentor, onClick, onBook }) {
       <div style={{ borderTop: "1px solid #F0EDE8", paddingTop: 10, display: "flex", alignItems: "center", gap: 16, fontSize: 15 }}>
         <span style={{ fontWeight: 700, color: "#111" }}>
           <span style={{ textDecoration: "line-through", color: "#aaa", fontWeight: 400, fontSize: 13, marginRight: 6 }}>₹{mentor.price || 299}</span>
-          <span style={{ color: "#E93800" }}>₹50</span>
+          <span style={{ color: "#E93800", fontSize: 18, fontWeight: 800 }}>₹50</span>
           <span style={{ fontWeight: 400, color: "#888" }}> / 30 min</span>
         </span>
         
@@ -656,10 +658,10 @@ function FlashSaleBanner() {
   }, []);
 
   return (
-    <div style={{ background: "#E93800", color: "#fff", padding: "10px 24px", display: "flex", alignItems: "center", justifyContent: "center", gap: 16, flexWrap: "wrap", fontFamily: "'Gilroy', sans-serif", position: "sticky", top: 56, zIndex: 99 }}>
-      <span style={{ fontSize: 13, fontWeight: 800, letterSpacing: 2, textTransform: "uppercase" }}>⚡ Flash Sale</span>
-      <span style={{ fontSize: 14, fontWeight: 600 }}>Every session at <strong>₹50</strong> only — ends in</span>
-      <span style={{ background: "#fff", color: "#E93800", fontWeight: 800, fontSize: 14, padding: "3px 12px", borderRadius: 20 }}>{timeLeft}</span>
+    <div style={{ background: "#111", color: "#fff", padding: "16px 24px", display: "flex", alignItems: "center", justifyContent: "center", gap: 16, flexWrap: "wrap", fontFamily: "'Gilroy', sans-serif", position: "sticky", top: 56, zIndex: 99 }}>
+      <span style={{ fontSize: 16, fontWeight: 800, letterSpacing: 2, textTransform: "uppercase", color: "#E93800" }}>⚡ Flash Sale</span>
+      <span style={{ fontSize: 16, fontWeight: 600 }}>Every session at <strong style={{ color: "#E93800", fontSize: 22 }}>₹50</strong> only — ends in</span>
+      <span style={{ background: "#E93800", color: "#fff", fontWeight: 800, fontSize: 15, padding: "5px 16px", borderRadius: 20 }}>{timeLeft}</span>
     </div>
   );
 }
@@ -1109,7 +1111,7 @@ const upd = (k, v) => setForm(f => ({ ...f, [k]: v }));
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
               <div style={{ fontWeight: 700, fontSize: 20, color: "#111" }}>
                 <span style={{ textDecoration: "line-through", color: "#aaa", fontWeight: 400, fontSize: 14, marginRight: 6 }}>₹{mentor.price || 299}</span>
-                <span style={{ color: "#E93800" }}>₹50</span>
+                <span style={{ color: "#E93800", fontSize: 22, fontWeight: 800 }}>₹50</span>
                 <span style={{ color: "#888", fontWeight: 400, fontSize: 15 }}>/30 min</span>
               </div>
               <button onClick={() => setScreen("slots")} style={{ background: "#111", color: "#fff", border: "none", borderRadius: 8, padding: "12px 24px", fontSize: 14, fontWeight: 600, cursor: "pointer", fontFamily: "'Gilroy', sans-serif" }}>Book a Session →</button>
@@ -1124,7 +1126,7 @@ const upd = (k, v) => setForm(f => ({ ...f, [k]: v }));
               <div style={{ fontSize: 12, color: "#888", marginBottom: 4 }}>Booking a session with</div>
               <div style={{ fontSize: 17, fontWeight: 700, color: "#111" }}>{mentor.name}</div>
               <div style={{ borderBottom: "1px solid #f0d5cb", margin: "10px 0" }} />
-              <div style={{ fontSize: 15, color: "#555" }}>30 min · <span style={{ textDecoration: "line-through", color: "#aaa", fontSize: 13 }}>₹{mentor.price || 299}</span> <span style={{ color: "#E93800", fontWeight: 700 }}>₹50</span></div>
+              <div style={{ fontSize: 15, color: "#555" }}>30 min · <span style={{ textDecoration: "line-through", color: "#aaa", fontSize: 13 }}>₹{mentor.price || 299}</span> <span style={{ color: "#E93800", fontWeight: 800, fontSize: 18 }}>₹50</span></div>
               <div style={{ fontSize: 12, color: "#888", marginTop: 8 }}>Asia/Kolkata (IST)</div>
             </div>
             <div style={RS}>
@@ -1323,9 +1325,9 @@ function BookingFlow({ mentor, slot, form: passedForm, onDone }) {
           <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: 1, color: "#888", marginBottom: 10 }}>INVOICE</div>
           <div style={{ display: "flex", justifyContent: "space-between", fontSize: 14, padding: "6px 0" }}>
             <span>Session Cost</span>
-            <span><span style={{ textDecoration: "line-through", color: "#aaa", marginRight: 6 }}>₹{mentor.price || 299}</span><span style={{ color: "#E93800", fontWeight: 700 }}>₹50</span></span>
+            <span><span style={{ textDecoration: "line-through", color: "#aaa", marginRight: 6 }}>₹{mentor.price || 299}</span><span style={{ color: "#E93800", fontWeight: 800, fontSize: 18 }}>₹50</span></span>
           </div>
-          <div style={{ display: "flex", justifyContent: "space-between", fontSize: 15, fontWeight: 700, borderTop: "1px solid #f0c8b8", marginTop: 4, paddingTop: 10 }}><span>Total</span><span style={{ color: "#E93800" }}>₹50</span></div>
+          <div style={{ display: "flex", justifyContent: "space-between", fontSize: 15, fontWeight: 700, borderTop: "1px solid #f0c8b8", marginTop: 4, paddingTop: 10 }}><span>Total</span><span style={{ color: "#E93800", fontSize: 22, fontWeight: 800 }}>₹50</span></div>
         </div>
         <button onClick={handlePay} disabled={loading}
           style={{ width: "100%", background: "#111", color: "#fff", border: "none", borderRadius: 8, padding: "14px", fontSize: 15, fontWeight: 600, cursor: loading ? "not-allowed" : "pointer", fontFamily: "'Gilroy', sans-serif", opacity: loading ? 0.7 : 1 }}>
