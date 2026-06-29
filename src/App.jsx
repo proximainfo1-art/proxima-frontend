@@ -175,7 +175,7 @@ function Stars({ rating }) {
 
 function Landing({ onMentee, onMentor, onGroup }) {
   const LIGHT_LOGO = "/images/logo-light.png";
-  const STUDENT_PHOTO = "/images/landing.png";
+  const STUDENT_PHOTO = "/images/landing1.png";
   const [mentorCount, setMentorCount] = useState(0);
   const [collegeCount, setCollegeCount] = useState(0);
   const [openFaq, setOpenFaq] = useState(0);
