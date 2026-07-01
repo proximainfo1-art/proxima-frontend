@@ -1266,6 +1266,13 @@ function BookingFlow({ mentor, slot, form: passedForm, onDone }) {
   });
 
   const handlePay = async () => {
+    // Detect Instagram in-app browser on Android
+    const ua = navigator.userAgent || "";
+    const isInstagramAndroid = ua.includes("Instagram") && ua.includes("Android");
+    if (isInstagramAndroid) {
+      alert("Please open this page in Chrome or your default browser to complete payment. Tap the three dots (⋮) at the top right and select 'Open in browser'.");
+      return;
+    }
     setLoading(true);
     try {
       const loaded = await loadRazorpay();
